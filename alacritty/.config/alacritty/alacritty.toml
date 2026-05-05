@@ -1,0 +1,24 @@
+general.import = [
+    "~/.config/alacritty/themes/tokyo_night.toml"
+]
+
+[ env ]
+TERM = "alacritty"
+
+[window]
+padding.x = 5
+padding.y = 5
+opacity = 0.95
+
+decorations = "None"
+
+[font]
+normal.family = "FiraCode Nerd FontMono"
+
+#regular
+size = 10
+
+#for video
+# size = 35.0
+
+
