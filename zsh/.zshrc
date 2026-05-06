@@ -1,8 +1,5 @@
-# ====================== Main Zsh Config ======================
-
 source ~/.zshenv
 
-# History
 HISTFILE=~/.zsh_history
 HISTSIZE=15000
 SAVEHIST=15000
