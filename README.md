@@ -13,17 +13,19 @@ My personal Arch Linux + Hyprland configuration focused on building a fast, clea
 - Easy to bootstrap on fresh Arch installs
 - Modular structure for easy maintenance
 
-### Current Packages
-- **hypr** — Hyprland core configuration
-- **waybar** — Status bar
+### Structure
+```
+.
+├── hypr/          # Hyprland configuration
+├── waybar/        # Status bar config
+├── scripts/       # Utility scripts
+└── install.sh     # Bootstrap script
+```
 
-### What's Next
-- Terminal (Foot / Kitty)
-- Zsh + plugins
-- Neovim
-- Tmux
-- Development tools (Rust, Go, Node.js, Docker, etc.)
-- Full bootstrap script (`install.sh`)
+### Key Features
+- Fast, minimal Hyprland setup
+- Modular config structure
+- Easy to extend and customize
 
 ---
 
