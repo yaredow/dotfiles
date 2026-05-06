@@ -1,23 +1,462 @@
+/* --- Base Setup --- */
 * {
-  font-family: JetBrainsMono, monospace;
-  font-size: 13px;
+    font-family: 'FiraCode Nerd Font', sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    min-height: 0;
+    border-radius: 0px;
 }
 
+@import "../waybar/colors/mocha.css";
+
 window#waybar {
-  background-color: #1e1e2e;
-  color: #cdd6f4;
+    background-color: @base;
+    border-radius: 0;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+button {
+    box-shadow: inset 0 -3px transparent;
+    border: none;
+    border-radius: 0px;
+}
+
+/* --- Modules --- */
+#workspaces {
+    color: @mauve;
+    font-weight: normal;
+    font-style: normal;
 }
 
 #workspaces button {
-  padding: 5px;
-  color: #cdd6f4;
+    border-radius: 0px;
+    min-width: 20px;
+    color: @mauve;
+    transition: all 0.1s ease-in-out;
 }
 
 #workspaces button.active {
-  background-color: #89b4fa;
-  color: #1e1e2e;
+    background: @mauve;
+    color: @base;
+    border-radius: 0px;
+    min-width: 30px;
+    background-size: 400% 400%;
+    transition: all 0.1s ease-in-out;
 }
 
-#clock, #battery, #network, #cpu, #memory {
-  padding: 0 10px;
+#workspaces button:hover {
+    background: @mauve;
+    color: @base;
+    border-radius: 0px;
+    min-width: 30px;
+}
+
+#clock,
+#bluetooth,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#custom-media,
+#tray,
+#mode,
+#idle_inhibitor,
+#scratchpad,
+#power-profiles-daemon,
+#custom-pomodoro,
+#mpd {
+    padding: 0 10px;
+    color: @text;
+    margin: 0 0px;
+}
+
+#idle_inhibitor {
+    color: @peach;
+    min-width: 20px;
+    border-radius: 0px;
+}
+
+#idle_inhibitor.activated {
+    background-color: @peacht;
+    color: @base;
+}
+
+#idle_inhibitor:hover {
+    background-color: @peach;
+    color: @base;
+}
+
+#tray {
+    border-radius: 0px;
+    color: @lavender;
+}
+
+#mpris,
+#mpd {
+    border-radius: 0px;
+    color: @green;
+    padding: 0 10px;
+}
+
+#mpris:hover,
+#mpd:hover {
+    background-color: @green;
+    color: @base;
+}
+
+#custom-start {
+    /*margin-left: 10px;*/
+    min-width: 20px;
+    border-radius: 0px;
+    color: @teal;
+}
+
+#custom-start:hover {
+    background-color: @teal;
+    min-width: 20px;
+    color: @base;
+}
+
+#custom-logo {
+    /*margin-right: 10px;*/
+    border-radius: 0px;
+    min-width: 40px;
+    color: @sky;
+}
+
+#custom-logo:hover {
+
+    background-color: @sky;
+    color: @base;
+}
+
+#window,
+#workspaces {
+    margin: 0 0px;
+}
+
+.modules-left>widget:first-child>#workspaces {
+    margin-left: 0px;
+}
+
+.modules-right>widget:last-child>#workspaces {
+    margin-right: 0;
+}
+
+#clock {
+    border-radius: 0px;
+    color: @yellow;
+}
+
+#clock:hover {
+    background-color: @yellow;
+    color: @base;
+}
+
+#hardware {
+    border-radius: 0px;
+    background-color: transparent;
+}
+
+#hardware:hover {
+    background-color: transparent;
+}
+
+#network {
+    margin-right: 0px;
+    border-radius: 0px;
+    color: @lavender;
+    transition: background-color 0.5s ease;
+}
+
+#network:hover {
+    background-color: @lavender;
+    color: @base;
+}
+
+#network.disconnected {
+    border-radius: 0px;
+    background-color: @red;
+    color: @crust;
+}
+
+#bluetooth {
+    margin-right: 4px;
+    margin-left: 4px;
+    border-radius: 0px;
+    min-width: 20px;
+    color: @flamingo;
+}
+
+#bluetooth:hover {
+    background-color: @flamingo;
+    color: @base;
+}
+
+#battery {
+    color: @rosewater;
+}
+
+#battery:hover {
+    background-color: @rosewater;
+    color: @base;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @green;
+}
+
+@keyframes blink {
+    to {
+        background-color: @crust;
+        color: @text;
+    }
+}
+
+#battery.critical:not(.charging) {
+    color: @red;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+#backlight {
+    margin-right: 4px;
+    margin-left: 4px;
+    color: @teal;
+}
+
+#backlight:hover {
+    background-color: @teal;
+    color: @base;
+}
+
+#pulseaudio {
+    border-radius: 0px;
+    color: @sapphire;
+}
+
+#pulseaudio.muted {
+    border-radius: 0px;
+    background-color: @red;
+    color: @crust;
+}
+
+#pulseaudio:hover {
+    background-color: @sapphire;
+    color: @base;
+}
+
+#custom-pomodoro {
+    padding: 0 10px;
+    color: @maroon;
+}
+
+#custom-pomodoro.paused {
+    color: @yellow;
+}
+
+#custom-pomodoro:hover {
+    background-color: @maroon;
+    color: @base;
+}
+
+#custom-brew-task {
+    min-width: 20px;
+    padding: 0 10px;
+    color: @mauve;
+}
+
+#custom-brew-task:hover {
+    background-color: @mauve;
+    color: @base;
+}
+
+#custom-pomodoro.critical {
+    background-color: @red;
+    color: @base;
+    animation-name: blink-red;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+#custom-pomodoro.done {
+    background-color: @green;
+    color: @base;
+    animation-name: blink-green;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes blink-red {
+    0% {
+        background-color: @red;
+        color: @base;
+    }
+
+    50% {
+        background-color: @base;
+        color: @red;
+    }
+
+    100% {
+        background-color: @red;
+        color: @base;
+    }
+}
+
+@keyframes blink-green {
+    0% {
+        background-color: @green;
+        color: @base;
+    }
+
+    50% {
+        background-color: @base;
+        color: @green;
+    }
+
+    100% {
+        background-color: @green;
+        color: @base;
+    }
+}
+
+#language {
+    background: @teal;
+    color: @base;
+    padding: 0 5px;
+    margin: 0 5px;
+    min-width: 16px;
+}
+
+#keyboard-state {
+    background: @green;
+    color: @base;
+    padding: 0 0px;
+    margin: 0 5px;
+    min-width: 16px;
+}
+
+#keyboard-state>label {
+    padding: 0 5px;
+}
+
+#keyboard-state>label.locked {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#scratchpad {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#scratchpad.empty {
+    background-color: transparent;
+}
+
+#privacy {
+    padding: 0;
+}
+
+#privacy-item {
+    padding: 0 5px;
+    color: @text;
+}
+
+#privacy-item.screenshare {
+    background-color: @peach;
+}
+
+#privacy-item.audio-in {
+    background-color: @green;
+}
+
+#privacy-item.audio-out {
+    background-color: @blue;
+}
+
+#wireplumber {
+    background-color: @surface0;
+    color: @text;
+}
+
+#wireplumber.muted {
+    background-color: @red;
+}
+
+#custom-media {
+    background-color: @green;
+    color: @base;
+    min-width: 100px;
+}
+
+#custom-media.custom-spotify {
+    background-color: @green;
+}
+
+#custom-media.custom-vlc {
+    background-color: @peach;
+}
+
+#temperature {
+    background-color: @peach;
+    color: @base;
+}
+
+#temperature.critical {
+    background-color: @red;
+    color: @base;
+}
+
+#power-profiles-daemon {
+    padding-right: 15px;
+}
+
+#power-profiles-daemon.performance {
+    background-color: @red;
+    color: @base;
+}
+
+#power-profiles-daemon.balanced {
+    background-color: @blue;
+    color: @base;
+}
+
+#power-profiles-daemon.power-saver {
+    background-color: @green;
+    color: @base;
+}
+
+label:focus {
+    background-color: @base;
+}
+
+#cpu {
+    background-color: @green;
+    color: @base;
+}
+
+#memory {
+    background-color: @mauve;
+    color: @base;
+}
+
+#disk {
+    background-color: @maroon;
+    color: @base;
 }

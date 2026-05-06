@@ -1,0 +1,225 @@
+{
+    /* --- Layout --- */
+    "layer": "top",
+    "position": "bottom",
+    "spacing": 4,
+    "height": 26,
+    "modules-left": [
+        "custom/start",
+        "clock",
+        "mpris"
+    ],
+    "modules-center": [
+        "hyprland/workspaces"
+    ],
+    "modules-right": [
+        "tray",
+        "custom/pomodoro",
+        "battery",
+        "bluetooth",
+        "pulseaudio",
+        "group/hardware"
+    ],
+    /* --- Grouping --- */
+    "group/hardware": {
+        "format": "  ",
+        "orientation": "horizontal",
+        "modules": [
+            "custom/logo",
+            "backlight",
+            "network"
+        ],
+        "drawer": {
+            "transition-duration": 0
+        }
+    },
+    /* --- System --- */
+    "hyprland/workspaces": {
+        "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10"
+        },
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": []
+        }
+    },
+
+    "tray": {
+        "show-passive-items": true,
+        "spacing": 10
+    },
+
+    "mpris": {
+        "format": "{status_icon} {title} - {artist}",
+        "format-paused": "{status_icon} <i>{title} - {artist}</i>",
+        "player-icons": {
+            "default": "▶",
+            "spotify": "",
+            "firefox": "󰈹",
+            "vlc": "󰕼"
+        },
+        "status-icons": {
+            "playing": "",
+            "paused": "⏸"
+        },
+        "max-length": 35,
+        "interval": 1,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "tooltip-format": "Player: {player}\nTitle: {title}\nArtist: {artist}\nAlbum: {album}"
+    },
+    "mpd": {
+        "server": "127.0.0.1",
+        "port": 6600,
+        "format": "{stateIcon} {title} - {artist}",
+        "format-paused": "{stateIcon} <i>{title} - {artist}</i>",
+        "format-stopped": "",
+        "format-disconnected": " Disconnected",
+        "state-icons": {
+            "playing": "",
+            "paused": "⏸"
+        },
+        "max-length": 35,
+        "interval": 2,
+        "on-click": "mpc toggle",
+        "on-scroll-up": "mpc next",
+        "on-scroll-down": "mpc prev",
+        "tooltip-format": "MPD: {artist} - {album} - {title}"
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        },
+        "tooltip": true,
+        "tooltip-format-activated": "Caffeine Mode: Active (Stay Awake)",
+        "tooltip-format-deactivated": "Caffeine Mode: Inactive (Sleep Enabled)"
+    },
+    "clock": {
+        "tooltip-format": "{calendar}",
+        "format-alt": "{:%a, %d %b %Y}",
+        "format": "{:%I:%M %p}"
+    },
+    "pulseaudio": {
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% {icon}  {format_source}",
+        "format-bluetooth-muted": "{icon} {format_source}",
+        "format-muted": "{format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": [
+                "󰕿",
+                "󰖀",
+                "󰕾"
+            ]
+        },
+        "on-click-middle": "pavucontrol",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    },
+    "backlight": {
+        "format": "{percent}% {icon}",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
+    },
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon}",
+        "format-full": "{icon}",
+        "format-charging": "󰂄",
+        "format-plugged": "",
+        "format-alt": "{capacity}% ",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
+    },
+    "network": {
+        "format-wifi": "󰤨 {essid}",
+        "format-off": "󰤭",
+        "format-ethernet": "{ipaddr}/{cidr} ",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected 󰤮",
+        "on-click": "kitty --class nmtui -e nmtui"
+    },
+    "bluetooth": {
+        "format-on": "",
+        "format-off": "󰂲",
+        "format-disabled": "",
+        "format-connected": "󰂱 {num_connections}",
+        "tooltip-format-connected": "{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "on-click": "kitty --class bluetui -e bluetui"
+    },
+    /* --- Custom Scripts --- */
+    "custom/start": {
+        "format": "  ",
+        "tooltip": false,
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "rofi -show drun",
+        "escape": true
+    },
+    "custom/logo": {
+        "format": "   ",
+        "tooltip": false,
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "on-click-middle": "$HOME/.config/rofi/wallpaper_menu.sh",
+        "escape": true
+    },
+    "custom/brew-task": {
+        "format": "",
+        "tooltip": true,
+        "tooltip-format": "brew-task",
+        "on-click": "~/.config/waybar/scripts/toggle-brew-task.sh"
+    },
+    "custom/pomodoro": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/brewland/pomodoro/pomodoro.sh",
+        "interval": 1,
+        "on-click": "~/.config/brewland/pomodoro/pomodoro.sh click",
+        "on-click-middle": "~/.config/brewland/pomodoro/pomodoro.sh toggle"
+    }
+}
