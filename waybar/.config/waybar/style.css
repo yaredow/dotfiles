@@ -9,7 +9,16 @@
 window#waybar {
   transition-property: background-color;
   transition-duration: 0.5s;
+  padding: 0; /* padding handled by left/right containers */
   background-color: #1a1b26;
+}
+
+/* apply padding once inside the bar on the left/right containers */
+.left, .modules-left {
+  padding-left: 6px;
+}
+.right, .modules-right {
+  padding-right: 6px;
 }
 
 #workspaces button {

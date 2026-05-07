@@ -1,7 +1,7 @@
 {
   "layer": "bottom",
-  "position": "bottom",
-  "height": 40,
+  "position": "top",
+  "height": 36,
   "spacing": 2,
   "exclusive": true,
   "gtk-layer-shell": true,
@@ -17,7 +17,7 @@
     "clock#simpleclock",
     "tray",
     "custom/notification",
-    "custom/power",
+    "custom/power"
    ],
   "custom/spotify": {
     "format": "  {}",
