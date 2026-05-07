@@ -43,6 +43,7 @@ return {
         "gofmt",
         "goimports",
         "golines",
+        "golangci-lint",
         "prettier",
         "stylua",
         "isort",

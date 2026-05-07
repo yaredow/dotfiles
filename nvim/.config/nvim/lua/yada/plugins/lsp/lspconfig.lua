@@ -78,6 +78,11 @@ return {
     })
     vim.lsp.enable("gopls")
 
+    vim.lsp.config("ts_ls", {
+      capabilities = capabilities,
+    })
+    vim.lsp.enable("ts_ls")
+
     vim.lsp.config("svelte", {
       capabilities = capabilities,
       on_attach = function(client, bufnr)

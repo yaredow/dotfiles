@@ -1,4 +1,8 @@
 vim.cmd("let g:netrw_liststyle = 3")
+vim.cmd("let g:loaded_netrw = 1")
+vim.cmd("let g:loaded_netrwPlugin = 1")
+
+vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
 
 local opt = vim.opt -- for conciseness
 
