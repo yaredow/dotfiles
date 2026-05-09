@@ -12,16 +12,13 @@
       "enabled": true,
       "remote": false,
       "command": "npx",
-      "args": [
-        "-y",
-        "@hugeicons/mcp-server"
-      ]
-    }
+      "args": ["-y", "@hugeicons/mcp-server"],
+    },
   },
   "agent_servers": {
     "github-copilot": {
-      "type": "registry"
-    }
+      "type": "registry",
+    },
   },
   "agent_buffer_font_size": 13.0,
   "edit_predictions": {
@@ -54,13 +51,17 @@
     },
     "enabled_in_text_threads": false,
   },
-  "icon_theme": "Material Icon Theme",
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Material Icon Theme",
+    "dark": "Material Icon Theme",
+  },
   "notification_panel": {
     "button": false,
   },
   "agent": {
     "tool_permissions": {
-      "default": "allow"
+      "default": "allow",
     },
     "dock": "left",
     "default_profile": "ask",
@@ -87,6 +88,13 @@
         },
       ],
     },
+    "SQL": {
+      "formatter": {
+        "external": {
+          "command": "pg_format",
+        },
+      },
+    },
   },
   "lsp": {
     "basedpyright": {
@@ -102,6 +110,7 @@
         },
       },
     },
+
     "gopls": {
       "initialization_options": {
         "gofumpt": true,
