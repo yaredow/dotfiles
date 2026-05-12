@@ -7,6 +7,7 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "cli_default_open_behavior": "existing_window",
   "context_servers": {
     "hugeicons": {
       "enabled": true,
@@ -97,6 +98,21 @@
     },
   },
   "lsp": {
+    "vtsls": {
+      "settings": {
+        "typescript": {
+          "updateImportsOnFileMove": {
+            "enabled": "always"
+          }
+        },
+        "javascript": {
+          "updateImportsOnFileMove": {
+            "enabled": "always"
+          }
+        }
+      },
+      "enable_lsp_tasks": true
+    },
     "basedpyright": {
       "settings": {
         "python": {
@@ -216,7 +232,7 @@
     "env": {
       "EDITOR": "zed --wait",
     },
-    "font_size": 14,
+    "font_size": 13.5,
     "font_family": "FiraCode Nerd Font Mono",
     "detect_venv": {
       "on": {
