@@ -10,6 +10,7 @@ require('snacks').setup {
   },
   notifier = { enabled = true },
   lazygit = { enabled = true },
+  indent = { enabled = true },
 }
 
 vim.keymap.set('n', '<leader>gg', function() Snacks.lazygit() end, { desc = 'Lazygit' })

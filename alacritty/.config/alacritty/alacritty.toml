@@ -7,7 +7,7 @@ TERM = "alacritty"
 
 [window]
 padding.x = 5
-padding.y = 5
+padding.y = 8
 opacity = 0.95
 
 decorations = "None"
