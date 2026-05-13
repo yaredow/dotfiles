@@ -48,3 +48,6 @@ export PATH=$PATH:$HOME/go/bin
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# bun completions
+[ -s "/home/yada/.bun/_bun" ] && source "/home/yada/.bun/_bun"
