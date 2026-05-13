@@ -26,13 +26,6 @@
       "space t k": "pane::ActivatePreviousItem",
     },
   },
-  // Vim mode
-  {
-    "context": "vim_mode == insert",
-    "bindings": {
-      "j k": "vim::NormalBefore",
-    },
-  },
   // Project panel (file tree)
   {
     "context": "ProjectPanel && not_editing",
@@ -238,7 +231,6 @@
     "bindings": {
       "ctrl-j": "menu::SelectNext",
       "ctrl-k": "menu::SelectPrevious",
-      "j k": "vim::NormalBefore",
     },
   },
   {
