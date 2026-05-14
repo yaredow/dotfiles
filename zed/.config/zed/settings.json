@@ -279,8 +279,8 @@
   },
   "ui_font_size": 14.0,
   "buffer_font_size": 13.0,
-  "buffer_font_family": "FiraCode Nerd Font Mono",
-  "ui_font_family": "FiraCode Nerd Font Mono",
+  "buffer_font_family": "MesloLGS Nerd Font",
+  "ui_font_family": "MesloLGS Nerd Font",
   "theme": {
     "mode": "dark",
     "light": "One Light",
