@@ -13,7 +13,7 @@ opacity = 0.95
 decorations = "None"
 
 [font]
-normal.family = "MesloLGS Nerd Font"
+normal.family = "JetBrainsMono Nerd Font"
 
 #regular
 size = 10
