@@ -13,16 +13,10 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 export PNPM_HOME="$HOME/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
-export GREENLIGHT_DB_DSN='postgres://greenlight:pa55word@localhost/greenlight?sslmode=disable'
-
 # Cargo
 export PATH="$HOME/.cargo/bin:$PATH"
 
 export ELECTRON_OZONE_PLATFORM_HINT=auto
-
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # android
 export ANDROID_HOME="$HOME/Android/Sdk"

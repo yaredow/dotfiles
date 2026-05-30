@@ -96,3 +96,4 @@ export PATH="$PATH:$HOME/go/bin"
 # Powerlevel10k config
 # ==============================
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+eval "$(direnv hook zsh)"

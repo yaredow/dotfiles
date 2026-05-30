@@ -7,6 +7,7 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "soft_wrap": "editor_width",
   "cli_default_open_behavior": "existing_window",
   "context_servers": {
     "hugeicons": {
@@ -17,6 +18,12 @@
     },
   },
   "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    },
+    "gemini": {
+      "type": "registry"
+    },
     "github-copilot": {
       "type": "registry",
     },
@@ -65,11 +72,12 @@
       "default": "allow",
     },
     "dock": "left",
-    "default_profile": "ask",
+    "default_profile": "write",
     "default_model": {
+      "effort": "medium",
       "enable_thinking": true,
-      "provider": "openrouter",
-      "model": "google/gemini-2.5-flash",
+      "provider": "openai-subscribed",
+      "model": "gpt-5.4-mini",
     },
   },
   "languages": {
@@ -102,16 +110,16 @@
       "settings": {
         "typescript": {
           "updateImportsOnFileMove": {
-            "enabled": "always"
-          }
+            "enabled": "always",
+          },
         },
         "javascript": {
           "updateImportsOnFileMove": {
-            "enabled": "always"
-          }
-        }
+            "enabled": "always",
+          },
+        },
       },
-      "enable_lsp_tasks": true
+      "enable_lsp_tasks": true,
     },
     "basedpyright": {
       "settings": {
@@ -278,9 +286,9 @@
     "button": false,
   },
   "ui_font_size": 14.0,
-  "buffer_font_size": 13.0,
-  "buffer_font_family": "MesloLGS Nerd Font",
-  "ui_font_family": "MesloLGS Nerd Font",
+  "buffer_font_size": 13.2,
+  "buffer_font_family": "FiraCode Nerd Font",
+  "ui_font_family": "FiraCode Nerd Font",
   "theme": {
     "mode": "dark",
     "light": "One Light",

@@ -60,6 +60,7 @@ hl.on("hyprland.start", function ()
     hl.exec_cmd("hyprpaper")
     hl.exec_cmd("waybar")
     hl.exec_cmd("systemctl --userr start hyprpolkitagent")
+    hl.exec_cmd("hyprctl setcursor Bibata-Modern-Ice 24")
 end)
 
 
@@ -300,6 +301,8 @@ hl.bind(secondMod .. " + j",  hl.dsp.window.move({ direction = "down" }))
 
 hl.bind(secondMod .. " + T", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(secondMod .. " + F", hl.dsp.window.fullscreen({mode = "maximized"}))
+hl.bind(secondMod .. " + equal", hl.dsp.window.resize({ x = 10, y = 0, relative = true }), { repeating = true })
+hl.bind(secondMod .. " + minus", hl.dsp.window.resize({ x = -10, y = 0, relative = true }), { repeating = true })
 
 
 -- Switch workspaces with mainMod + [0-9]

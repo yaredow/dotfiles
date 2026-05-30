@@ -27,6 +27,9 @@ alias mux='pgrep -vx tmux > /dev/null && \
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
+# Android studio
+alias ase='nohup emulator -avd Pixel_8 > /dev/null 2>&1 &!'
+
 # Yazi wrapper
 function y() {
     local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
