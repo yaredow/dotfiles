@@ -77,7 +77,7 @@
       "effort": "medium",
       "enable_thinking": true,
       "provider": "openai-subscribed",
-      "model": "gpt-5.4-mini",
+      "model": "gpt-5.2",
     },
   },
   "languages": {

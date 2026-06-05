@@ -99,7 +99,7 @@ do
   vim.g.maplocalleader = ' '
 
   -- Set to true if you have a Nerd Font installed and selected in the terminal
-  vim.g.have_nerd_font = false
+  vim.g.have_nerd_font = true
 
   -- [[ Setting options ]]
   --  See `:help vim.o`
@@ -345,7 +345,10 @@ do
   --
   -- Here we only install `nvim-web-devicons` (which adds pretty icons) if we have a Nerd Font,
   -- since otherwise the icons won't display properly.
-  if vim.g.have_nerd_font then vim.pack.add { gh 'nvim-tree/nvim-web-devicons' } end
+  if vim.g.have_nerd_font then
+    vim.pack.add { gh 'nvim-tree/nvim-web-devicons' }
+    require('nvim-web-devicons').setup {}
+  end
 
   -- Here is a more advanced configuration example that passes options to `gitsigns.nvim`
   --
@@ -372,6 +375,7 @@ do
     spec = {
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>t', group = '[T]erminal' },
+      { '<leader>b', group = '[B]uffer' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
     },
@@ -576,6 +580,25 @@ do
 
   -- Shortcut for searching your Neovim configuration files
   vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end, { desc = '[S]earch [N]eovim files' })
+
+  -- [[ Flash.nvim ]]
+  -- Quick jumping using labels. Press `s` followed by two chars to jump.
+  -- See `:help flash` and https://github.com/folke/flash.nvim
+  vim.pack.add { gh 'folke/flash.nvim' }
+  require('flash').setup {
+    -- Use regex search instead of generating all 2-char substrings;
+    -- this avoids the slow first-press label generation.
+    modes = {
+      jump = {
+        search = { mode = 'search' },
+      },
+    },
+  }
+
+  -- flash doesn't install keymaps itself; wire them up explicitly
+  vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, { desc = 'Flash' })
+  vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() require('flash').treesitter() end, { desc = 'Flash Treesitter' })
+  vim.keymap.set('o', 'r', function() require('flash').remote() end, { desc = 'Remote Flash' })
 end
 
 -- ============================================================

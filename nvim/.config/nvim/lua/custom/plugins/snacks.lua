@@ -44,7 +44,6 @@ snacks.setup {
       { section = 'recent_files', limit = 5, cwd = true },
     },
   },
-  explorer = { enabled = true, replace_netrw = true },
   picker = {
     sources = {
       explorer = {
@@ -65,16 +64,30 @@ snacks.setup {
   statuscolumn = { enabled = true },
   words = { enabled = true },
   zen = { enabled = true },
-  lazygit = { enabled = true },
 }
-
-vim.keymap.set('n', '<leader>e', function() snacks.explorer() end, { desc = 'Explorer toggle', silent = true })
 
 -- Terminal: bottom split by default; each `count` is a separate session
 vim.keymap.set('n', '<leader>th', function()
   snacks.terminal.toggle(nil, { win = terminal_win_opts() })
 end, { desc = '[T]erminal toggle' })
+vim.keymap.set('t', '<leader>th', function()
+  local cur_buf = vim.api.nvim_get_current_buf()
+  for _, t in ipairs(snacks.terminal.list()) do
+    if t.buf == cur_buf then
+      t:toggle()
+      return
+    end
+  end
+  snacks.terminal.toggle()
+end, { desc = '[T]erminal toggle' })
+
 vim.keymap.set('n', '<leader>tn', function()
+  snacks.terminal.open(nil, {
+    count = next_terminal_count(),
+    win = terminal_win_opts(),
+  })
+end, { desc = '[T]erminal [N]ew' })
+vim.keymap.set('t', '<leader>tn', function()
   snacks.terminal.open(nil, {
     count = next_terminal_count(),
     win = terminal_win_opts(),
