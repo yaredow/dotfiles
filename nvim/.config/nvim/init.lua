@@ -108,9 +108,8 @@ do
 
   -- Make line numbers default
   vim.o.number = true
-  -- You can also add relative line numbers, to help with jumping.
-  --  Experiment for yourself to see if you like it!
-  -- vim.o.relativenumber = true
+  -- Relative line numbers for jumping (e.g. 5j, 3dd)
+  vim.o.relativenumber = true
 
   -- Enable mouse mode, can be useful for resizing splits for example!
   vim.o.mouse = 'a'
@@ -158,11 +157,20 @@ do
   vim.o.list = true
   vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
+  -- Indent: 4 columns (a bit tighter than the 8 default)
+  vim.o.tabstop = 4
+  vim.o.softtabstop = 4
+  vim.o.shiftwidth = 4
+
   -- Preview substitutions live, as you type!
   vim.o.inccommand = 'split'
 
   -- Show which line your cursor is on
   vim.o.cursorline = true
+
+  -- Wrap long lines visually; break at word boundaries, not mid-word
+  vim.o.wrap = true
+  vim.o.linebreak = true
 
   -- Minimal number of screen lines to keep above and below the cursor.
   vim.o.scrolloff = 10
@@ -378,6 +386,8 @@ do
       { '<leader>b', group = '[B]uffer' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
+      { 'gd', desc = '[G]oto [D]efinition', mode = { 'n' } },
+      { 'gD', desc = '[G]oto [D]eclaration', mode = { 'n' } },
     },
   }
 
@@ -660,6 +670,10 @@ do
       -- Execute a code action, usually your cursor needs to be on top of an error
       -- or a suggestion from your LSP for this to activate.
       map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+
+      -- Go to definition / declaration (standard `gd` / `gD`)
+      map('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
+      map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
       -- WARN: This is not Goto Definition, this is Goto Declaration.
       --  For example, in C this would take you to the header.

@@ -6,6 +6,10 @@ require('neo-tree').setup {
   },
   filesystem = {
     hijack_netrw_behavior = 'open_default',
+    follow_current_file = {
+      enabled = true,
+      leave_dirs_open = false,
+    },
     window = {
       mappings = {
         ['h'] = 'close_node',
