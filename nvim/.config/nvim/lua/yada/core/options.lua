@@ -1,0 +1,55 @@
+-- Editor options, leader keys, and diagnostic config.
+-- Required from init.lua before plugins load so leader is set first.
+
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
+-- Set if you have a Nerd Font in your terminal
+vim.g.have_nerd_font = true
+
+vim.o.number = true
+vim.o.relativenumber = true
+vim.o.mouse = 'a'
+vim.o.showmode = false
+
+-- Defer until after UI starts to avoid slowing down startup
+-- See `:help 'clipboard'`
+vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
+
+vim.o.undofile = true
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.signcolumn = 'yes'
+vim.o.updatetime = 250
+vim.o.timeoutlen = 300
+vim.o.splitright = true
+vim.o.splitbelow = true
+
+vim.o.list = true
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
+vim.o.inccommand = 'split'
+vim.o.cursorline = true
+vim.o.wrap = true
+vim.o.linebreak = true
+vim.o.scrolloff = 10
+vim.o.confirm = true
+vim.o.breakindent = true
+
+vim.diagnostic.config {
+  update_in_insert = false,
+  severity_sort = true,
+  float = { border = 'rounded', source = 'if_many' },
+  underline = { severity = { min = vim.diagnostic.severity.WARN } },
+  virtual_text = true,
+  virtual_lines = false,
+  -- Open the float automatically on `[d` / `]d` jumps
+  jump = {
+    on_jump = function(_, bufnr)
+      vim.diagnostic.open_float { bufnr = bufnr, scope = 'cursor', focus = false }
+    end,
+  },
+}

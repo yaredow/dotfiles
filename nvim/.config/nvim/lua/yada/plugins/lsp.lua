@@ -1,0 +1,190 @@
+-- LSP server configs + buffer-local keymap spec. Loaded by
+-- `yada.plugins` (see lua/yada/plugins/init.lua).
+
+local M = {}
+
+-- ============================================================
+-- Plugin installation
+-- ============================================================
+vim.pack.add {
+  'https://github.com/neovim/nvim-lspconfig',
+  'https://github.com/mason-org/mason.nvim',
+  'https://github.com/mason-org/mason-lspconfig.nvim',
+  'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
+}
+
+-- ============================================================
+-- Server configs
+-- ============================================================
+-- See `:help lsp-config`
+---@type table<string, vim.lsp.Config>
+local servers = {
+  -- clangd = {},
+  gopls = {
+    settings = {
+      gopls = {
+        gofumpt = true,
+        staticcheck = true,
+        usePlaceholders = true,
+        analyses = { unusedparams = true, unreachable = true, nilness = true, shadow = true },
+        hints = {
+          assignVariableTypes = true,
+          compositeLiteralFields = true,
+          functionTypeParameters = true,
+          parameterNames = true,
+          rangeVariableTypes = true,
+        },
+        codelenses = { toggle_gc_details = false, run_govulncheck = false, whyline = false },
+      },
+    },
+  },
+  -- pyright = {},
+  -- rust_analyzer = {},
+  ts_ls = {
+    settings = {
+      typescript = { inlayHints = { parameterTypes = { enabled = true } } },
+      javascript = { inlayHints = { parameterTypes = { enabled = true } } },
+    },
+  },
+  stylua = {},
+
+  lua_ls = {
+    on_init = function(client)
+      client.server_capabilities.documentFormattingProvider = false -- formatting is done by stylua
+
+      if client.workspace_folders then
+        local path = client.workspace_folders[1].name
+        if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then return end
+      end
+
+      client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+        runtime = {
+          version = 'LuaJIT',
+          path = { 'lua/?.lua', 'lua/?/init.lua' },
+        },
+        workspace = {
+          checkThirdParty = false,
+          -- Slows startup; see https://github.com/neovim/nvim-lspconfig/issues/3189
+          library = vim.tbl_extend('force', vim.api.nvim_get_runtime_file('', true), {
+            '${3rd}/luv/library',
+            '${3rd}/busted/library',
+          }),
+        },
+      })
+    end,
+    ---@type lspconfig.settings.lua_ls
+    settings = {
+      Lua = { format = { enable = false } },
+    },
+  },
+}
+
+require('mason').setup {}
+
+local ensure_installed = vim.tbl_keys(servers or {})
+vim.list_extend(ensure_installed, { 'prettier' }) -- used by conform.nvim
+
+require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+
+for name, server in pairs(servers) do
+  vim.lsp.config(name, server)
+  vim.lsp.enable(name)
+end
+
+-- ============================================================
+-- LSP keymap spec
+-- ============================================================
+-- Declarative table consumed by `yada.core.keymaps.apply_lsp_keymaps`.
+-- Override 0.12's built-in LSP keymaps (grn/gra/grr/gri/grt/grx/K) to
+-- use Telescope pickers, and add an AstroNvim-style `<leader>l*` group.
+-- See `:help lsp` for the full list of 0.12 built-ins we override.
+--
+-- Spec entry: { lhs, rhs, desc, mode?, has?, cond?, opts? }
+M.lsp_keymaps = {
+  -- Goto (override 0.12 built-ins to use Telescope pickers)
+  { lhs = 'gd', rhs = function() require('telescope.builtin').lsp_definitions() end,     desc = 'Goto Definition',        has = 'definition' },
+  { lhs = 'gD', rhs = function() require('telescope.builtin').lsp_declarations() end,    desc = 'Goto Declaration',       has = 'declaration' },
+  { lhs = 'gI', rhs = function() require('telescope.builtin').lsp_implementations() end,  desc = 'Goto Implementation',    has = 'implementation' },
+  { lhs = 'gr', rhs = function() require('telescope.builtin').lsp_references() end,      desc = 'Goto References',        has = 'references' },
+  { lhs = 'gT', rhs = function() require('telescope.builtin').lsp_type_definitions() end, desc = 'Goto Type Definition',   has = 'typeDefinition' },
+
+  -- Telescope variants (alternate lhs for muscle memory)
+  { lhs = 'grd', rhs = function() require('telescope.builtin').lsp_definitions() end,     desc = 'Goto Definition (alt)',     has = 'definition' },
+  { lhs = 'grr', rhs = function() require('telescope.builtin').lsp_references() end,      desc = 'Goto References (alt)',     has = 'references' },
+  { lhs = 'gri', rhs = function() require('telescope.builtin').lsp_implementations() end,  desc = 'Goto Implementation (alt)', has = 'implementation' },
+  { lhs = 'grt', rhs = function() require('telescope.builtin').lsp_type_definitions() end, desc = 'Goto Type Definition (alt)', has = 'typeDefinition' },
+  { lhs = 'gO',  rhs = function() require('telescope.builtin').lsp_document_symbols() end,  desc = 'Document Symbols',          has = 'documentSymbol' },
+  { lhs = 'gW',  rhs = function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end, desc = 'Workspace Symbols', has = 'workspaceSymbol' },
+
+  -- Hover / signature / rename
+  { lhs = 'K',          rhs = vim.lsp.buf.hover,          desc = 'Hover',          has = 'hoverProvider' },
+  { lhs = '<leader>lh', rhs = vim.lsp.buf.signature_help, desc = 'Signature Help', has = 'signatureHelpProvider' },
+  { lhs = '<leader>lr', rhs = vim.lsp.buf.rename,         desc = 'Rename Symbol',  has = 'renameProvider' },
+
+  -- Code action
+  { lhs = '<leader>la', rhs = vim.lsp.buf.code_action,    desc = 'Code Action',    mode = { 'n', 'v' }, has = 'codeActionProvider' },
+
+  -- Format
+  { lhs = '<leader>lf', rhs = function() vim.lsp.buf.format { async = true } end, desc = 'Format Buffer', has = 'documentFormattingProvider' },
+
+  -- Symbol pickers
+  { lhs = '<leader>lR', rhs = function() require('telescope.builtin').lsp_references() end, desc = 'References (picker)', has = 'references' },
+  { lhs = '<leader>ls', rhs = function() require('telescope.builtin').lsp_document_symbols() end, desc = 'Document Symbols (picker)', has = 'documentSymbol' },
+  { lhs = '<leader>lg', rhs = function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end, desc = 'Workspace Symbols (picker)', has = 'workspaceSymbol' },
+
+  -- Inlay hint toggle (only if the server supports the protocol)
+  {
+    lhs = '<leader>ih',
+    rhs = function()
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = vim.api.nvim_get_current_buf() })
+    end,
+    desc = 'Toggle Inlay Hints',
+    has = 'inlayHint',
+  },
+
+  -- Misc
+  { lhs = '<leader>li', rhs = function() vim.cmd 'LspInfo' end, desc = 'LSP Info' },
+  { lhs = '<leader>ld', rhs = vim.diagnostic.open_float,       desc = 'Diagnostic Line' },
+}
+
+-- ============================================================
+-- LspAttach handler
+-- ============================================================
+-- One handler: applies the keymap spec, then sets up document
+-- highlights. This replaces the multiple LspAttach autocmds in
+-- init.lua and is the only place LSP-related keymaps are wired.
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('yada-lsp-attach', { clear = true }),
+  callback = function(event)
+    local client = vim.lsp.get_client_by_id(event.data.client_id)
+    if not client then return end
+
+    -- 1. Apply buffer-local LSP keymaps (capability-conditional)
+    require('yada.core.keymaps').apply_lsp_keymaps(event.buf, client, M.lsp_keymaps)
+
+    -- 2. Document highlight on CursorHold; cleared on CursorMoved / LspDetach
+    --    See `:help CursorHold`
+    if client:supports_method 'textDocument/documentHighlight' then
+      local group = vim.api.nvim_create_augroup('yada-lsp-highlight', { clear = false })
+      vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+        buffer = event.buf,
+        group = group,
+        callback = vim.lsp.buf.document_highlight,
+      })
+      vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+        buffer = event.buf,
+        group = group,
+        callback = vim.lsp.buf.clear_references,
+      })
+      vim.api.nvim_create_autocmd('LspDetach', {
+        group = vim.api.nvim_create_augroup('yada-lsp-detach', { clear = true }),
+        callback = function(args)
+          vim.lsp.buf.clear_references()
+          vim.api.nvim_clear_autocmds { group = 'yada-lsp-highlight', buffer = args.buf }
+        end,
+      })
+    end
+  end,
+})
+
+return M
