@@ -18,6 +18,9 @@
     },
   },
   "agent_servers": {
+    "opencode": {
+      "type": "registry"
+    },
     "claude-acp": {
       "type": "registry"
     },
@@ -77,7 +80,7 @@
       "effort": "medium",
       "enable_thinking": true,
       "provider": "openai-subscribed",
-      "model": "gpt-5.2",
+      "model": "gpt-5.5",
     },
   },
   "languages": {

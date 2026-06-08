@@ -25,7 +25,7 @@ local servers = {
       gopls = {
         gofumpt = true,
         staticcheck = true,
-        usePlaceholders = true,
+        usePlaceholders = false,
         analyses = { unusedparams = true, unreachable = true, nilness = true, shadow = true },
         hints = {
           assignVariableTypes = true,

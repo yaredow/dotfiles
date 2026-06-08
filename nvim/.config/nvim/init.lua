@@ -6,6 +6,9 @@ do
   vim.loader.enable()
   require 'yada.core'
 
+  vim.g.loaded_netrw = 1
+  vim.g.loaded_netrwPlugin = 1
+
   -- See `:help lua-guide-autocommands`
   vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
@@ -161,26 +164,7 @@ do
 end
 
 -- ============================================================
--- SECTION 6: FORMATTING
--- ============================================================
-do
-  vim.pack.add { gh 'stevearc/conform.nvim' }
-  require('conform').setup {
-    notify_on_error = false,
-    format_on_save = { go = { timeout_ms = 500 } },
-    default_format_opts = { lsp_format = 'fallback' },
-    formatters_by_ft = {
-      go = { 'goimports', 'gofumpt' },
-      javascript = { 'prettier' },
-      javascriptreact = { 'prettier' },
-      typescript = { 'prettier' },
-      typescriptreact = { 'prettier' },
-    },
-  }
-end
-
--- ============================================================
--- SECTION 7: AUTOCOMPLETE & SNIPPETS
+-- SECTION 6: AUTOCOMPLETE & SNIPPETS
 -- ============================================================
 do
   require 'yada.plugins.autopairs'
@@ -192,6 +176,17 @@ do
   require('blink.cmp').setup {
     keymap = {
       preset = 'enter',
+      ['<Tab>'] = {
+        function(cmp)
+          local ok, sm = pcall(require, 'supermaven-nvim.completion_preview')
+          if ok and sm.has_suggestion() then
+            vim.schedule(function() sm.on_accept_suggestion() end)
+            return true
+          end
+          return cmp.select_next()
+        end,
+        'fallback',
+      },
       ['<C-j>'] = { 'select_next', 'fallback' },
       ['<C-k>'] = { 'select_prev', 'fallback' },
     },
@@ -199,7 +194,7 @@ do
       nerd_font_variant = 'mono', -- 'mono' for Nerd Font Mono, 'normal' for Nerd Font
     },
     completion = {
-      list = { selection = { preselect = false } },
+      list = { selection = { preselect = true } },
       accept = { auto_brackets = { enabled = true } },
       documentation = { auto_show = false, auto_show_delay_ms = 500 },
     },
@@ -217,7 +212,7 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   local parsers = {
-    'bash', 'c', 'diff', 'go', 'gomod', 'gosum',
+    'bash', 'c', 'diff', 'go', 'gomod', 'gosum', 'sql',
     'html', 'javascript', 'lua', 'luadoc',
     'markdown', 'markdown_inline', 'query',
     'tsx', 'typescript', 'vim', 'vimdoc',
