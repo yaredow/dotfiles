@@ -25,6 +25,11 @@ alias mux='pgrep -vx tmux > /dev/null && \
         tmux kill-session -t delete-me && \
         tmux attach || tmux attach'
 
+# youtube fzf
+ytplay() {
+  ytfzf -t -p mpv "$*"
+}
+
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 # Android studio

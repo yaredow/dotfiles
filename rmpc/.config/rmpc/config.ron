@@ -1,0 +1,56 @@
+#![enable(implicit_some)]
+#![enable(unwrap_newtypes)]
+#![enable(unwrap_variant_newtypes)]
+// Only fields that differ from rmpc's built-in defaults are listed here.
+// Run `rmpc config` to see the full default set (keybinds, search, artists, etc.)
+// if you ever want to override more of it.
+(
+    // Must be a local socket, not an IP — required for YouTube/SoundCloud playback.
+    // Has to match `bind_to_address` in mpd.conf.
+    address: "/tmp/mpd_socket",
+
+    theme: Some("tokyonight"),
+
+    // Where rmpc caches files downloaded via yt-dlp for YouTube/SoundCloud playback.
+    cache_dir: Some("~/.cache/rmpc"),
+
+    // Drop matching .lrc files here for synced lyrics.
+    lyrics_dir: Some("~/.config/rmpc/lyrics"),
+
+    // Feeds the Cava pane below. `source` must match the fifo audio_output
+    // path in mpd.conf.
+    cava: (
+        input: (
+            method: Fifo,
+            source: "/tmp/mpd.fifo",
+            sample_rate: 44100,
+            channels: 2,
+            sample_bits: 16,
+        ),
+    ),
+
+    tabs: [
+        (
+            name: "Queue",
+            pane: Split(
+                direction: Horizontal,
+                panes: [
+                    (size: "60%", pane: Pane(Queue)),
+                    (size: "40%", pane: Split(
+                        direction: Vertical,
+                        panes: [
+                            (size: "70%", pane: Pane(AlbumArt)),
+                            (size: "30%", pane: Pane(Cava)),
+                        ],
+                    )),
+                ],
+            ),
+        ),
+        (name: "Directories", pane: Pane(Directories)),
+        (name: "Artists", pane: Pane(Artists)),
+        (name: "Album Artists", pane: Pane(AlbumArtists)),
+        (name: "Albums", pane: Pane(Albums)),
+        (name: "Playlists", pane: Pane(Playlists)),
+        (name: "Search", pane: Pane(Search)),
+    ],
+)

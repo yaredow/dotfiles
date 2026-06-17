@@ -97,3 +97,6 @@ export PATH="$PATH:$HOME/go/bin"
 # ==============================
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 eval "$(direnv hook zsh)"
+
+# mimocode
+export PATH=/home/yada/.mimocode/bin:$PATH

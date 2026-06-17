@@ -77,10 +77,9 @@
     "dock": "left",
     "default_profile": "write",
     "default_model": {
-      "effort": "medium",
-      "enable_thinking": true,
-      "provider": "openai-subscribed",
-      "model": "gpt-5.5",
+      "enable_thinking": false,
+      "provider": "opencode",
+      "model": "zen/minimax-m2.5",
     },
   },
   "languages": {

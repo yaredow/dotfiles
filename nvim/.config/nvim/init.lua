@@ -81,6 +81,7 @@ do
     delay = 0,
     icons = { mappings = vim.g.have_nerd_font },
     spec = {
+      { '<leader>a', group = '[A]I' },
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>t', group = '[T]erminal' },
       { '<leader>b', group = '[B]uffer' },
