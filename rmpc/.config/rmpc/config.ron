@@ -19,6 +19,8 @@
 
     // Feeds the Cava pane below. `source` must match the fifo audio_output
     // path in mpd.conf.
+    extra_yt_dlp_args: Some(["--cookies-from-browser=firefox"]),
+
     cava: (
         input: (
             method: Fifo,

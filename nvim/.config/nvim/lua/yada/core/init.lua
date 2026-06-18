@@ -1,8 +1,6 @@
--- yada.core — foundation: options, keymaps, autocmds, etc.
--- `require 'yada.core'` applies options immediately.
+-- yada.core — foundation: keymaps, etc.
+-- Options are loaded directly by init.lua.
 -- Call `require('yada.core').setup()` at the end of init.lua to apply keymaps.
-
-require('yada.core.options')
 
 local M = {}
 

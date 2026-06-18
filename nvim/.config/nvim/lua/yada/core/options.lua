@@ -1,11 +1,5 @@
--- Editor options, leader keys, and diagnostic config.
--- Required from init.lua before plugins load so leader is set first.
-
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
-
--- Set if you have a Nerd Font in your terminal
-vim.g.have_nerd_font = true
+-- Editor options and diagnostic config.
+-- Leader keys are set in init.lua before lazy.nvim loads.
 
 vim.o.number = true
 vim.o.relativenumber = true

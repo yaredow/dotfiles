@@ -1,23 +1,27 @@
-vim.pack.add { 'https://github.com/MunifTanjim/nui.nvim' }
-vim.pack.add { 'https://github.com/nvim-neo-tree/neo-tree.nvim' }
-
-require('neo-tree').setup {
-  window = {
-    position = 'right',
+return {
+  'nvim-neo-tree/neo-tree.nvim',
+  dependencies = {
+    'MunifTanjim/nui.nvim',
   },
-  filesystem = {
-    hijack_netrw_behavior = 'open_default',
-    follow_current_file = {
-      enabled = true,
-      leave_dirs_open = false,
-    },
+  keys = {
+    { '<leader>e', '<cmd>Neotree position=right toggle<cr>', desc = 'File explorer toggle' },
+  },
+  opts = {
     window = {
-      mappings = {
-        ['h'] = 'close_node',
-        ['l'] = 'open',
+      position = 'right',
+    },
+    filesystem = {
+      hijack_netrw_behavior = 'open_default',
+      follow_current_file = {
+        enabled = true,
+        leave_dirs_open = false,
+      },
+      window = {
+        mappings = {
+          ['h'] = 'close_node',
+          ['l'] = 'open',
+        },
       },
     },
   },
 }
-
-vim.keymap.set('n', '<leader>e', '<cmd>Neotree position=right toggle<cr>', { desc = 'File explorer toggle', silent = true })

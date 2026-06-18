@@ -1,22 +1,8 @@
--- LSP server configs + buffer-local keymap spec. Loaded by
--- `yada.plugins` (see lua/yada/plugins/init.lua).
-
-local M = {}
-
--- ============================================================
--- Plugin installation
--- ============================================================
-vim.pack.add {
-  'https://github.com/neovim/nvim-lspconfig',
-  'https://github.com/mason-org/mason.nvim',
-  'https://github.com/mason-org/mason-lspconfig.nvim',
-  'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
-}
+-- LSP server configs + buffer-local keymap spec.
 
 -- ============================================================
 -- Server configs
 -- ============================================================
--- See `:help lsp-config`
 ---@type table<string, vim.lsp.Config>
 local servers = {
   -- clangd = {},
@@ -79,28 +65,13 @@ local servers = {
   },
 }
 
-require('mason').setup {}
-
-local ensure_installed = vim.tbl_keys(servers or {})
-vim.list_extend(ensure_installed, { 'prettier' }) -- used by conform.nvim
-
-require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-for name, server in pairs(servers) do
-  vim.lsp.config(name, server)
-  vim.lsp.enable(name)
-end
-
 -- ============================================================
 -- LSP keymap spec
 -- ============================================================
 -- Declarative table consumed by `yada.core.keymaps.apply_lsp_keymaps`.
--- Override 0.12's built-in LSP keymaps (grn/gra/grr/gri/grt/grx/K) to
--- use Telescope pickers, and add an AstroNvim-style `<leader>l*` group.
--- See `:help lsp` for the full list of 0.12 built-ins we override.
---
--- Spec entry: { lhs, rhs, desc, mode?, has?, cond?, opts? }
-M.lsp_keymaps = {
+-- Exported as a global so keymaps.lua can access it.
+---@type { lhs: string, rhs: function|string, desc: string, mode?: string|string[], has?: string, cond?: fun(buf: integer, client: vim.lsp.Client): boolean, opts?: table }[]
+YADA_LSP_KEYMAPS = {
   -- Goto (override 0.12 built-ins to use Telescope pickers)
   { lhs = 'gd', rhs = function() require('telescope.builtin').lsp_definitions() end,     desc = 'Goto Definition',        has = 'definition' },
   { lhs = 'gD', rhs = function() require('telescope.builtin').lsp_declarations() end,    desc = 'Goto Declaration',       has = 'declaration' },
@@ -148,43 +119,60 @@ M.lsp_keymaps = {
 }
 
 -- ============================================================
--- LspAttach handler
+-- Plugin spec
 -- ============================================================
--- One handler: applies the keymap spec, then sets up document
--- highlights. This replaces the multiple LspAttach autocmds in
--- init.lua and is the only place LSP-related keymaps are wired.
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('yada-lsp-attach', { clear = true }),
-  callback = function(event)
-    local client = vim.lsp.get_client_by_id(event.data.client_id)
-    if not client then return end
+return {
+  'neovim/nvim-lspconfig',
+  dependencies = {
+    'mason-org/mason.nvim',
+    'mason-org/mason-lspconfig.nvim',
+    'WhoIsSethDaniel/mason-tool-installer.nvim',
+  },
+  config = function()
+    require('mason').setup {}
 
-    -- 1. Apply buffer-local LSP keymaps (capability-conditional)
-    require('yada.core.keymaps').apply_lsp_keymaps(event.buf, client, M.lsp_keymaps)
+    local ensure_installed = vim.tbl_keys(servers or {})
+    vim.list_extend(ensure_installed, { 'prettier' }) -- used by conform.nvim
 
-    -- 2. Document highlight on CursorHold; cleared on CursorMoved / LspDetach
-    --    See `:help CursorHold`
-    if client:supports_method 'textDocument/documentHighlight' then
-      local group = vim.api.nvim_create_augroup('yada-lsp-highlight', { clear = false })
-      vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-        buffer = event.buf,
-        group = group,
-        callback = vim.lsp.buf.document_highlight,
-      })
-      vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-        buffer = event.buf,
-        group = group,
-        callback = vim.lsp.buf.clear_references,
-      })
-      vim.api.nvim_create_autocmd('LspDetach', {
-        group = vim.api.nvim_create_augroup('yada-lsp-detach', { clear = true }),
-        callback = function(args)
-          vim.lsp.buf.clear_references()
-          vim.api.nvim_clear_autocmds { group = 'yada-lsp-highlight', buffer = args.buf }
-        end,
-      })
+    require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+
+    for name, server in pairs(servers) do
+      vim.lsp.config(name, server)
+      vim.lsp.enable(name)
     end
-  end,
-})
 
-return M
+    -- LspAttach handler
+    vim.api.nvim_create_autocmd('LspAttach', {
+      group = vim.api.nvim_create_augroup('yada-lsp-attach', { clear = true }),
+      callback = function(event)
+        local client = vim.lsp.get_client_by_id(event.data.client_id)
+        if not client then return end
+
+        -- Apply buffer-local LSP keymaps (capability-conditional)
+        require('yada.core.keymaps').apply_lsp_keymaps(event.buf, client, YADA_LSP_KEYMAPS)
+
+        -- Document highlight on CursorHold; cleared on CursorMoved / LspDetach
+        if client:supports_method 'textDocument/documentHighlight' then
+          local group = vim.api.nvim_create_augroup('yada-lsp-highlight', { clear = false })
+          vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+            buffer = event.buf,
+            group = group,
+            callback = vim.lsp.buf.document_highlight,
+          })
+          vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+            buffer = event.buf,
+            group = group,
+            callback = vim.lsp.buf.clear_references,
+          })
+          vim.api.nvim_create_autocmd('LspDetach', {
+            group = vim.api.nvim_create_augroup('yada-lsp-detach', { clear = true }),
+            callback = function(args)
+              vim.lsp.buf.clear_references()
+              vim.api.nvim_clear_autocmds { group = 'yada-lsp-highlight', buffer = args.buf }
+            end,
+          })
+        end
+      end,
+    })
+  end,
+}
