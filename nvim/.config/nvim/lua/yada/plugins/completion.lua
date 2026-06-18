@@ -18,6 +18,7 @@ return {
     event = 'InsertEnter',
     dependencies = {
       'L3MON4D3/LuaSnip',
+      'saghen/blink.lib',
     },
     opts = {
       keymap = {
