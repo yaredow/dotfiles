@@ -75,11 +75,12 @@
       "default": "allow",
     },
     "dock": "left",
-    "default_profile": "write",
+    "default_profile": "ask",
     "default_model": {
-      "enable_thinking": false,
+      "effort": "xhigh",
+      "enable_thinking": true,
       "provider": "opencode",
-      "model": "zen/minimax-m2.5",
+      "model": "go/deepseek-v4-flash",
     },
   },
   "languages": {
