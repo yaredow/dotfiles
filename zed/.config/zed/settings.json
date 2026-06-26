@@ -19,6 +19,11 @@
   },
   "agent_servers": {
     "opencode": {
+      "default_config_options": {
+        "effort": "high",
+        "mode": "plan",
+        "model": "opencode/deepseek-v4-flash-free"
+      },
       "type": "registry"
     },
     "claude-acp": {
@@ -77,10 +82,10 @@
     "dock": "left",
     "default_profile": "ask",
     "default_model": {
-      "effort": "xhigh",
+      "effort": "medium",
       "enable_thinking": true,
-      "provider": "opencode",
-      "model": "go/deepseek-v4-flash",
+      "provider": "google",
+      "model": "gemini-3.5-flash",
     },
   },
   "languages": {
