@@ -21,7 +21,7 @@
     "opencode": {
       "default_config_options": {
         "effort": "high",
-        "mode": "plan",
+        "mode": "build",
         "model": "opencode/deepseek-v4-flash-free"
       },
       "type": "registry"
@@ -82,10 +82,10 @@
     "dock": "left",
     "default_profile": "ask",
     "default_model": {
-      "effort": "medium",
+      "effort": "high",
       "enable_thinking": true,
       "provider": "google",
-      "model": "gemini-3.5-flash",
+      "model": "gemini-3.1-pro-preview",
     },
   },
   "languages": {
