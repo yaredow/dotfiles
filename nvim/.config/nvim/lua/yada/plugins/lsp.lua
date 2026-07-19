@@ -33,6 +33,9 @@ local servers = {
     },
   },
   stylua = {},
+  qmlls = {
+    cmd = { '/usr/lib/qt6/bin/qmlls', '-E' },
+  },
 
   lua_ls = {
     on_init = function(client)

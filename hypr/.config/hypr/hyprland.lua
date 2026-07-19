@@ -52,7 +52,7 @@ local runner = "rofi -show run"
 --
 hl.on("hyprland.start", function()
 	hl.exec_cmd("hyprpaper")
-	hl.exec_cmd("waybar")
+	hl.exec_cmd("qs")
 	hl.exec_cmd("systemctl --userr start hyprpolkitagent")
 	hl.exec_cmd("hyprctl setcursor Bibata-Modern-Ice 24")
 end)
@@ -310,6 +310,10 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:mag
 -- Scroll through existing workspaces with mainMod + scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
+
+-- Switch workspaces with ALT + CTRL + h/l
+hl.bind("ALT + CTRL + h", hl.dsp.focus({ workspace = "e-1" }))
+hl.bind("ALT + CTRL + l", hl.dsp.focus({ workspace = "e+1" }))
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
