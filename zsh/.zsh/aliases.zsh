@@ -3,6 +3,9 @@ alias la="eza -lha"
 alias ls="eza --color=always"
 alias l="eza"
 
+alias sps="sudo pacman -S"
+alias spu="sudo pacman -Syu"
+
 alias gs="git status"
 alias gc="git commit"
 alias gp="git push"
