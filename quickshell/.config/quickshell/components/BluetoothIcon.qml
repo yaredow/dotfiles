@@ -1,0 +1,14 @@
+pragma ComponentBehavior: Bound
+import QtQuick
+import qs.services
+import qs.config
+
+Text {
+    id: root
+
+    font.family: Config.font
+    font.pixelSize: Config.fontSizeNormal
+    color: Config.textColor
+
+    text: BluetoothService.systemIcon
+}
