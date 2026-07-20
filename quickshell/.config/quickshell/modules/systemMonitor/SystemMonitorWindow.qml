@@ -10,7 +10,7 @@ QsPopupWindow {
 
     popupWidth: 380
     popupMaxHeight: 700
-    anchorSide: "left"
+    anchorSide: "right"
     moduleName: "SystemMonitor"
     contentImplicitHeight: content.implicitHeight
 

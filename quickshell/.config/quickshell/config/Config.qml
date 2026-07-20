@@ -33,7 +33,7 @@ Singleton {
     readonly property color blueDarkColor: "#16161e"
 
     // Opacity
-    readonly property real backgroundOpacity: 0.9
+    readonly property real backgroundOpacity: 0.93
     readonly property color backgroundTransparentColor: Qt.alpha(backgroundColor, backgroundOpacity)
 
     // Fonts
@@ -58,7 +58,7 @@ Singleton {
     readonly property int clockSize: 14
 
     // Geometry & layout
-    readonly property int barHeight: 30
+    readonly property int barHeight: 24
     readonly property bool barAutoHide: false
     readonly property int barPadding: 14
     readonly property int widgetSpacing: 6
@@ -68,6 +68,9 @@ Singleton {
     readonly property int radiusLarge: 15
     readonly property int spacing: 8
     readonly property int padding: 6
+
+    // Separator
+    readonly property color sepColor: Qt.alpha(textColor, 0.18)
 
     // Animations
     readonly property int animDurationShort: 100

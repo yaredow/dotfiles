@@ -16,3 +16,4 @@ singleton ThemeService ThemeService.qml
 singleton MprisService MprisService.qml
 singleton WallpaperService WallpaperService.qml
 singleton LockService LockService.qml
+singleton LauncherService LauncherService.qml

@@ -13,12 +13,12 @@ Singleton {
 
     readonly property string systemIcon: {
         if (muted || volume <= 0)
-            return String.fromCodePoint(0xF0150);
+            return String.fromCodePoint(0xF026);
         if (volume < 0.33)
-            return String.fromCodePoint(0xF014F);
+            return String.fromCodePoint(0xF027);
         if (volume < 0.67)
-            return String.fromCodePoint(0xF014E);
-        return String.fromCodePoint(0xF014D);
+            return String.fromCodePoint(0xF027);
+        return String.fromCodePoint(0xF028);
     }
 
     function setVolume(val) {

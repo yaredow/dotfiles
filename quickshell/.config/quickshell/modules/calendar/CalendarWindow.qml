@@ -11,9 +11,14 @@ QsPopupWindow {
 
     popupWidth: 300
     popupMaxHeight: 500
-    anchorSide: "left"
     moduleName: "Calendar"
     contentImplicitHeight: calendarContent.implicitHeight
+
+    anchors {
+        top: true
+        left: false
+        right: false
+    }
 
     property int displayMonth: today.getMonth()
     property int displayYear: today.getFullYear()

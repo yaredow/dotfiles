@@ -3,7 +3,8 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    readonly property date date: new Date()
+    id: root
+    property date date: new Date()
 
     function format(formatStr) {
         const d = new Date();
