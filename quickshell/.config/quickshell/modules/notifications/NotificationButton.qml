@@ -24,6 +24,7 @@ BarButton {
         }
         font.family: Config.font
         font.pixelSize: Config.fontSizeLarge
+        font.weight: Config.fontWeight
         color: root.active ? Config.accentColor : Config.textColor
 
         Behavior on color {

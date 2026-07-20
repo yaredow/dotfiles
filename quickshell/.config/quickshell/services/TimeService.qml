@@ -3,6 +3,8 @@ import QtQuick
 import Quickshell
 
 Singleton {
+    readonly property date date: new Date()
+
     function format(formatStr) {
         const d = new Date();
         const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -14,5 +16,12 @@ Singleton {
         result = result.replace("MMM", months[d.getMonth()]);
         result = result.replace("ddd", days[d.getDay()]);
         return result;
+    }
+
+    Timer {
+        interval: 60000
+        running: true
+        repeat: true
+        onTriggered: root.date = new Date()
     }
 }

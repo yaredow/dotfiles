@@ -41,6 +41,7 @@ Singleton {
     readonly property string labelFont: "SF Pro Display"
     readonly property string monoFont: "SF Mono"
     readonly property string font: "JetBrainsMono Nerd Font Propo"
+    readonly property int fontWeight: Font.Medium
 
     // Typography sizes
     readonly property int fontSizeSmall: 12

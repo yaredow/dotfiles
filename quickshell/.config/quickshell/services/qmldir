@@ -1,9 +1,18 @@
 module qs.services
+singleton AudioService AudioService.qml
 singleton BatteryService BatteryService.qml
 singleton BluetoothService BluetoothService.qml
+singleton BrightnessService BrightnessService.qml
 singleton NetworkService NetworkService.qml
 singleton NotificationService NotificationService.qml
 singleton StateService StateService.qml
+singleton SystemMonitorService SystemMonitorService.qml
 singleton TimeService TimeService.qml
 singleton TrayService TrayService.qml
 singleton WindowManagerService WindowManagerService.qml
+singleton IdleService IdleService.qml
+singleton PowerService PowerService.qml
+singleton ThemeService ThemeService.qml
+singleton MprisService MprisService.qml
+singleton WallpaperService WallpaperService.qml
+singleton LockService LockService.qml

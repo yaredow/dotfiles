@@ -34,7 +34,7 @@ local servers = {
   },
   stylua = {},
   qmlls = {
-    cmd = { '/usr/lib/qt6/bin/qmlls', '-E' },
+    cmd = { '/usr/lib/qt6/bin/qmlls', '--ignore-settings', '-I', '/home/yada/dotfiles/quickshell/.config/quickshell' },
   },
 
   lua_ls = {

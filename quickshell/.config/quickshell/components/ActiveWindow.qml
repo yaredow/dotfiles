@@ -59,6 +59,7 @@ Item {
             color: Config.surface3Color
             font.family: Config.font
             font.pixelSize: Config.fontSizeNormal
+            font.weight: Config.fontWeight
             elide: Text.ElideRight
 
             Layout.fillWidth: true

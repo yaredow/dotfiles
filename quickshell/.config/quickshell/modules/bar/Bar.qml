@@ -3,10 +3,10 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import qs.config
 import qs.services
 import "../../components/"
-import "../quickSettings/"
 import "../notifications/"
 import "../systemMonitor/"
 import "../calendar/"
@@ -90,7 +90,52 @@ Scope {
                     spacing: root.gapIn
 
                     TrayWidget {}
-                    QuickSettingsButton {}
+
+                    Row {
+                        spacing: 10
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: NetworkService.systemIcon
+                            font.family: Config.font
+                            font.pixelSize: Config.fontSizeNormal
+                            font.weight: Config.fontWeight
+                            color: Config.textColor
+                            ToolTip.visible: hovered
+                            ToolTip.text: NetworkService.statusText
+                            ToolTip.delay: 300
+                            HoverHandler {}
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: BluetoothService.systemIcon
+                            font.family: Config.font
+                            font.pixelSize: Config.fontSizeNormal
+                            font.weight: Config.fontWeight
+                            color: Config.textColor
+                            ToolTip.visible: hovered
+                            ToolTip.text: BluetoothService.statusText
+                            ToolTip.delay: 300
+                            HoverHandler {}
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: BatteryService.hasBattery
+                            text: BatteryService.getBatteryIcon()
+                            font.family: Config.font
+                            font.pixelSize: Config.fontSizeNormal
+                            font.weight: Config.fontWeight
+                            color: BatteryService.isCharging ? Config.successColor : (BatteryService.percentage < 20 ? Config.warningColor : Config.textColor)
+                            ToolTip.visible: hovered
+                            ToolTip.text: BatteryService.percentage + "%" + (BatteryService.isCharging ? " (charging)" : "")
+                            ToolTip.delay: 300
+                            HoverHandler {}
+                        }
+                    }
+
                     NotificationButton {}
                 }
             }
