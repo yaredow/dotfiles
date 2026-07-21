@@ -89,10 +89,55 @@ ShellRoot {
         source: "./modules/lock/LockScreen.qml"
     }
 
+    Loader {
+        id: keybindsLoader
+
+        property bool _shown: false
+        property bool _keepAlive: false
+
+        active: _shown || _keepAlive
+        source: "./modules/keybinds/KeybindsOverlay.qml"
+
+        on_ShownChanged: {
+            if (!_shown) {
+                _keepAlive = true;
+                keybindsExitTimer.restart();
+            }
+        }
+
+        onStatusChanged: {
+            if (status === Loader.Ready && _shown)
+                item.showing = true;
+        }
+
+        Connections {
+            target: keybindsLoader.item
+            enabled: keybindsLoader.status === Loader.Ready
+
+            function onShowingChanged() {
+                if (keybindsLoader.item && !keybindsLoader.item.showing)
+                    keybindsLoader._shown = false;
+            }
+        }
+
+        Timer {
+            id: keybindsExitTimer
+            interval: Config.animDurationLong
+            onTriggered: keybindsLoader._keepAlive = false
+        }
+    }
+
     IpcHandler {
         target: "settings"
         function toggle(): void {
             SettingsService.toggle();
+        }
+    }
+
+    IpcHandler {
+        target: "keybinds"
+        function toggle(): void {
+            keybindsLoader._shown = !keybindsLoader._shown;
         }
     }
 
@@ -148,6 +193,36 @@ ShellRoot {
         }
         function edit(): void {
             if (screenshotLoader.item) screenshotLoader.item.editSelection();
+        }
+    }
+
+    Loader {
+        id: clipboardLoader
+
+        property bool _shown: ClipboardService.visible
+        property bool _keepAlive: false
+
+        active: _shown || _keepAlive
+        source: "./modules/clipboard/ClipboardHistory.qml"
+
+        on_ShownChanged: {
+            if (!_shown) {
+                _keepAlive = true;
+                clipboardExitTimer.restart();
+            }
+        }
+
+        Timer {
+            id: clipboardExitTimer
+            interval: Config.animDurationLong
+            onTriggered: clipboardLoader._keepAlive = false
+        }
+    }
+
+    IpcHandler {
+        target: "clipboard"
+        function toggle(): void {
+            ClipboardService.toggle();
         }
     }
 }

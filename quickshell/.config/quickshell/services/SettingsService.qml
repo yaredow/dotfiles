@@ -19,10 +19,10 @@ Singleton {
     property bool panelVisible: false
     property string currentTheme: getState("theme.name", "tokyonight")
     property string currentFont: getState("typography.monoFont", "JetBrainsMono Nerd Font")
-    property int currentWallpaperIndex: getState("wallpaper.index", 0)
 
     property string section: "theme"
     property int selectedIndex: 0
+    property string query: ""
 
     readonly property var sections: [
         { name: "theme", label: "Theme" },
@@ -44,14 +44,24 @@ Singleton {
 
     readonly property var currentItems: section === "theme" ? themes : fonts
 
+    readonly property var filteredItems: {
+        if (!query) return currentItems;
+        var q = query.toLowerCase();
+        return currentItems.filter(function(item) {
+            return item.name.toLowerCase().indexOf(q) >= 0;
+        });
+    }
+
     function show() {
-        selectedIndex = 0
-        section = "theme"
-        panelVisible = true
+        query = "";
+        selectedIndex = 0;
+        section = "theme";
+        panelVisible = true;
     }
 
     function hide() {
-        panelVisible = false
+        panelVisible = false;
+        query = "";
     }
 
     function toggle() {
@@ -60,7 +70,7 @@ Singleton {
     }
 
     function activate(index) {
-        var items = currentItems
+        var items = filteredItems
         var item = items[index]
         if (!item) return
 
@@ -79,10 +89,11 @@ Singleton {
         hide()
     }
 
+    onQueryChanged: { selectedIndex = 0 }
+
     Process {
         id: applyThemeProc
     }
-
     Process {
         id: applyFontProc
     }

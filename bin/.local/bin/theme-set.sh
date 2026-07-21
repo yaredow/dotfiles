@@ -12,11 +12,12 @@ COLORS=$(cat "$THEME_DIR/colors.json")
 mkdir -p "$HOME/.config/quickshell/state"
 cp "$THEME_DIR/colors.json" "$HOME/.config/quickshell/state/colors.json"
 
-# Wallpaper + notification first — everything else can wait
+notify-send "Theme" "${THEME}" -t 2000
+
+# Wallpaper first — everything else can wait
 WALLPAPER_MAP='{"tokyonight":"tokyonight","catppuccin":"catppuccin","rosepine":"rose-pine"}'
 WP_PREFIX=$(echo "$WALLPAPER_MAP" | jq -r ".$THEME")
 WP_FILE=$(find "$HOME/.local/wallpapers" -maxdepth 1 -name "${WP_PREFIX}-1.*" -type f 2>/dev/null | head -1)
-notify-send "Theme" "${THEME}" -t 2000
 if [[ -n "$WP_FILE" ]]; then
   awww img "$WP_FILE" --transition-type grow --transition-step 30 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null || true
 fi
@@ -73,10 +74,10 @@ hyprctl reload >/dev/null 2>&1 || true
 pkill -SIGUSR1 kitty 2>/dev/null || true
 tmux source-file ~/.tmux.conf 2>/dev/null || true
 
-# Reset wallpaper index to 0 on theme switch
+# Write theme name + reset wallpaper index
 STATE_FILE="$HOME/.config/quickshell/state.json"
 if [[ -f "$STATE_FILE" ]]; then
-  jq '.["wallpaper.index"] = 0' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+  jq --arg theme "$THEME" '.["theme.name"] = $theme | .["wallpaper.index"] = 0' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
 fi
 
 ln -sfn "$THEME_DIR" "$HOME/.config/theme/current"

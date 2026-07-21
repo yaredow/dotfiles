@@ -30,7 +30,6 @@ PanelWindow {
 
     readonly property int tabH: 32
     readonly property int itemH: 40
-    readonly property int maxItems: Math.max(SettingsService.themes.length, SettingsService.fonts.length)
 
     MouseArea {
         anchors.fill: parent
@@ -41,7 +40,7 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         y: parent.height * 0.2
         width: 280
-        height: 16 + tabH + 8 + (maxItems * itemH)
+        height: { var n = Math.max(SettingsService.themes.length, SettingsService.fonts.length); return 16 + tabH + 8 + 36 + 4 + (n * itemH); }
         visible: SettingsService.panelVisible
         opacity: visible ? 1 : 0
 
@@ -55,7 +54,10 @@ PanelWindow {
             border.width: 1
 
             Keys.onEscapePressed: SettingsService.hide()
-            Keys.onReturnPressed: SettingsService.activate(SettingsService.selectedIndex)
+            Keys.onReturnPressed: {
+                if (SettingsService.filteredItems.length > 0)
+                    SettingsService.activate(SettingsService.selectedIndex)
+            }
 
             Keys.onUpPressed: {
                 if (SettingsService.selectedIndex > 0)
@@ -63,7 +65,7 @@ PanelWindow {
             }
 
             Keys.onDownPressed: {
-                if (SettingsService.selectedIndex < SettingsService.currentItems.length - 1)
+                if (SettingsService.selectedIndex < SettingsService.filteredItems.length - 1)
                     SettingsService.selectedIndex++
             }
 
@@ -83,19 +85,17 @@ PanelWindow {
                 }
             }
 
-            Component.onCompleted: forceActiveFocus()
+            Component.onCompleted: searchInput.forceActiveFocus()
         }
 
-        Rectangle {
-            x: 8
-            y: 8
-            width: 264
-            height: tabH
-            radius: Config.radius
-            color: Config.surface1Color
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 8
+            spacing: 6
 
             Row {
-                anchors.fill: parent
+                Layout.fillWidth: true
+                height: tabH
                 spacing: 4
 
                 Repeater {
@@ -106,18 +106,27 @@ PanelWindow {
                         width: (parent.width - 4) / SettingsService.sections.length
                         height: parent.height
                         radius: Config.radius
-                        color: SettingsService.section === modelData.name ? Config.accentColor : "transparent"
 
-                        Behavior on color {
-                            ColorAnimation { duration: Config.animDurationShort }
-                        }
+                        color: "transparent"
 
                         Text {
                             anchors.centerIn: parent
                             text: modelData.label
-                            color: Config.textColor
+                            color: SettingsService.section === modelData.name ? Config.accentColor : Config.subtextColor
                             font.family: Config.font
                             font.pixelSize: Config.fontSizeNormal
+                            font.bold: SettingsService.section === modelData.name
+                        }
+
+                        Rectangle {
+                            anchors {
+                                bottom: parent.bottom
+                                horizontalCenter: parent.horizontalCenter
+                            }
+                            width: parent.width * 0.5
+                            height: 2
+                            radius: 1
+                            color: SettingsService.section === modelData.name ? Config.accentColor : "transparent"
                         }
 
                         MouseArea {
@@ -131,79 +140,115 @@ PanelWindow {
                     }
                 }
             }
-        }
 
-        ListView {
-            x: 8
-            y: 8 + tabH + 8
-            width: 264
-            height: maxItems * itemH
-            spacing: 2
-            interactive: false
+            TextField {
+                id: searchInput
+                Layout.fillWidth: true
+                Layout.preferredHeight: 32
 
-            model: SettingsService.currentItems
-            currentIndex: SettingsService.selectedIndex
-            highlightFollowsCurrentItem: true
+                color: Config.textColor
+                font.family: Config.font
+                font.pixelSize: Config.fontSizeNormal
+                verticalAlignment: TextInput.AlignVCenter
+                selectByMouse: true
+                placeholderText: "Search..."
+                placeholderTextColor: Config.subtextColor
 
-            delegate: Item {
-                required property int index
-                required property var modelData
-
-                width: ListView.view.width
-                height: itemH
-
-                property bool isCurrent: index === ListView.view.currentIndex
-                property bool isActive: {
-                    if (modelData.type === "theme")
-                        return modelData.name === SettingsService.currentTheme
-                    return modelData.name === SettingsService.currentFont
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 2
+                background: Rectangle {
                     radius: Config.radiusSmall
-                    color: isCurrent ? Config.surface2Color : "transparent"
+                    color: Qt.alpha(Config.surface0Color, 0.4)
+                }
 
-                    Behavior on color {
-                        ColorAnimation { duration: Config.animDurationShort }
+                onTextChanged: SettingsService.query = text
+
+                Keys.onEscapePressed: SettingsService.hide()
+                Keys.onReturnPressed: {
+                    if (SettingsService.filteredItems.length > 0)
+                        SettingsService.activate(SettingsService.selectedIndex)
+                }
+                Keys.onUpPressed: {
+                    if (SettingsService.selectedIndex > 0)
+                        SettingsService.selectedIndex--
+                }
+                Keys.onDownPressed: {
+                    if (SettingsService.selectedIndex < SettingsService.filteredItems.length - 1)
+                        SettingsService.selectedIndex++
+                }
+            }
+
+            ListView {
+                Layout.fillWidth: true
+                Layout.preferredHeight: Math.max(SettingsService.themes.length, SettingsService.fonts.length) * itemH
+                Layout.fillHeight: true
+                clip: true
+
+                spacing: 2
+                interactive: false
+
+                model: SettingsService.filteredItems
+                currentIndex: SettingsService.selectedIndex
+                highlightFollowsCurrentItem: true
+
+                delegate: Item {
+                    required property int index
+                    required property var modelData
+
+                    width: ListView.view.width
+                    height: itemH
+
+                    property bool isCurrent: index === ListView.view.currentIndex
+                    property bool isActive: {
+                        if (modelData.type === "theme")
+                            return modelData.name === SettingsService.currentTheme
+                        return modelData.name === SettingsService.currentFont
                     }
-                }
 
-                Text {
-                    x: 12
-                    y: 0
-                    width: parent.width - 36
-                    height: parent.height
-                    text: modelData.name
-                    color: Config.textColor
-                    font.family: Config.font
-                    font.pixelSize: Config.fontSizeNormal
-                    font.bold: isActive
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                }
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 2
+                        radius: Config.radiusSmall
+                        color: isCurrent ? Config.surface2Color : "transparent"
 
-                Text {
-                    x: parent.width - 24
-                    y: 0
-                    width: 16
-                    height: parent.height
-                    text: "✓"
-                    color: Config.accentColor
-                    font.pixelSize: Config.fontSizeSmall
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignRight
-                    visible: isActive
-                }
+                        Behavior on color {
+                            ColorAnimation { duration: Config.animDurationShort }
+                        }
+                    }
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        SettingsService.selectedIndex = index
-                        SettingsService.activate(index)
+                    Text {
+                        x: 12
+                        y: 0
+                        width: parent.width - 36
+                        height: parent.height
+                        text: modelData.name
+                        color: Config.textColor
+                        font.family: Config.font
+                        font.pixelSize: Config.fontSizeNormal
+                        font.bold: isActive
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        x: parent.width - 24
+                        y: 0
+                        width: 16
+                        height: parent.height
+                        text: "✓"
+                        color: Config.accentColor
+                        font.pixelSize: Config.fontSizeSmall
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignRight
+                        visible: isActive
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            SettingsService.selectedIndex = index
+                            SettingsService.activate(index)
+                        }
                     }
                 }
             }

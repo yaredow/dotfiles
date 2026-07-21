@@ -75,6 +75,8 @@ grim
 slurp
 satty
 wl-clipboard
+cliphist
+wtype
 
 # =============================================================================
 # System Utilities
