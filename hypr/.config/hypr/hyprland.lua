@@ -92,8 +92,8 @@ hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
 	general = {
-		gaps_in = 5,
-		gaps_out = 10,
+		gaps_in = 4,
+		gaps_out = 8,
 
 		border_size = 2,
 
@@ -112,7 +112,7 @@ hl.config({
 	},
 
 	decoration = {
-		rounding = 10,
+		rounding = 4,
 		rounding_power = 2,
 
 		-- Change transparency of focused and unfocused windows
@@ -329,6 +329,7 @@ hl.bind(
 	hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"),
 	{ locked = true, repeating = true }
 )
+
 hl.bind(
 	"XF86AudioLowerVolume",
 	hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
