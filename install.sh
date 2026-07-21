@@ -97,6 +97,15 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
 fi
 
 # =============================================================================
+# Copy default wallpapers
+# =============================================================================
+echo ":: Copying default wallpapers..."
+mkdir -p "$HOME/.local/wallpapers"
+for img in "$REPO_DIR/theme/.config/theme/wallpapers"/*.jpg; do
+  [[ -f "$img" ]] && cp -n "$img" "$HOME/.local/wallpapers/"
+done
+
+# =============================================================================
 # Create common directories
 # =============================================================================
 mkdir -p "$HOME/.local/share"

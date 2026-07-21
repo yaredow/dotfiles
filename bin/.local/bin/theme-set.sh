@@ -36,6 +36,27 @@ PALETTE=$(echo "$PALETTE_MAP" | jq -r ".$THEME")
 STARSHIP_TARGET=$(readlink -f "$HOME/.config/starship.toml" 2>/dev/null || echo "$HOME/.config/starship.toml")
 sed -i "s/^palette = .*/palette = \"$PALETTE\"/" "$STARSHIP_TARGET"
 
+# Fonts
+FONT_MONO=$(echo "$COLORS" | jq -r '.fonts.mono // "JetBrainsMono Nerd Font"')
+FONT_SIZE=$(echo "$COLORS" | jq -r '.fonts.size // 13')
+{
+  echo ""
+  echo "font_family $FONT_MONO"
+  echo "font_size $FONT_SIZE"
+  echo "bold_font $FONT_MONO"
+  echo "italic_font auto"
+  echo "bold_italic_font auto"
+} >> "$HOME/.config/kitty/theme.conf"
+
+# Wallpaper
+WALLPAPER=$(echo "$COLORS" | jq -r '.wallpaper // ""')
+if [[ -n "$WALLPAPER" ]]; then
+  WALLPAPER_PATH="$HOME/.local/wallpapers/$WALLPAPER"
+  if [[ -f "$WALLPAPER_PATH" ]]; then
+    hyprctl hyprpaper wallpaper ",$WALLPAPER_PATH,cover" >/dev/null 2>&1 || true
+  fi
+fi
+
 hyprctl reload >/dev/null 2>&1 || true
 pkill -SIGUSR1 kitty 2>/dev/null || true
 tmux source-file ~/.tmux.conf 2>/dev/null || true

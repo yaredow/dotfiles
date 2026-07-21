@@ -25,5 +25,9 @@
   "sky": "#9ccfd8",
   "sapphire": "#9ccfd8",
   "blue": "#9ccfd8",
-  "lavender": "#c4a7e7"
+  "lavender": "#c4a7e7",
+  "wallpaper": "rosepine.jpg",
+  "fonts": {
+    "mono": "JetBrainsMono Nerd Font"
+  }
 }

@@ -61,25 +61,25 @@ ShellRoot {
     }
 
     Loader {
-        id: wallpaperLoader
+        id: settingsLoader
 
-        property bool _shown: WallpaperService.pickerVisible
+        property bool _shown: SettingsService.panelVisible
         property bool _keepAlive: false
 
         active: _shown || _keepAlive
-        source: "./modules/wallpaper/WallpaperPicker.qml"
+        source: "./modules/settings/SettingsPanel.qml"
 
         on_ShownChanged: {
             if (!_shown) {
                 _keepAlive = true;
-                wallpaperExitTimer.restart();
+                settingsExitTimer.restart();
             }
         }
 
         Timer {
-            id: wallpaperExitTimer
+            id: settingsExitTimer
             interval: Config.animDurationLong
-            onTriggered: wallpaperLoader._keepAlive = false
+            onTriggered: settingsLoader._keepAlive = false
         }
     }
 
@@ -90,9 +90,9 @@ ShellRoot {
     }
 
     IpcHandler {
-        target: "wallpaper"
+        target: "settings"
         function toggle(): void {
-            WallpaperService.toggle();
+            SettingsService.toggle();
         }
     }
 
