@@ -1,17 +1,9 @@
 # ==============================
-# Powerlevel10k instant prompt
-# ==============================
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-
-# ==============================
 # Oh My Zsh
 # ==============================
 export ZSH="$HOME/.oh-my-zsh"
 
-ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_THEME=""
 
 plugins=(
   git
@@ -20,6 +12,11 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
+
+# ==============================
+# Starship prompt
+# ==============================
+eval "$(starship init zsh)"
 
 
 # ==============================
@@ -92,10 +89,6 @@ export PATH="$PATH:$HOME/go/bin"
 [[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
 
 
-# ==============================
-# Powerlevel10k config
-# ==============================
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 eval "$(direnv hook zsh)"
 
 # mimocode

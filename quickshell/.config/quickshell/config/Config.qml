@@ -1,87 +1,93 @@
 pragma Singleton
-import QtQuick
+pragma ComponentBehavior: Bound
+
 import Quickshell
+import QtQuick
+import qs.services
 
 Singleton {
-    // TokyoNight palette
-    readonly property color bg: "#1a1b26"
-    readonly property color fg: "#c0caf5"
-    readonly property color blue: "#7aa2f7"
-    readonly property color yellow: "#e0af68"
-    readonly property color muted: "#565f89"
-    readonly property color selection: "#283457"
+    id: root
 
-    // Extended palette (lyne-dots compat)
-    readonly property color backgroundColor: bg
-    readonly property color surface0Color: "#24283b"
-    readonly property color surface1Color: "#292e42"
-    readonly property color surface2Color: "#414868"
-    readonly property color surface3Color: "#565f89"
+    // Helper function to shorten the service call
+    function getState(path, fallback) {
+        return StateService.get(path, fallback);
+    }
 
-    readonly property color textColor: fg
-    readonly property color textReverseColor: bg
-    readonly property color subtextColor: "#a9b1d6"
-    readonly property color subtextReverseColor: muted
-
-    readonly property color accentColor: blue
-    readonly property color successColor: "#9ece6a"
-    readonly property color warningColor: yellow
-    readonly property color errorColor: "#f7768e"
-
-    readonly property color mutedColor: "#545c7e"
-    readonly property color greyBlueColor: selection
-    readonly property color blueDarkColor: "#16161e"
-
-    // Opacity
-    readonly property real backgroundOpacity: 0.93
+    // ========================================================================
+    // PALETTE (from ThemeService — defined in .data/themes/<name>.json)
+    // ========================================================================
+    readonly property color backgroundColor: ThemeService.color("background", "#1a1b26")
+    readonly property real backgroundOpacity: getState("opacity.background", 0.9)
     readonly property color backgroundTransparentColor: Qt.alpha(backgroundColor, backgroundOpacity)
+    readonly property color surface0Color: ThemeService.color("surface0", "#24283b")
+    readonly property color surface1Color: ThemeService.color("surface1", "#292e42")
+    readonly property color surface2Color: ThemeService.color("surface2", "#414868")
+    readonly property color surface3Color: ThemeService.color("surface3", "#565f89")
 
-    // Fonts
-    readonly property string iconFont: "JetBrainsMono Nerd Font Propo"
-    readonly property string labelFont: "SF Pro Display"
-    readonly property string monoFont: "SF Mono"
-    readonly property string font: "JetBrainsMono Nerd Font Propo"
-    readonly property int fontWeight: Font.Medium
+    readonly property color textColor: ThemeService.color("text", "#c0caf5")
+    readonly property color textReverseColor: ThemeService.color("textReverse", "#1a1b26")
+    readonly property color subtextColor: ThemeService.color("subtext", "#a9b1d6")
+    readonly property color subtextReverseColor: ThemeService.color("subtextReverse", "#565f89")
 
-    // Typography sizes
-    readonly property int fontSizeSmall: 12
-    readonly property int fontSizeNormal: 14
-    readonly property int fontSizeLarge: 16
-    readonly property int fontSizeIconSmall: 18
-    readonly property int fontSizeIcon: 22
-    readonly property int fontSizeIconLarge: 28
+    readonly property color accentColor: ThemeService.color("accent", "#7aa2f7")
+    readonly property color successColor: ThemeService.color("success", "#9ece6a")
+    readonly property color warningColor: ThemeService.color("warning", "#e0af68")
+    readonly property color errorColor: ThemeService.color("error", "#f7768e")
 
-    // Widget sizes
-    readonly property int iconSize: 13
-    readonly property int labelSize: 13
-    readonly property int wsFontSize: 13
-    readonly property int clockSize: 14
+    readonly property color mutedColor: ThemeService.color("muted", "#545c7e")
+    readonly property color greyBlueColor: ThemeService.color("greyBlue", "#283457")
+    readonly property color blueDarkColor: ThemeService.color("blueDark", "#16161e")
 
-    // Geometry & layout
-    readonly property int barHeight: 24
-    readonly property bool barAutoHide: false
-    readonly property int barPadding: 14
-    readonly property int widgetSpacing: 6
+    readonly property color sepColor: surface3Color
 
-    readonly property int radiusSmall: 5
-    readonly property int radius: 10
-    readonly property int radiusLarge: 15
-    readonly property int spacing: 8
-    readonly property int padding: 6
+    // ========================================================================
+    // WALLPAPER
+    // ========================================================================
+    readonly property bool dynamicWallpaper: getState("wallpaper.dynamic", true)
 
-    // Separator
-    readonly property color sepColor: Qt.alpha(textColor, 0.18)
+    // ========================================================================
+    // GEOMETRY & LAYOUT
+    // ========================================================================
+    readonly property int barHeight: getState("bar.height", 32)
+    readonly property bool barAutoHide: getState("bar.autoHide", true)
 
-    // Animations
-    readonly property int animDurationShort: 100
-    readonly property int animDuration: 200
-    readonly property int animDurationLong: 400
+    readonly property int radiusSmall: getState("geometry.radiusSmall", 5)
+    readonly property int radius: getState("geometry.radius", 10)
+    readonly property int radiusLarge: getState("geometry.radiusLarge", 15)
+    readonly property int spacing: getState("geometry.spacing", 8)
+    readonly property int padding: getState("geometry.padding", 6)
+
+    // ========================================================================
+    // TYPOGRAPHY
+    // ========================================================================
+    readonly property string font: getState("typography.font", "Caskaydia Cove Nerd Font")
+    readonly property string monoFont: getState("typography.monoFont", "Caskaydia Cove Nerd Font Mono")
+
+    readonly property int fontSizeSmall: getState("typography.sizeSmall", 12)
+    readonly property int fontSizeNormal: getState("typography.sizeNormal", 14)
+    readonly property int fontSizeLarge: getState("typography.sizeLarge", 16)
+    readonly property int fontSizeIconSmall: getState("typography.iconSmall", 18)
+    readonly property int fontSizeIcon: getState("typography.icon", 22)
+    readonly property int fontSizeIconLarge: getState("typography.iconLarge", 28)
+
+    // ========================================================================
+    // ANIMATIONS
+    // ========================================================================
+    readonly property int animDurationShort: getState("animations.short", 100)
+    readonly property int animDuration: getState("animations.normal", 200)
+    readonly property int animDurationLong: getState("animations.long", 400)
+
+    // Popup/overlay entry+exit animation presets (used by AnimatedPopup.qml)
     readonly property real animPopupFromScale: 0.92
     readonly property int animPopupEasing: Easing.OutExpo
 
-    // Notifications
-    readonly property int notifWidth: 350
-    readonly property int notifImageSize: 40
-    readonly property int notifTimeout: 5000
-    readonly property int notifSpacing: 10
+    readonly property bool screenshotAnimations: getState("animations.screenshot", true)
+
+    // ========================================================================
+    // NOTIFICATIONS
+    // ========================================================================
+    readonly property int notifWidth: getState("notifications.width", 350)
+    readonly property int notifImageSize: getState("notifications.imageSize", 40)
+    readonly property int notifTimeout: getState("notifications.timeout", 5000)
+    readonly property int notifSpacing: getState("notifications.spacing", 10)
 }

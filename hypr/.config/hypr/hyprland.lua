@@ -98,8 +98,8 @@ hl.config({
 		border_size = 2,
 
 		col = {
-			active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
-			inactive_border = "rgba(595959aa)",
+			active_border = { colors = { "rgba(cba6f7ee)", "rgba(89b4faee)" }, angle = 45 },
+			inactive_border = "rgba(45475aaa)",
 		},
 
 		-- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -123,7 +123,7 @@ hl.config({
 			enabled = true,
 			range = 4,
 			render_power = 3,
-			color = 0xee1a1a1a,
+			color = 0xee11111b,
 		},
 
 		blur = {
@@ -268,6 +268,10 @@ hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(music))
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call launcher toggle"))
+hl.bind("SUPER + L", hl.dsp.exec_cmd("qs ipc call power action lock"))
+hl.bind("ALT + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
+hl.bind("SUPER + S", hl.dsp.exec_cmd("qs ipc call screenshot start"))
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd("qs ipc call power open"))
 hl.bind(secondMod .. " + SPACE", hl.dsp.exec_cmd(runner))
 
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())

@@ -77,11 +77,16 @@
     "button": false,
   },
   "agent": {
+    "sandbox_permissions": {
+      "network_hosts": [
+        "raw.githubusercontent.com"
+      ]
+    },
     "tool_permissions": {
       "default": "allow",
     },
     "dock": "left",
-    "default_profile": "ask",
+    "default_profile": "write",
     "default_model": {
       "effort": "medium",
       "enable_thinking": true,

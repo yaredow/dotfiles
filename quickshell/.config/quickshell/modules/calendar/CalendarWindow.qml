@@ -72,6 +72,7 @@ QsPopupWindow {
                     text: String.fromCodePoint(0xF00ED)
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeLarge
+                    font.weight: Font.Light
                     color: Config.accentColor
                 }
             }
@@ -79,7 +80,7 @@ QsPopupWindow {
             Text {
                 text: "Calendar"
                 font.family: Config.font
-                font.bold: true
+                font.weight: Font.Light
                 font.pixelSize: Config.fontSizeLarge
                 color: Config.textColor
                 Layout.fillWidth: true
@@ -100,6 +101,7 @@ QsPopupWindow {
                         text: String.fromCodePoint(0xF00F6)
                         font.family: Config.font
                         font.pixelSize: Config.fontSizeSmall
+                        font.weight: Font.Light
                         color: Config.subtextColor
                     }
 
@@ -107,7 +109,7 @@ QsPopupWindow {
                         text: TimeService.format("MMM dd")
                         font.family: Config.font
                         font.pixelSize: Config.fontSizeSmall
-                        font.bold: true
+                        font.weight: Font.Light
                         color: Config.subtextColor
                     }
                 }
@@ -141,6 +143,7 @@ QsPopupWindow {
                     text: String.fromCodePoint(0xF0141)
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeNormal
+                    font.weight: Font.Light
                     color: Config.subtextColor
                 }
 
@@ -164,7 +167,7 @@ QsPopupWindow {
                     text: new Date(root.displayYear, root.displayMonth, 1).toLocaleDateString(Qt.locale(), "MMMM yyyy")
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeNormal
-                    font.bold: true
+                    font.weight: Font.Light
                     font.capitalization: Font.Capitalize
                     color: Config.textColor
                 }
@@ -200,6 +203,7 @@ QsPopupWindow {
                     text: String.fromCodePoint(0xF0142)
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeNormal
+                    font.weight: Font.Light
                     color: Config.subtextColor
                 }
 
@@ -225,7 +229,7 @@ QsPopupWindow {
                 text: model.shortName
                 font.family: Config.font
                 font.pixelSize: Config.fontSizeSmall
-                font.bold: true
+                font.weight: Font.Light
                 color: (model.day === 0 || model.day === 6) ? Config.subtextColor : Config.textColor
             }
         }
@@ -279,7 +283,7 @@ QsPopupWindow {
                         text: dayCell.model.day
                         font.family: Config.font
                         font.pixelSize: Config.fontSizeSmall
-                        font.bold: dayCell.isToday
+                        font.weight: Font.Light
                         color: {
                             if (dayCell.isToday)
                                 return Config.textReverseColor;

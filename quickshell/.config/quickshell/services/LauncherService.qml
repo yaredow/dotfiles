@@ -33,7 +33,7 @@ Singleton {
         });
 
         if (query === "") {
-            return apps.slice(0, apps.length);
+            return [];
         }
 
         const q = query.toLowerCase();

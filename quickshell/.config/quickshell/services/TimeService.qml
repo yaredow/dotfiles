@@ -11,6 +11,7 @@ Singleton {
         const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
         const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
         let result = formatStr;
+        result = result.replace("HH", String(d.getHours()).padStart(2,'0'));
         result = result.replace("hh", String(d.getHours()).padStart(2,'0'));
         result = result.replace("mm", String(d.getMinutes()).padStart(2,'0'));
         result = result.replace("dd", String(d.getDate()).padStart(2,'0'));

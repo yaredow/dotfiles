@@ -9,7 +9,7 @@ import qs.services
 Item {
     id: root
 
-    signal paletteToggleRequested()
+    signal paletteToggleRequested
 
     readonly property int barHeight: Config.barHeight
 
@@ -22,8 +22,19 @@ Item {
         root.barEdge = edges[(edges.indexOf(root.barEdge) + 1) % 4];
     }
 
+    readonly property var kanjiNum: ["〇", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
+
+    function indexKanji(n) {
+        return n >= 0 && n <= 10 ? kanjiNum[n] : String(n);
+    }
+
     function edgeArrow() {
-        return ({top: "↑", right: "→", bottom: "↓", left: "←"})[root.barEdge] || "?";
+        return ({
+                top: "↑",
+                right: "→",
+                bottom: "↓",
+                left: "←"
+            })[root.barEdge] || "?";
     }
 
     // ---------- Tooltips ----------
@@ -33,7 +44,8 @@ Item {
     property bool tooltipShown: false
 
     function showTooltip(text, x, y) {
-        if (!text) return;
+        if (!text)
+            return;
         root.tooltipText = text;
         root.tooltipBarX = x;
         root.tooltipBarY = y;
@@ -65,7 +77,8 @@ Item {
         const have = [];
         for (let i = 0; i < wsList.values.length; i++) {
             const id = wsList.values[i].id;
-            if (id >= 1 && id <= 9) have.push(id);
+            if (id >= 1 && id <= 9)
+                have.push(id);
         }
         const set = new Set([...have, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
         root.existingWs = [...set].sort((a, b) => a - b).slice(0, 9);
@@ -75,10 +88,13 @@ Item {
         target: Hyprland
         function onFocusedWorkspaceChanged() {
             const ws = Hyprland.focusedWorkspace;
-            if (!ws) return;
+            if (!ws)
+                return;
             const next = ws.id;
-            if (next > root.activeWs) root.lastDirection = 1;
-            else if (next < root.activeWs) root.lastDirection = -1;
+            if (next > root.activeWs)
+                root.lastDirection = 1;
+            else if (next < root.activeWs)
+                root.lastDirection = -1;
             root.activeWs = next;
             Qt.callLater(refreshExistingWs);
         }
@@ -92,7 +108,8 @@ Item {
 
     Component.onCompleted: {
         const ws = Hyprland.focusedWorkspace;
-        if (ws) root.activeWs = ws.id;
+        if (ws)
+            root.activeWs = ws.id;
         refreshExistingWs();
     }
 }

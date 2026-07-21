@@ -3,25 +3,81 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Quickshell.Io
+import Quickshell.Services.Pam
 
 Singleton {
     id: root
 
     property bool locked: false
+    property bool authenticating: false
+    property bool failed: false
+    property string failMessage: ""
+
+    signal authSucceeded
+
+    property string _pendingPassword: ""
+
+    PamContext {
+        id: pam
+        config: "login"
+        user: Quickshell.env("USER")
+
+        onResponseRequiredChanged: {
+            if (responseRequired)
+                pam.respond(root._pendingPassword);
+        }
+
+        onCompleted: result => {
+            root.authenticating = false;
+            root._pendingPassword = "";
+
+            if (result === PamResult.Success) {
+                console.log("[Lock] Authentication successful");
+                root.failed = false;
+                root.failMessage = "";
+                root.authSucceeded();
+            } else {
+                console.log("[Lock] Authentication failed:", PamResult.toString(result));
+                root.failed = true;
+                root.failMessage = "Authentication failed";
+            }
+        }
+
+        onError: error => {
+            root.authenticating = false;
+            root._pendingPassword = "";
+            console.log("[Lock] PAM error:", PamError.toString(error));
+            root.failed = true;
+            root.failMessage = "Authentication error";
+        }
+    }
 
     function lock() {
-        console.log("[Lock] Locking screen");
-        lockProc.running = true;
-        locked = true;
+        if (!locked) {
+            console.log("[Lock] Locking screen");
+            locked = true;
+            failed = false;
+            failMessage = "";
+            authenticating = false;
+            _pendingPassword = "";
+        }
     }
 
     function unlock() {
-        locked = false;
+        if (locked) {
+            console.log("[Lock] Unlocking screen");
+            locked = false;
+        }
     }
 
-    Process {
-        id: lockProc
-        command: ["bash", "-c", "loginctl lock-session || hyprctl dispatch exit"]
+    function tryUnlock(password) {
+        if (authenticating)
+            return;
+        console.log("[Lock] Attempting authentication");
+        _pendingPassword = password;
+        authenticating = true;
+        failed = false;
+        failMessage = "";
+        pam.start();
     }
 }

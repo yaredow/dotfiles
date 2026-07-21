@@ -19,26 +19,34 @@ QsPopupWindow {
         anchors.fill: parent
         spacing: 12
 
+        // ========== HEADER ==========
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
 
+            // Decorative icon
             Rectangle {
                 Layout.preferredWidth: 36
                 Layout.preferredHeight: 36
                 radius: Config.radius
                 color: NotificationService.dndEnabled ? Qt.alpha(Config.warningColor, 0.2) : Qt.alpha(Config.accentColor, 0.15)
-                Behavior on color { ColorAnimation { duration: Config.animDuration } }
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: Config.animDuration
+                    }
+                }
 
                 Text {
                     anchors.centerIn: parent
-                    text: NotificationService.dndEnabled ? String.fromCodePoint(0xF009B) : String.fromCodePoint(0xF009A)
+                    text: NotificationService.dndEnabled ? "󰂛" : "󰂚"
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeLarge
                     color: NotificationService.dndEnabled ? Config.warningColor : Config.accentColor
                 }
             }
 
+            // Title and counter
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 2
@@ -53,18 +61,26 @@ QsPopupWindow {
 
                 Text {
                     visible: NotificationService.count > 0 || NotificationService.dndEnabled
-                    text: NotificationService.dndEnabled ? "Do not disturb active" : NotificationService.count + (NotificationService.count === 1 ? " notification" : " notifications")
+                    text: {
+                        if (NotificationService.dndEnabled)
+                            return "Do not disturb active";
+                        return NotificationService.count + (NotificationService.count === 1 ? " notification" : " notifications");
+                    }
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeSmall
                     color: NotificationService.dndEnabled ? Config.warningColor : Config.subtextColor
                 }
             }
 
-            Item { Layout.fillWidth: true }
+            // Spacer
+            Item {
+                Layout.fillWidth: true
+            }
 
+            // DND Toggle Button
             ActionButton {
                 size: 32
-                icon: NotificationService.dndEnabled ? String.fromCodePoint(0xF009B) : String.fromCodePoint(0xF009A)
+                icon: NotificationService.dndEnabled ? "󰂛" : "󰂚"
                 iconSize: 14
                 text: "DND"
                 baseColor: NotificationService.dndEnabled ? Config.warningColor : Config.surface1Color
@@ -74,20 +90,24 @@ QsPopupWindow {
                 onClicked: NotificationService.toggleDnd()
             }
 
+            // Clear All Button
             ClearButton {
                 visible: NotificationService.count > 0
-                icon: String.fromCodePoint(0xF01B4)
+                icon: "󰆴"
                 text: "Clear"
+
                 onClicked: NotificationService.clearAll()
             }
         }
 
+        // ========== SEPARATOR ==========
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
             color: Config.surface1Color
         }
 
+        // ========== NOTIFICATION LIST ==========
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -102,20 +122,40 @@ QsPopupWindow {
                 model: NotificationService.notifications
 
                 add: Transition {
-                    NumberAnimation { property: "opacity"; from: 0; to: 1; duration: Config.animDuration }
-                    NumberAnimation { property: "x"; from: 30; to: 0; duration: Config.animDuration; easing.type: Easing.OutQuad }
+                    NumberAnimation {
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: Config.animDuration
+                    }
+                    NumberAnimation {
+                        property: "x"
+                        from: 30
+                        to: 0
+                        duration: Config.animDuration
+                        easing.type: Easing.OutQuad
+                    }
                 }
 
                 remove: Transition {
-                    NumberAnimation { property: "opacity"; to: 0; duration: Config.animDurationShort }
+                    NumberAnimation {
+                        property: "opacity"
+                        to: 0
+                        duration: Config.animDurationShort
+                    }
                 }
 
                 displaced: Transition {
-                    NumberAnimation { properties: "y"; duration: Config.animDuration; easing.type: Easing.OutQuad }
+                    NumberAnimation {
+                        properties: "y"
+                        duration: Config.animDuration
+                        easing.type: Easing.OutQuad
+                    }
                 }
 
                 delegate: NotificationCard {
                     required property var modelData
+
                     wrapper: modelData
                     popupMode: false
                     width: listView.width
@@ -124,6 +164,7 @@ QsPopupWindow {
                 ScrollBar.vertical: ScrollBar {
                     active: listView.moving || listView.contentHeight > listView.height
                     policy: ScrollBar.AsNeeded
+
                     contentItem: Rectangle {
                         implicitWidth: 4
                         implicitHeight: 100
@@ -131,10 +172,15 @@ QsPopupWindow {
                         color: Config.surface2Color
                         opacity: parent.active ? 0.8 : 0
                     }
-                    background: Rectangle { implicitWidth: 4; color: "transparent" }
+
+                    background: Rectangle {
+                        implicitWidth: 4
+                        color: "transparent"
+                    }
                 }
             }
 
+            // Empty state
             Column {
                 anchors.centerIn: parent
                 spacing: 12
@@ -142,12 +188,14 @@ QsPopupWindow {
 
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    width: 64; height: 64; radius: 32
+                    width: 64
+                    height: 64
+                    radius: 32
                     color: NotificationService.dndEnabled ? Qt.alpha(Config.warningColor, 0.2) : Config.surface1Color
 
                     Text {
                         anchors.centerIn: parent
-                        text: NotificationService.dndEnabled ? String.fromCodePoint(0xF009B) : String.fromCodePoint(0xF009C)
+                        text: NotificationService.dndEnabled ? "󰂛" : "󰂜"
                         font.family: Config.font
                         font.pixelSize: Config.fontSizeIconLarge
                         color: NotificationService.dndEnabled ? Config.warningColor : Config.subtextColor

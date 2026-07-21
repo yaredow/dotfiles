@@ -52,6 +52,7 @@ QsPopupWindow {
                     text: String.fromCodePoint(0xF035B)
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeLarge
+                    font.weight: Font.Light
                     color: Config.accentColor
                 }
             }
@@ -59,7 +60,7 @@ QsPopupWindow {
             Text {
                 text: "System Monitor"
                 font.family: Config.font
-                font.bold: true
+                font.weight: Font.Light
                 font.pixelSize: Config.fontSizeLarge
                 color: Config.textColor
                 Layout.fillWidth: true
@@ -80,6 +81,7 @@ QsPopupWindow {
                         text: String.fromCodePoint(0xF0150)
                         font.family: Config.font
                         font.pixelSize: Config.fontSizeSmall
+                        font.weight: Font.Light
                         color: Config.subtextColor
                     }
 
@@ -87,7 +89,7 @@ QsPopupWindow {
                         text: SystemMonitorService.uptime
                         font.family: Config.font
                         font.pixelSize: Config.fontSizeSmall
-                        font.bold: true
+                        font.weight: Font.Light
                         color: Config.subtextColor
                     }
                 }
@@ -164,6 +166,7 @@ QsPopupWindow {
                     text: String.fromCodePoint(0xF06F3)
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeLarge
+                    font.weight: Font.Light
                     color: Config.accentColor
                 }
 
@@ -171,7 +174,7 @@ QsPopupWindow {
                     text: "Network"
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeNormal
-                    font.bold: true
+                    font.weight: Font.Light
                     color: Config.textColor
                     Layout.fillWidth: true
                 }
@@ -197,6 +200,7 @@ QsPopupWindow {
                             text: String.fromCodePoint(0xF0045)
                             font.family: Config.font
                             font.pixelSize: Config.fontSizeNormal
+                            font.weight: Font.Light
                             color: Config.successColor
                         }
 
@@ -204,7 +208,7 @@ QsPopupWindow {
                             text: SystemMonitorService.networkDown
                             font.family: Config.font
                             font.pixelSize: Config.fontSizeSmall
-                            font.bold: true
+                            font.weight: Font.Light
                             color: Config.textColor
                             Layout.fillWidth: true
                         }
@@ -227,6 +231,7 @@ QsPopupWindow {
                             text: String.fromCodePoint(0xF005D)
                             font.family: Config.font
                             font.pixelSize: Config.fontSizeNormal
+                            font.weight: Font.Light
                             color: Config.warningColor
                         }
 
@@ -234,7 +239,7 @@ QsPopupWindow {
                             text: SystemMonitorService.networkUp
                             font.family: Config.font
                             font.pixelSize: Config.fontSizeSmall
-                            font.bold: true
+                            font.weight: Font.Light
                             color: Config.textColor
                             Layout.fillWidth: true
                         }
@@ -323,7 +328,7 @@ QsPopupWindow {
                 text: gauge.usage + "%"
                 font.family: Config.font
                 font.pixelSize: 22
-                font.bold: true
+                font.weight: Font.Light
                 color: gauge.arcColor
 
                 Behavior on color {
@@ -337,7 +342,7 @@ QsPopupWindow {
             text: gauge.subtitle ? (gauge.label + " \u00B7 " + gauge.subtitle) : gauge.label
             font.family: Config.font
             font.pixelSize: Config.fontSizeSmall
-            font.bold: true
+            font.weight: Font.Light
             color: Config.textColor
         }
 
@@ -360,6 +365,7 @@ QsPopupWindow {
                     text: String.fromCodePoint(0xF050F)
                     font.family: Config.font
                     font.pixelSize: 12
+                    font.weight: Font.Light
                     color: gauge.badgeColor
 
                     Behavior on color { ColorAnimation { duration: Config.animDuration } }
@@ -370,7 +376,7 @@ QsPopupWindow {
                     text: gauge.temp + "\u00B0C"
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeSmall
-                    font.bold: true
+                    font.weight: Font.Light
                     color: gauge.badgeColor
 
                     Behavior on color { ColorAnimation { duration: Config.animDuration } }
@@ -408,6 +414,7 @@ QsPopupWindow {
                 text: metric.icon
                 font.family: Config.font
                 font.pixelSize: Config.fontSizeLarge
+                font.weight: Font.Light
                 color: metric.barColor
 
                 Behavior on color { ColorAnimation { duration: Config.animDuration } }
@@ -417,7 +424,7 @@ QsPopupWindow {
                 text: metric.label
                 font.family: Config.font
                 font.pixelSize: Config.fontSizeNormal
-                font.bold: true
+                font.weight: Font.Light
                 color: Config.textColor
             }
 
@@ -427,6 +434,7 @@ QsPopupWindow {
                 text: metric.detail
                 font.family: Config.font
                 font.pixelSize: Config.fontSizeSmall
+                font.weight: Font.Light
                 color: Config.subtextColor
             }
         }
@@ -451,6 +459,7 @@ QsPopupWindow {
             text: metric.usage + "% used"
             font.family: Config.font
             font.pixelSize: 11
+            font.weight: Font.Light
             color: Config.subtextColor
             Layout.alignment: Qt.AlignRight
         }

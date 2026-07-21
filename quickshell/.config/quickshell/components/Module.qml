@@ -11,21 +11,23 @@ Item {
     property string tooltip: ""
     property color color: Config.textColor
     property string fontFamily: Config.font
-    property int fontSize: 14
+    property int fontSize: 12
     property int glyphYOffset: -1
+    property int fontWeight: Font.Medium
 
-    signal activated()
-    signal rightActivated()
+    signal activated
+    signal rightActivated
 
-    Layout.alignment: Qt.AlignVCenter
-    Layout.preferredWidth: 24
-    Layout.preferredHeight: Config.barHeight
+    Layout.alignment: modItem.host.isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
+    Layout.preferredWidth: modItem.host.isHorizontal ? 24 : Config.barHeight
+    Layout.preferredHeight: modItem.host.isHorizontal ? Config.barHeight : 24
 
     Timer {
         id: tipDelay
         interval: 320
         onTriggered: {
-            if (!modItem.tooltip) return;
+            if (!modItem.tooltip)
+                return;
             const p = modItem.mapToItem(null, modItem.width / 2, modItem.height / 2);
             modItem.host.showTooltip(modItem.tooltip, p.x, p.y);
         }
@@ -35,11 +37,17 @@ Item {
         anchors.fill: parent
         anchors.margins: 3
         radius: Config.radiusSmall
-        color: mouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.08) : "transparent"
-        Behavior on color { ColorAnimation { duration: 180 } }
+        color: mouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
+        Behavior on color {
+            ColorAnimation {
+                duration: 180
+            }
+        }
     }
 
-    Bloom { id: bloom; }
+    Bloom {
+        id: bloom
+    }
 
     Text {
         anchors.centerIn: parent
@@ -48,6 +56,7 @@ Item {
         color: modItem.color
         font.family: modItem.fontFamily
         font.pixelSize: modItem.fontSize
+        font.weight: modItem.fontWeight
     }
 
     MouseArea {
@@ -58,17 +67,20 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onEntered: {
             bloom.fire(mouseX, mouseY);
-            if (modItem.tooltip) tipDelay.restart();
+            if (modItem.tooltip)
+                tipDelay.restart();
         }
         onExited: {
             tipDelay.stop();
             modItem.host.hideTooltip(modItem.tooltip);
         }
-        onClicked: (e) => {
+        onClicked: e => {
             tipDelay.stop();
             modItem.host.hideTooltip(modItem.tooltip);
-            if (e.button === Qt.RightButton) modItem.rightActivated();
-            else modItem.activated();
+            if (e.button === Qt.RightButton)
+                modItem.rightActivated();
+            else
+                modItem.activated();
         }
     }
 }
