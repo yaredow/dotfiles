@@ -52,9 +52,10 @@ local runner = "rofi -show run"
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function()
-	hl.exec_cmd("hyprpaper")
+	hl.exec_cmd("awww-daemon")
+	hl.exec_cmd("bash -c 'sleep 0.5 && ~/.local/bin/wallpaper-cycle.sh'")
 	hl.exec_cmd("qs")
-	hl.exec_cmd("systemctl --userr start hyprpolkitagent")
+	hl.exec_cmd("systemctl --user start hyprpolkitagent")
 	hl.exec_cmd("hyprctl setcursor Bibata-Modern-Ice 24")
 end)
 
@@ -270,7 +271,8 @@ hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(music))
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call launcher toggle"))
 hl.bind("SUPER + L", hl.dsp.exec_cmd("qs ipc call power action lock"))
-hl.bind("ALT + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
+hl.bind("ALT + W", hl.dsp.exec_cmd("qs ipc call settings toggle"))
+hl.bind("SUPER + W", hl.dsp.exec_cmd("~/.local/bin/wallpaper-cycle.sh"))
 hl.bind("SUPER + S", hl.dsp.exec_cmd("qs ipc call screenshot start"))
 hl.bind("XF86PowerOff", hl.dsp.exec_cmd("qs ipc call power open"))
 hl.bind(secondMod .. " + SPACE", hl.dsp.exec_cmd(runner))

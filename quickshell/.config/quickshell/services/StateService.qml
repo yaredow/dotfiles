@@ -54,6 +54,7 @@ Singleton {
             current = current[key];
         }
         current[keys[keys.length - 1]] = value;
+        state = Object.assign({}, state);
         if (!isLoading)
             saveState();
     }

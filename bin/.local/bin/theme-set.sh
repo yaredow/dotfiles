@@ -12,6 +12,15 @@ COLORS=$(cat "$THEME_DIR/colors.json")
 mkdir -p "$HOME/.config/quickshell/state"
 cp "$THEME_DIR/colors.json" "$HOME/.config/quickshell/state/colors.json"
 
+# Wallpaper + notification first — everything else can wait
+WALLPAPER_MAP='{"tokyonight":"tokyonight","catppuccin":"catppuccin","rosepine":"rose-pine"}'
+WP_PREFIX=$(echo "$WALLPAPER_MAP" | jq -r ".$THEME")
+WP_FILE=$(find "$HOME/.local/wallpapers" -maxdepth 1 -name "${WP_PREFIX}-1.*" -type f 2>/dev/null | head -1)
+notify-send "Theme" "${THEME}" -t 2000
+if [[ -n "$WP_FILE" ]]; then
+  awww img "$WP_FILE" --transition-type grow --transition-step 30 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null || true
+fi
+
 render() {
   local tpl="$THEME_ROOT/templates/$1.tpl"
   local dst="$2"
@@ -27,18 +36,22 @@ render() {
   eval "sed $sed_cmd" "$tpl" > "$dst"
 }
 
-render kitty.conf        "$HOME/.config/kitty/theme.conf"
+KITTY_THEME="$HOME/.config/kitty/theme.conf"
+
+FONT_MONO=$(echo "$COLORS" | jq -r '.fonts.mono // "JetBrainsMono Nerd Font"')
+FONT_SIZE=$(echo "$COLORS" | jq -r '.fonts.size // 13')
+
+# Global font override from quickshell state (settings panel)
+STATE_FILE="$HOME/.config/quickshell/state.json"
+if [[ -f "$STATE_FILE" ]]; then
+  OVERRIDE=$(jq -r '.typography.monoFont // ""' "$STATE_FILE" 2>/dev/null || echo "")
+  [[ -n "$OVERRIDE" ]] && FONT_MONO="$OVERRIDE"
+fi
+
+render kitty.conf        "$KITTY_THEME.tmp"
 render hypr-colors.lua   "$HOME/.config/hypr/theme.lua"
 render tmux.conf         "$HOME/.config/tmux/theme.conf"
 
-PALETTE_MAP='{"tokyonight":"tokyonight_night","catppuccin":"catppuccin_mocha","rosepine":"rose_pine"}'
-PALETTE=$(echo "$PALETTE_MAP" | jq -r ".$THEME")
-STARSHIP_TARGET=$(readlink -f "$HOME/.config/starship.toml" 2>/dev/null || echo "$HOME/.config/starship.toml")
-sed -i "s/^palette = .*/palette = \"$PALETTE\"/" "$STARSHIP_TARGET"
-
-# Fonts
-FONT_MONO=$(echo "$COLORS" | jq -r '.fonts.mono // "JetBrainsMono Nerd Font"')
-FONT_SIZE=$(echo "$COLORS" | jq -r '.fonts.size // 13')
 {
   echo ""
   echo "font_family $FONT_MONO"
@@ -46,20 +59,25 @@ FONT_SIZE=$(echo "$COLORS" | jq -r '.fonts.size // 13')
   echo "bold_font $FONT_MONO"
   echo "italic_font auto"
   echo "bold_italic_font auto"
-} >> "$HOME/.config/kitty/theme.conf"
+} >> "$KITTY_THEME.tmp"
+mv "$KITTY_THEME.tmp" "$KITTY_THEME"
 
-# Wallpaper
-WALLPAPER=$(echo "$COLORS" | jq -r '.wallpaper // ""')
-if [[ -n "$WALLPAPER" ]]; then
-  WALLPAPER_PATH="$HOME/.local/wallpapers/$WALLPAPER"
-  if [[ -f "$WALLPAPER_PATH" ]]; then
-    hyprctl hyprpaper wallpaper ",$WALLPAPER_PATH,cover" >/dev/null 2>&1 || true
-  fi
-fi
+kitty @ set-colors --all --configured "$KITTY_THEME" 2>/dev/null || true
+
+PALETTE_MAP='{"tokyonight":"tokyonight_night","catppuccin":"catppuccin_mocha","rosepine":"rose_pine"}'
+PALETTE=$(echo "$PALETTE_MAP" | jq -r ".$THEME")
+STARSHIP_TARGET=$(readlink -f "$HOME/.config/starship.toml" 2>/dev/null || echo "$HOME/.config/starship.toml")
+sed -i "s/^palette = .*/palette = \"$PALETTE\"/" "$STARSHIP_TARGET"
 
 hyprctl reload >/dev/null 2>&1 || true
 pkill -SIGUSR1 kitty 2>/dev/null || true
 tmux source-file ~/.tmux.conf 2>/dev/null || true
+
+# Reset wallpaper index to 0 on theme switch
+STATE_FILE="$HOME/.config/quickshell/state.json"
+if [[ -f "$STATE_FILE" ]]; then
+  jq '.["wallpaper.index"] = 0' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+fi
 
 ln -sfn "$THEME_DIR" "$HOME/.config/theme/current"
 

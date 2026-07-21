@@ -30,7 +30,7 @@ yazi
 # Hyprland Ecosystem
 # =============================================================================
 hyprland
-hyprpaper
+awww
 
 xdg-desktop-portal-hyprland
 quickshell

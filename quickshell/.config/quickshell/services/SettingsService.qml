@@ -16,134 +16,74 @@ Singleton {
         if (StateService.set) StateService.set(path, value)
     }
 
-    readonly property string wallpaperDir: Quickshell.env("HOME") + "/.local/wallpapers"
-    readonly property string themesDir: Quickshell.env("HOME") + "/.config/theme/themes"
-
     property bool panelVisible: false
-    property string currentWallpaper: getState("wallpaper.current", "")
     property string currentTheme: getState("theme.name", "tokyonight")
-    property string currentFont: getState("fonts.mono", "JetBrainsMono Nerd Font")
-    property var wallpapers: []
-    property string searchQuery: ""
-    property string currentSection: "wallpaper"
+    property string currentFont: getState("typography.monoFont", "JetBrainsMono Nerd Font")
+    property int currentWallpaperIndex: getState("wallpaper.index", 0)
+
+    property string section: "theme"
+    property int selectedIndex: 0
 
     readonly property var sections: [
-        { name: "wallpaper", icon: "󰸉", label: "Wallpaper" },
-        { name: "theme", icon: "", label: "Theme" },
-        { name: "font", icon: "", label: "Font" },
+        { name: "theme", label: "Theme" },
+        { name: "font",  label: "Font" },
     ]
 
-    readonly property var availableThemes: ["tokyonight", "catppuccin", "rosepine"]
-    readonly property var availableFonts: [
-        "JetBrainsMono Nerd Font",
-        "FiraCode Nerd Font",
-        "CaskaydiaCove Nerd Font",
-        "Meslo Nerd Font",
+    readonly property var themes: [
+        { type: "theme", name: "tokyonight" },
+        { type: "theme", name: "catppuccin" },
+        { type: "theme", name: "rosepine" },
     ]
 
-    readonly property var filteredWallpapers: {
-        var list = root.wallpapers;
-        if (root.searchQuery) {
-            var q = root.searchQuery.toLowerCase();
-            list = list.filter(function(w) {
-                return w.split("/").pop().toLowerCase().includes(q);
-            });
-        }
-        return list;
-    }
+    readonly property var fonts: [
+        { type: "font", name: "JetBrainsMono Nerd Font" },
+        { type: "font", name: "FiraCode Nerd Font" },
+        { type: "font", name: "CaskaydiaCove Nerd Font" },
+        { type: "font", name: "Meslo Nerd Font" },
+    ]
 
-    Component.onCompleted: refreshWallpapers()
+    readonly property var currentItems: section === "theme" ? themes : fonts
 
     function show() {
-        refreshWallpapers();
-        panelVisible = true;
+        selectedIndex = 0
+        section = "theme"
+        panelVisible = true
     }
 
     function hide() {
-        panelVisible = false;
-        searchQuery = "";
+        panelVisible = false
     }
 
     function toggle() {
-        if (panelVisible) hide();
-        else show();
+        if (panelVisible) hide()
+        else show()
     }
 
-    function setWallpaper(path) {
-        currentWallpaper = path;
-        setState("wallpaper.current", path);
-        setWallpaperProc.command = ["hyprctl", "hyprpaper", "wallpaper", "," + path + ",cover"];
-        setWallpaperProc.running = true;
-        hide();
-    }
+    function activate(index) {
+        var items = currentItems
+        var item = items[index]
+        if (!item) return
 
-    function setTheme(name) {
-        currentTheme = name;
-        setState("theme.name", name);
-        applyThemeProc.command = [
-            "bash", "-c",
-            Quickshell.env("HOME") + "/.local/bin/theme-set.sh " + name
-        ];
-        applyThemeProc.running = true;
-    }
-
-    function setFont(name) {
-        currentFont = name;
-        setState("fonts.mono", name);
-        var themeColors = Quickshell.env("HOME") + "/.config/theme/themes/" + currentTheme + "/colors.json";
-        updateFontProc.command = [
-            "bash", "-c",
-            "jq '.fonts.mono = \"" + name + "\"' " + themeColors +
-            " > " + themeColors + ".tmp && mv " + themeColors + ".tmp " + themeColors +
-            " && " + Quickshell.env("HOME") + "/.local/bin/theme-set.sh " + currentTheme
-        ];
-        updateFontProc.running = true;
-    }
-
-    function refreshWallpapers() {
-        listWallpapersProc.running = true;
-    }
-
-    Process {
-        id: listWallpapersProc
-        property var _buffer: []
-        command: ["bash", "-c", "ls -1 '" + root.wallpaperDir + "'/*.{png,jpg,jpeg,webp,gif} 2>/dev/null | sort"]
-        stdout: SplitParser {
-            onRead: data => {
-                var trimmed = data.trim();
-                if (trimmed && !trimmed.includes("*"))
-                    listWallpapersProc._buffer.push(trimmed);
-            }
+        if (item.type === "theme") {
+            currentTheme = item.name
+            setState("theme.name", item.name)
+            applyThemeProc.command = ["bash", "-c", Quickshell.env("HOME") + "/.local/bin/theme-set.sh " + item.name]
+            applyThemeProc.running = true
+        } else {
+            currentFont = item.name
+            setState("typography.monoFont", item.name)
+            setState("typography.font", item.name)
+            applyFontProc.command = ["bash", "-c", Quickshell.env("HOME") + "/.local/bin/theme-set.sh " + currentTheme]
+            applyFontProc.running = true
         }
-        onStarted: listWallpapersProc._buffer = []
-        onExited: root.wallpapers = listWallpapersProc._buffer
-    }
-
-    Process {
-        id: setWallpaperProc
+        hide()
     }
 
     Process {
         id: applyThemeProc
-        stdout: SplitParser {
-            onRead: data => console.log("[Settings] Theme output:", data.trim())
-        }
-        stderr: SplitParser {
-            onRead: data => console.error("[Settings] Theme error:", data)
-        }
-        onExited: exitCode => {
-            if (exitCode === 0)
-                console.log("[Settings] Theme switched to:", root.currentTheme);
-        }
     }
 
     Process {
-        id: updateFontProc
-        stdout: SplitParser {
-            onRead: data => console.log("[Settings] Font output:", data.trim())
-        }
-        stderr: SplitParser {
-            onRead: data => console.error("[Settings] Font error:", data)
-        }
+        id: applyFontProc
     }
 }

@@ -28,6 +28,7 @@
   "lavender": "#c4a7e7",
   "wallpaper": "rosepine.jpg",
   "fonts": {
-    "mono": "JetBrainsMono Nerd Font"
+    "mono": "JetBrainsMono Nerd Font",
+    "size": 10
   }
 }

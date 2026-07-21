@@ -28,6 +28,7 @@
   "lavender": "#b4befe",
   "wallpaper": "catppuccin.jpg",
   "fonts": {
-    "mono": "JetBrainsMono Nerd Font"
+    "mono": "CaskaydiaCove Nerd Font",
+    "size": 10
   }
 }
