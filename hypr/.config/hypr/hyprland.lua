@@ -1,13 +1,14 @@
--- This is an example Hyprland Lua config file.
--- Refer to the wiki for more information.
--- https://wiki.hypr.land/Configuring/Start/
-
--- Please note not all available settings / options are set here.
--- For a full list, see the wiki
-
--- You can (and should!!) split this configuration into multiple files
--- Create your files separately and then require them like this:
--- require("myColors")
+local theme = (function()
+  local loaded, result = pcall(require, "theme")
+  if loaded and type(result) == "table" and result.active1 then
+    return result
+  end
+  return {
+    active1 = "rgba(7aa2f7ee)",
+    active2 = "rgba(bb9af7ee)",
+    inactive = "rgba(565f89aa)",
+  }
+end)()
 
 ------------------
 ---- MONITORS ----
@@ -98,8 +99,8 @@ hl.config({
 		border_size = 2,
 
 		col = {
-			active_border = { colors = { "rgba(cba6f7ee)", "rgba(89b4faee)" }, angle = 45 },
-			inactive_border = "rgba(45475aaa)",
+			active_border = { colors = { theme.active1, theme.active2 }, angle = 45 },
+			inactive_border = theme.inactive,
 		},
 
 		-- Set to true to enable resizing windows by clicking and dragging on borders and gaps

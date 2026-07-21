@@ -1,3 +1,23 @@
+local function read_active()
+  local f = io.open(vim.fn.stdpath('config') .. '/lua/theme.lua', 'r')
+  if not f then return 'tokyonight-night' end
+  local content = f:read '*a'
+  f:close()
+  return content:match('return "(.+)"') or 'tokyonight-night'
+end
+local active = read_active()
+
+local function colorscheme_spec(plugin, name, colorscheme, opts, setup)
+  return {
+    plugin,
+    name = name,
+    lazy = active ~= colorscheme,
+    priority = active == colorscheme and 1000 or nil,
+    opts = opts,
+    config = function(_, o) setup(o) end,
+  }
+end
+
 return {
   -- Guess indentation
   { 'NMAC427/guess-indent.nvim', opts = {} },
@@ -37,17 +57,18 @@ return {
     },
   },
 
-  -- Colorscheme
-  {
-    'folke/tokyonight.nvim',
-    lazy = false,
-    priority = 1000,
-    opts = { styles = { comments = { italic = false } } },
-    config = function(_, opts)
-      require('tokyonight').setup(opts)
-      vim.cmd.colorscheme 'tokyonight-night'
-    end,
-  },
+  -- Colorschemes
+  colorscheme_spec('folke/tokyonight.nvim', nil, 'tokyonight-night',
+    { styles = { comments = { italic = false } } },
+    function(opts) require('tokyonight').setup(opts) end),
+
+  colorscheme_spec('catppuccin/nvim', 'catppuccin', 'catppuccin-mocha',
+    { flavour = 'mocha' },
+    function(opts) require('catppuccin').setup(opts) end),
+
+  colorscheme_spec('rose-pine/neovim', 'rose-pine', 'rose-pine',
+    { variant = 'main' },
+    function(opts) require('rose-pine').setup(opts) end),
 
   -- Todo comments
   { 'folke/todo-comments.nvim', event = 'BufReadPost', opts = { signs = false } },

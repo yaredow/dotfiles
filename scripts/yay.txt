@@ -1,24 +1,24 @@
 # Yay Applications (AUR)
-# Author: Binoy Manoj
+# AUR packages referenced by dotfiles configs
 
-# Essentials
+# =============================================================================
+# Music (referenced in Hyprland keybinds)
+# =============================================================================
+spotify
 
-# Hyprland Ecosystem
-ags-hyprpanel-git
-
-# Browsers & Communication
-brave-bin
-
-# Tools
+# =============================================================================
+# Theme & Appearance
+# =============================================================================
 bibata-cursor-theme
-juno-ocean-gtk-theme-git
 
-# Music Player
-g4music-git
-
-# CyberSecurity
-burpsuite
-
+# =============================================================================
 # Development
+# =============================================================================
+jetbrains-toolbox
+postman-bin
 nvm
-kanata
+
+# =============================================================================
+# Other
+# =============================================================================
+proton-vpn-gtk-app

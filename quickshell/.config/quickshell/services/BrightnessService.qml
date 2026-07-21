@@ -30,45 +30,7 @@ Singleton {
         return String.fromCodePoint(0xF00E0)
     }
 
-    property bool nightLightEnabled: getState("nightLight.enabled", false)
-    property int nightLightTemperature: 4000
-    property real nightLightIntensity: getState("nightLight.intensity", 0.5)
-    readonly property string nightLightIcon: nightLightEnabled ? String.fromCodePoint(0xF0B4D) : String.fromCodePoint(0xF0B4E)
-
-    Component.onCompleted: {
-        detectBacklight.running = true
-        ensureHyprsunsetRunning.running = true
-    }
-
-    Connections {
-        target: StateService
-        function onStateLoaded() {
-            root.nightLightEnabled = root.getState("nightLight.enabled", false)
-            root.nightLightIntensity = root.getState("nightLight.intensity", 0.5)
-            root.updateTemperatureFromIntensity()
-            applyStateTimer.restart()
-        }
-    }
-
-    Timer {
-        id: applyStateTimer
-        interval: 1000
-        onTriggered: {
-            if (root.nightLightEnabled) {
-                root.applyNightLight()
-                return
-            }
-            root.disableNightLight()
-        }
-    }
-
-    function updateTemperatureFromIntensity() {
-        nightLightTemperature = Math.round(2500 + (nightLightIntensity * 3000))
-    }
-
-    function updateIntensityFromTemperature() {
-        nightLightIntensity = (nightLightTemperature - 2500) / 3000
-    }
+    Component.onCompleted: { detectBacklight.running = true }
 
     Process {
         id: detectBacklight
@@ -142,77 +104,5 @@ Singleton {
         }
     }
 
-    function toggleNightLight() {
-        if (nightLightEnabled) disableNightLight()
-        else enableNightLight()
-    }
-
-    function enableNightLight() {
-        nightLightEnabled = true
-        setState("nightLight.enabled", true)
-        applyNightLight()
-    }
-
-    function disableNightLight() {
-        nightLightEnabled = false
-        setState("nightLight.enabled", false)
-        disableNightLightProc.running = true
-    }
-
-    function setNightLightIntensity(intensity) {
-        nightLightIntensity = Math.max(0.0, Math.min(1.0, intensity))
-        updateTemperatureFromIntensity()
-        setState("nightLight.intensity", nightLightIntensity)
-        if (nightLightEnabled) applyNightLight()
-    }
-
-    function setNightLightTemperature(temp) {
-        nightLightTemperature = Math.max(2500, Math.min(5500, temp))
-        updateIntensityFromTemperature()
-        setState("nightLight.intensity", nightLightIntensity)
-        if (nightLightEnabled) applyNightLight()
-    }
-
-    function applyNightLight() {
-        enableNightLightProc.command = ["hyprctl", "hyprsunset", "temperature", nightLightTemperature.toString()]
-        enableNightLightProc.running = true
-    }
-
     Process { id: setBrightnessProc }
-
-    Process {
-        id: ensureHyprsunsetRunning
-        command: ["bash", "-c",
-            "if ! pgrep -x hyprsunset >/dev/null 2>&1; then hyprsunset & disown; sleep 0.5; fi"]
-        onExited: {
-            if (!StateService.isLoading && root.nightLightEnabled) {
-                root.applyNightLight()
-            }
-        }
-    }
-
-    Process {
-        id: enableNightLightProc
-        stdout: SplitParser {
-            onRead: data => console.log("[Brightness] Enable night light response:", data)
-        }
-        stderr: SplitParser {
-            onRead: data => {
-                if (data.includes("error") || data.includes("failed")) {
-                    restartAndEnableProc.running = true
-                }
-            }
-        }
-    }
-
-    Process {
-        id: restartAndEnableProc
-        command: ["bash", "-c",
-            "pkill -x hyprsunset 2>/dev/null; sleep 0.2; hyprsunset & disown; sleep 0.5; hyprctl hyprsunset temperature " + root.nightLightTemperature]
-    }
-
-    Process {
-        id: disableNightLightProc
-        command: ["hyprctl", "hyprsunset", "identity"]
-    }
 }

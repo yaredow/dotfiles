@@ -1,0 +1,5 @@
+BG_COLOR="#{{base_strip}}"
+ACTIVE_COLOR="#{{blue_strip}}"
+INACTIVE_COLOR="#{{overlay0_strip}}"
+TEXT_COLOR="#{{text_strip}}"
+ACCENT_COLOR="#{{mauve_strip}}"

@@ -1,112 +1,134 @@
 # Pacman Applications
-# Author: Binoy Manoj
+# Essential packages for reproducible Arch + Hyprland dotfiles
 
+# =============================================================================
 # Essentials
+# =============================================================================
 git
 curl
 wget
 unzip
 zip
-tmux
 base-devel
-zsh
+stow
+jq
 polkit-gnome
-pacman-contrib
 
-# Hyprland Core & Dependencies
+# =============================================================================
+# Shell & Terminal
+# =============================================================================
+zsh
+tmux
 kitty
-#waybar
-hyprland 
-ttf-jetbrains-mono-nerd
-noto-fonts-emoji
-xdg-desktop-portal-hyprland
-hyprpaper
-hyprsunset
-hypridle
-hyprlock
-hyprpicker
-swww
+starship
+fzf
+zoxide
+eza
+yazi
 
-# Development
+# =============================================================================
+# Hyprland Ecosystem
+# =============================================================================
+hyprland
+hyprpaper
+
+xdg-desktop-portal-hyprland
+quickshell
+
+# =============================================================================
+# Editor
+# =============================================================================
 neovim
+zed
+
+# =============================================================================
+# Browser
+# =============================================================================
+firefox
+
+# =============================================================================
+# Development
+# =============================================================================
 docker
 docker-compose
+lazygit
 
-# Wayland Tools
-wl-clipboard
-cliphist
-grim
-slurp
-rofi-wayland
-rofi-emoji
-
+# =============================================================================
 # Audio & Video
+# =============================================================================
 pipewire
 pipewire-alsa
 pipewire-pulse
-pipewire-jack
-alsa-utils 
 wireplumber
 pavucontrol
 playerctl
 
-# Brightness Control
+# =============================================================================
+# Brightness
+# =============================================================================
 brightnessctl
 
-# File Managers & System Tools
-nautilus
-gnome-system-monitor
+# =============================================================================
+# Wayland Tools
+# =============================================================================
+grim
+slurp
+satty
+wl-clipboard
 
+# =============================================================================
+# System Utilities
+# =============================================================================
+btop
+fastfetch
+pacman-contrib
+
+# =============================================================================
+# Networking
+# =============================================================================
+networkmanager
+network-manager-applet
+nm-connection-editor
+
+# =============================================================================
 # Bluetooth
+# =============================================================================
 bluez
 bluez-utils
 blueman
 
-# Network
-networkmanager
-nm-connection-editor
-network-manager-applet
-
+# =============================================================================
 # Fonts
+# =============================================================================
+ttf-jetbrains-mono-nerd
+noto-fonts
+noto-fonts-emoji
 
-# Utilities
-jq
-polkit
-xdg-utils
-
-# Archive Tools
-unrar
-
-# KDE Connect
-kdeconnect
-
-# Password Manager
-keepassxc
-
-
-# System Info
-fastfetch
-btop
-
-# CyberSecurity
-nmap
-wireshark-qt
-
-# Others
-obs-studio
+# =============================================================================
+# Media & Graphics
+# =============================================================================
 mpv
-libnotify
+yt-dlp
 imagemagick
-zoxide
-zathura
-ufw
-plocate
-fzf
-yazi
-fwupd
-exfat-utils
+libnotify
+
+# =============================================================================
+# File Systems & Archives
+# =============================================================================
+unrar
 ntfs-3g
-power-profiles-daemon
-skim
-nwg-look 
-yt-dlp 
+exfat-utils
+
+# =============================================================================
+# Security
+# =============================================================================
+ufw
+
+# =============================================================================
+# Other
+# =============================================================================
+nautilus
+kdeconnect
+keepassxc
+zathura
+fwupd

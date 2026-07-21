@@ -14,29 +14,29 @@ Singleton {
     }
 
     // ========================================================================
-    // PALETTE (from ThemeService — defined in .data/themes/<name>.json)
+    // PALETTE (Catppuccin schema — from state/colors.json)
     // ========================================================================
-    readonly property color backgroundColor: ThemeService.color("background", "#1a1b26")
+    readonly property color backgroundColor: ThemeService.color("base", "#1e1e2e")
     readonly property real backgroundOpacity: getState("opacity.background", 0.9)
     readonly property color backgroundTransparentColor: Qt.alpha(backgroundColor, backgroundOpacity)
-    readonly property color surface0Color: ThemeService.color("surface0", "#24283b")
-    readonly property color surface1Color: ThemeService.color("surface1", "#292e42")
-    readonly property color surface2Color: ThemeService.color("surface2", "#414868")
-    readonly property color surface3Color: ThemeService.color("surface3", "#565f89")
+    readonly property color surface0Color: ThemeService.color("surface0", "#313244")
+    readonly property color surface1Color: ThemeService.color("surface1", "#45475a")
+    readonly property color surface2Color: ThemeService.color("surface2", "#585b70")
+    readonly property color surface3Color: ThemeService.color("overlay0", "#6c7086")
 
-    readonly property color textColor: ThemeService.color("text", "#c0caf5")
-    readonly property color textReverseColor: ThemeService.color("textReverse", "#1a1b26")
-    readonly property color subtextColor: ThemeService.color("subtext", "#a9b1d6")
-    readonly property color subtextReverseColor: ThemeService.color("subtextReverse", "#565f89")
+    readonly property color textColor: ThemeService.color("text", "#cdd6f4")
+    readonly property color textReverseColor: ThemeService.color("base", "#1e1e2e")
+    readonly property color subtextColor: ThemeService.color("subtext0", "#a6adc8")
+    readonly property color subtextReverseColor: ThemeService.color("overlay0", "#6c7086")
 
-    readonly property color accentColor: ThemeService.color("accent", "#7aa2f7")
-    readonly property color successColor: ThemeService.color("success", "#9ece6a")
-    readonly property color warningColor: ThemeService.color("warning", "#e0af68")
-    readonly property color errorColor: ThemeService.color("error", "#f7768e")
+    readonly property color accentColor: ThemeService.color("mauve", "#cba6f7")
+    readonly property color successColor: ThemeService.color("green", "#a6e3a1")
+    readonly property color warningColor: ThemeService.color("yellow", "#f9e2af")
+    readonly property color errorColor: ThemeService.color("red", "#f38ba8")
 
-    readonly property color mutedColor: ThemeService.color("muted", "#545c7e")
-    readonly property color greyBlueColor: ThemeService.color("greyBlue", "#283457")
-    readonly property color blueDarkColor: ThemeService.color("blueDark", "#16161e")
+    readonly property color mutedColor: ThemeService.color("overlay0", "#6c7086")
+    readonly property color greyBlueColor: ThemeService.color("surface1", "#45475a")
+    readonly property color blueDarkColor: ThemeService.color("mantle", "#181825")
 
     readonly property color sepColor: surface3Color
 

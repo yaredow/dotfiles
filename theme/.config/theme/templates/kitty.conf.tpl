@@ -1,0 +1,24 @@
+foreground              {{text}}
+background              {{base}}
+selection_foreground    {{base}}
+selection_background    {{rosewater}}
+cursor                  {{rosewater}}
+active_border_color     {{lavender}}
+inactive_border_color   {{overlay0}}
+
+color0  {{surface1}}
+color8  {{surface2}}
+color1  {{red}}
+color9  {{red}}
+color2  {{green}}
+color10 {{green}}
+color3  {{yellow}}
+color11 {{yellow}}
+color4  {{blue}}
+color12 {{blue}}
+color5  {{mauve}}
+color13 {{mauve}}
+color6  {{teal}}
+color14 {{teal}}
+color7  {{subtext1}}
+color15 {{subtext0}}
