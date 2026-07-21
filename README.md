@@ -1,37 +1,53 @@
 # Arch + Hyprland Dotfiles
 
-My personal Arch Linux + Hyprland configuration focused on building a fast, clean, and reproducible software engineering environment.
+## Overview
+Personal Arch Linux + Hyprland setup built around a centralized theme system. All configs deploy via GNU Stow and are managed from a unified QML settings panel.
 
----
-
-### ⚠️ Status
-**Actively in development** — Not ready for public use yet. Things will break and change frequently.
-
-### Goals
-- Minimal and performant Hyprland setup
-- Reproducible development environment
-- Easy to bootstrap on fresh Arch installs
-- Modular structure for easy maintenance
-
-### Structure
+## Structure
 ```
 .
-├── hypr/          # Hyprland configuration
-├── waybar/        # Status bar config
-├── scripts/       # Utility scripts
-└── install.sh     # Bootstrap script
+├── hypr/           # Hyprland config (Lua)
+├── kitty/          # Terminal
+├── quickshell/     # Shell/bar/panels (QML)
+├── theme/          # Central theme system
+├── tmux/           # Terminal multiplexer
+├── nvim/           # Editor
+├── bin/            # Scripts
+├── scripts/        # Bootstrap helpers
+└── install.sh      # Fresh-install bootstrap
 ```
 
-### Key Features
-- Fast, minimal Hyprland setup
-- Modular config structure
-- Easy to extend and customize
+## Features
+- **Centralized theme switching** — 3 themes (tokyonight, catppuccin, rosepine) with per-theme wallpapers and fonts
+- **Unified QML shell** — Bar, settings panel, clipboard history, keybinds overlay, launcher, power menu
+- **Searchable settings panel** — Change theme or font with live search
+- **Clipboard history** — `SUPER + V` opens searchable clipboard manager via cliphist
+- **Keybinds overlay** — `SUPER + /` shows categorized, searchable keybind reference
+- **Wallpaper cycling** — `SUPER + W` cycles wallpapers with smooth transitions
+- **Fully reproducible** — `git clone` + `install.sh` builds the entire environment
 
----
+## Prerequisites
+- Fresh Arch Linux install
+- Hyprland
 
-### Installation (Coming Soon)
-Once ready, you'll be able to set up everything quickly with a single script.
+## Usage
+```sh
+git clone https://github.com/yourusername/dotfiles ~/dotfiles
+cd ~/dotfiles
+./install.sh      # bootstrap everything
+```
 
----
+## Keybinds
+| Keys | Action |
+|------|--------|
+| `ALT + T` | Terminal |
+| `ALT + Space` | App launcher |
+| `ALT + W` | Settings panel |
+| `SUPER + V` | Clipboard history |
+| `SUPER + /` | Keybinds reference |
+| `SUPER + W` | Cycle wallpaper |
+| `SUPER + S` | Screenshot |
+| `SUPER + L` | Lock screen |
 
-**Work in progress** — Check back later!
+## Current State
+Actively developed — stable for daily use but iterating on UX.
