@@ -342,12 +342,12 @@ PanelWindow {
 
                             delegate: Item {
                                 required property var modelData
-                                implicitWidth: 28
+                                implicitWidth: 24
                                 implicitHeight: 24
 
                                 Image {
                                     anchors.centerIn: parent
-                                    width: 22; height: 22
+                                    width: 14; height: 14
                                     source: modelData.icon
                                     fillMode: Image.PreserveAspectFit
                                     asynchronous: true
@@ -389,7 +389,7 @@ PanelWindow {
                             text: "󰅁"
                             color: Config.textColor
                             font.family: Config.font
-                            font.pixelSize: 11
+                            font.pixelSize: 13
                             visible: trayArea.hasItems
                             scale: trayArea.isOpen ? -1 : 1
                             Behavior on scale {
@@ -413,7 +413,7 @@ PanelWindow {
                 glyph: "󰍛"
                 tooltip: "CPU " + SystemMonitorService.cpuUsage + "%"
                 color: SystemMonitorService.cpuUsage > 80 ? Config.accentColor : Config.textColor
-                fontSize: 12
+                fontSize: 13
                 fontWeight: Font.Medium
                 onActivated: monitorWindow.visible = !monitorWindow.visible
             }
@@ -427,7 +427,7 @@ PanelWindow {
                     return BluetoothService.connectedDevicesCount > 0 ? "Bluetooth · " + BluetoothService.connectedDevicesCount + " connected" : "Bluetooth on";
                 }
                 color: BluetoothService.isPowered ? Config.textColor : Qt.alpha(Config.textColor, 0.35)
-                fontSize: 12
+                fontSize: 13
                 fontWeight: Font.Medium
             }
 
@@ -435,7 +435,7 @@ PanelWindow {
                 host: bar.host
                 glyph: NetworkService.systemIcon
                 tooltip: NetworkService.statusText
-                fontSize: 12
+                fontSize: 13
                 fontWeight: Font.Medium
             }
 
@@ -444,7 +444,7 @@ PanelWindow {
                 glyph: AudioService.systemIcon
                 tooltip: AudioService.muted ? "Audio muted · " + Math.round(AudioService.volume * 100) + "%" : "Audio " + Math.round(AudioService.volume * 100) + "%"
                 color: AudioService.muted ? Qt.alpha(Config.textColor, 0.45) : Config.textColor
-                fontSize: 12
+                fontSize: 13
                 fontWeight: Font.Medium
                 onRightActivated: AudioService.toggleMute()
             }
@@ -459,7 +459,7 @@ PanelWindow {
                     return s;
                 }
                 color: BatteryService.percentage <= 10 ? Config.errorColor : BatteryService.percentage <= 20 ? Config.accentColor : Config.textColor
-                fontSize: 12
+                fontSize: 13
                 fontWeight: Font.Medium
             }
 
@@ -476,7 +476,7 @@ PanelWindow {
                     return NotificationService.count > 0 ? NotificationService.count + " notifications" : "No notifications";
                 }
                 color: NotificationService.dndEnabled ? Qt.alpha(Config.textColor, 0.45) : Config.textColor
-                fontSize: 12
+                fontSize: 13
                 fontWeight: Font.Medium
                 onActivated: notifWindow.visible = !notifWindow.visible
                 onRightActivated: NotificationService.toggleDnd()
@@ -488,7 +488,7 @@ PanelWindow {
                 tooltip: "Move bar"
                 color: Config.subtextColor
                 fontFamily: Config.font
-                fontSize: 12
+                fontSize: 13
                 fontWeight: Font.Medium
                 onActivated: host.cycleBarEdge()
             }
