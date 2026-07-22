@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
-import Quickshell.Services.SystemTray
 import qs.config
 import qs.services
 import "../../components/"
@@ -311,23 +310,25 @@ PanelWindow {
 
             Item {
                 id: trayArea
-                visible: SystemTray.items.count > 0
-                Layout.preferredWidth: drawer.width + toggleBtn.width
+                Layout.preferredWidth: drawer.width + 24
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
 
                 property bool isOpen: false
+                property bool hasItems: TrayService.hasItems
 
                 Row {
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 0
 
-                    Item {
+                    Row {
                         id: drawer
                         clip: true
-                        width: parent.parent.isOpen ? iconsRow.width : 0
+                        width: trayArea.isOpen ? iconsRow.width : 0
                         height: 24
-                        opacity: parent.parent.isOpen ? 1 : 0
+                        opacity: trayArea.isOpen ? 1 : 0
+                        visible: trayArea.hasItems
+                        spacing: 0
 
                         Behavior on width {
                             NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
@@ -336,42 +337,35 @@ PanelWindow {
                             NumberAnimation { duration: 150 }
                         }
 
-                        Row {
-                            id: iconsRow
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: parent.right
-                            spacing: 0
-
                             Repeater {
-                                model: SystemTray.items
+                                model: TrayService.items
 
-                                delegate: Item {
-                                    required property var modelData
-                                    implicitWidth: 24
-                                    implicitHeight: 24
+                            delegate: Item {
+                                required property var modelData
+                                implicitWidth: 24
+                                implicitHeight: 24
 
-                                    Image {
-                                        anchors.centerIn: parent
-                                        width: 18; height: 18
-                                        source: modelData.icon
-                                        fillMode: Image.PreserveAspectFit
-                                        asynchronous: true
-                                        sourceSize: Qt.size(32, 32)
-                                        smooth: true
-                                    }
+                                Image {
+                                    anchors.centerIn: parent
+                                    width: 18; height: 18
+                                    source: modelData.icon
+                                    fillMode: Image.PreserveAspectFit
+                                    asynchronous: true
+                                    sourceSize: Qt.size(32, 32)
+                                    smooth: true
+                                }
 
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: e => {
-                                            if (e.button === Qt.RightButton && modelData.hasMenu)
-                                                modelData.display(parent, e.x, e.y)
-                                            else if (e.button === Qt.RightButton)
-                                                modelData.secondaryActivate()
-                                            else
-                                                modelData.activate()
-                                        }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: e => {
+                                        if (e.button === Qt.RightButton && modelData.hasMenu)
+                                            modelData.display(parent, e.x, e.y)
+                                        else if (e.button === Qt.RightButton)
+                                            modelData.secondaryActivate()
+                                        else
+                                            modelData.activate()
                                     }
                                 }
                             }
@@ -379,7 +373,6 @@ PanelWindow {
                     }
 
                     Item {
-                        id: toggleBtn
                         implicitWidth: 24
                         implicitHeight: 24
 
@@ -387,7 +380,7 @@ PanelWindow {
                             anchors.fill: parent
                             anchors.margins: 3
                             radius: width / 2
-                            color: toggleMouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
+                            color: mouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
                             Behavior on color { ColorAnimation { duration: 180 } }
                         }
 
@@ -397,6 +390,7 @@ PanelWindow {
                             color: Config.textColor
                             font.family: Config.font
                             font.pixelSize: 11
+                            visible: trayArea.hasItems
                             scale: trayArea.isOpen ? -1 : 1
                             Behavior on scale {
                                 NumberAnimation { duration: 200; easing.type: Easing.OutBack }
@@ -404,7 +398,7 @@ PanelWindow {
                         }
 
                         MouseArea {
-                            id: toggleMouse
+                            id: mouse
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
