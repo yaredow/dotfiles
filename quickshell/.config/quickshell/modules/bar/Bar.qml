@@ -308,8 +308,31 @@ PanelWindow {
                 Layout.fillHeight: !host.isHorizontal
             }
 
+            Item {
+                id: trayItem
+                visible: TrayService.hasItems
+                Layout.preferredWidth: visible ? childrenRect.width : 0
+                Layout.preferredHeight: 20
+                Layout.alignment: Qt.AlignVCenter
+                Layout.leftMargin: 2
+
+                Row {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 0
+
+                    Repeater {
+                        model: TrayService.items
+                        delegate: TrayItem {
+                            host: bar.host
+                            trayItem: modelData
+                        }
+                    }
+                }
+            }
+
             Separator {
                 host: bar.host
+                visible: TrayService.hasItems
             }
 
             Module {
