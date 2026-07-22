@@ -311,10 +311,11 @@ PanelWindow {
 
             Item {
                 id: trayItem
-                Layout.preferredWidth: childrenRect.width || 24
+                implicitWidth: 24
+                implicitHeight: 20
+                Layout.preferredWidth: implicitWidth + childrenRect.width
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
-                Layout.leftMargin: 2
 
                 Row {
                     anchors.verticalCenter: parent.verticalCenter
