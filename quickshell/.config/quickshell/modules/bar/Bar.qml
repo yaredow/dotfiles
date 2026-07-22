@@ -309,6 +309,10 @@ PanelWindow {
                 Layout.fillHeight: !host.isHorizontal
             }
 
+            Separator {
+                host: bar.host
+            }
+
             Item {
                 id: trayItem
                 visible: SystemTray.items.count > 0
@@ -334,11 +338,6 @@ PanelWindow {
                         }
                     }
                 }
-            }
-
-            Separator {
-                host: bar.host
-                visible: SystemTray.items.count > 0
             }
 
             Module {
