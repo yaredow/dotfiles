@@ -324,7 +324,7 @@ PanelWindow {
                     Row {
                         id: drawer
                         clip: true
-                        width: trayArea.isOpen ? iconsRow.width : 0
+                        width: trayArea.isOpen ? drawer.implicitWidth : 0
                         height: 24
                         opacity: trayArea.isOpen ? 1 : 0
                         visible: trayArea.hasItems
@@ -337,17 +337,17 @@ PanelWindow {
                             NumberAnimation { duration: 150 }
                         }
 
-                            Repeater {
-                                model: TrayService.items
+                        Repeater {
+                            model: TrayService.items
 
                             delegate: Item {
                                 required property var modelData
-                                implicitWidth: 24
+                                implicitWidth: 28
                                 implicitHeight: 24
 
                                 Image {
                                     anchors.centerIn: parent
-                                    width: 18; height: 18
+                                    width: 22; height: 22
                                     source: modelData.icon
                                     fillMode: Image.PreserveAspectFit
                                     asynchronous: true
