@@ -317,6 +317,11 @@ PanelWindow {
                 property bool isOpen: false
                 property bool hasItems: TrayService.hasItems
 
+                TrayMenu {
+                    id: sharedMenu
+                    visible: false
+                }
+
                 Row {
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 0
@@ -360,12 +365,17 @@ PanelWindow {
                                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: e => {
-                                        if (e.button === Qt.RightButton && modelData.hasMenu)
-                                            modelData.display(parent, e.x, e.y)
-                                        else if (e.button === Qt.RightButton)
+                                        if (e.button === Qt.RightButton && modelData.hasMenu) {
+                                            var g = parent.mapToGlobal(0, parent.height);
+                                            sharedMenu.rootMenuHandle = modelData.menu;
+                                            sharedMenu.anchorX = g.x;
+                                            sharedMenu.anchorY = g.y + 5;
+                                            sharedMenu.open();
+                                        } else if (e.button === Qt.RightButton) {
                                             modelData.secondaryActivate()
-                                        else
+                                        } else {
                                             modelData.activate()
+                                        }
                                     }
                                 }
                             }
