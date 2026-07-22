@@ -4,6 +4,14 @@ set -euo pipefail
 REPO_URL="https://github.com/yada/dotfiles"
 REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 
+TOTAL_STEPS=10
+step=0
+
+say() {
+  ((step++))
+  printf "\n[\033[1;34m%02d/%02d\033[0m] %s\n" "$step" "$TOTAL_STEPS" "$1"
+}
+
 # =============================================================================
 # Self-bootstrap: if running via curl | sh, clone the repo first
 # =============================================================================
@@ -16,27 +24,26 @@ fi
 
 cd "$REPO_DIR"
 
-# =============================================================================
-# Preflight
-# =============================================================================
 [[ "$EUID" -eq 0 ]] && { echo "Do not run as root." >&2; exit 1; }
 
 # =============================================================================
-# Install yay (AUR helper)
+# 1 – Install yay (AUR helper)
 # =============================================================================
+say "Installing yay (AUR helper)..."
 if ! command -v yay &>/dev/null; then
-  echo ":: Installing yay..."
   sudo pacman -S --needed --noconfirm base-devel git
   mkdir -p /tmp/yay-build
   git clone https://aur.archlinux.org/yay.git /tmp/yay-build
   (cd /tmp/yay-build && makepkg -si --noconfirm)
   rm -rf /tmp/yay-build
+else
+  echo "  already installed"
 fi
 
 # =============================================================================
-# Install pacman packages
+# 2 – Install pacman packages
 # =============================================================================
-echo ":: Installing pacman packages..."
+say "Installing pacman packages..."
 PACMAN_PKGS=()
 while IFS= read -r line; do
   line="${line%%#*}"
@@ -48,9 +55,9 @@ done < "$REPO_DIR/scripts/pacman.txt"
 sudo pacman -S --needed --noconfirm "${PACMAN_PKGS[@]}"
 
 # =============================================================================
-# Install AUR packages
+# 3 – Install AUR packages
 # =============================================================================
-echo ":: Installing AUR packages..."
+say "Installing AUR packages..."
 YAY_PKGS=()
 while IFS= read -r line; do
   line="${line%%#*}"
@@ -61,12 +68,14 @@ done < "$REPO_DIR/scripts/yay.txt"
 
 if [[ ${#YAY_PKGS[@]} -gt 0 ]]; then
   yay -S --needed --noconfirm "${YAY_PKGS[@]}"
+else
+  echo "  none to install"
 fi
 
 # =============================================================================
-# Stow all config packages
+# 4 – Stow all config packages
 # =============================================================================
-echo ":: Stowing dotfiles..."
+say "Stowing dotfiles..."
 STOW_PACKAGES=()
 for dir in "$REPO_DIR"/*/; do
   pkg="$(basename "$dir")"
@@ -77,47 +86,54 @@ done
 stow --target="$HOME" --dir="$REPO_DIR" "${STOW_PACKAGES[@]}"
 
 # =============================================================================
-# Bootstrap default theme
+# 5 – Bootstrap default theme
 # =============================================================================
-echo ":: Setting default theme..."
+say "Setting default theme..."
 "$HOME/.local/bin/theme-set.sh" tokyonight
 
 # =============================================================================
-# Enable services
+# 6 – Generate antidote static plugin file
 # =============================================================================
-echo ":: Enabling systemd services..."
+say "Generating antidote plugin file..."
+zsh -c 'source /usr/share/zsh-antidote/antidote.zsh && antidote bundle < "$HOME/.zsh_plugins.txt" > "$HOME/.zsh_plugins.zsh"' 2>/dev/null || true
+
+# =============================================================================
+# 7 – Enable systemd services
+# =============================================================================
+say "Enabling systemd services..."
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
 sudo systemctl enable --now bluetooth.service 2>/dev/null || true
 sudo systemctl enable --now ufw.service 2>/dev/null || true
 
 # =============================================================================
-# Change default shell to zsh
+# 8 – Change default shell to zsh
 # =============================================================================
+say "Changing default shell to zsh..."
 if [[ "$SHELL" != "$(which zsh)" ]]; then
-  echo ":: Changing default shell to zsh..."
   chsh -s "$(which zsh)"
+else
+  echo "  already zsh"
 fi
 
 # =============================================================================
-# Setup tmux TPM
+# 9 – Setup tmux TPM
 # =============================================================================
+say "Installing tmux TPM..."
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
-  echo ":: Installing tmux TPM..."
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+else
+  echo "  already installed"
 fi
 
 # =============================================================================
-# Copy default wallpapers
+# 10 – Copy default wallpapers
 # =============================================================================
-echo ":: Copying default wallpapers..."
+say "Copying default wallpapers..."
 mkdir -p "$HOME/.local/wallpapers"
 for img in "$REPO_DIR/theme/.config/theme/wallpapers"/*.jpg; do
   [[ -f "$img" ]] && cp -n "$img" "$HOME/.local/wallpapers/"
 done
 
-# =============================================================================
-# Create common directories
-# =============================================================================
 mkdir -p "$HOME/.local/share"
 
 echo ""

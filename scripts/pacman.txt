@@ -77,6 +77,7 @@ satty
 wl-clipboard
 cliphist
 wtype
+xdg-utils
 
 # =============================================================================
 # System Utilities
@@ -84,6 +85,8 @@ wtype
 btop
 fastfetch
 pacman-contrib
+direnv
+hyprpolkitagent
 
 # =============================================================================
 # Networking
@@ -132,8 +135,9 @@ ufw
 # =============================================================================
 # Other
 # =============================================================================
-nautilus
+nemo
 kdeconnect
 keepassxc
 zathura
 fwupd
+qt6ct

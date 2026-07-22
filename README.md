@@ -39,7 +39,7 @@ curl -fsSL https://raw.githubusercontent.com/yaredow/dotfiles/main/install.sh | 
 
 ### Existing setup
 ```sh
-git clone https://github.com/yourusername/dotfiles ~/dotfiles
+git clone https://github.com/yaredow/dotfiles ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 ```
@@ -48,6 +48,7 @@ cd ~/dotfiles
 | Keys | Action |
 |------|--------|
 | `ALT + T` | Terminal |
+| `ALT + F` | File Manager |
 | `ALT + Space` | App launcher |
 | `ALT + W` | Settings panel |
 | `SUPER + V` | Clipboard history |
