@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
-import Quickshell.Services.SystemTray
 import qs.config
 import qs.services
 import "../../components/"
@@ -311,26 +310,22 @@ PanelWindow {
 
             Item {
                 id: trayItem
-                implicitWidth: 24
-                implicitHeight: 20
-                Layout.preferredWidth: implicitWidth + childrenRect.width
+                visible: TrayService.hasItems
+                Layout.preferredWidth: childrenRect.width || 24
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
 
                 Row {
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 0
+                    spacing: 2
 
                     Repeater {
-                        model: SystemTray.items
+                        model: TrayService.items
 
-                        delegate: Item {
+                        delegate: TrayItem {
                             required property var modelData
-
-                            TrayItem {
-                                host: bar.host
-                                trayItem: modelData
-                            }
+                            host: bar.host
+                            trayItem: modelData
                         }
                     }
                 }

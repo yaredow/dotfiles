@@ -1,34 +1,50 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Services.SystemTray
-import Quickshell.Widgets
 import qs.config
 import qs.services
 
 Item {
     id: root
     required property var host
-    required property SystemTrayItem trayItem
+    required property var trayItem
 
     Layout.alignment: root.host.isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
-    Layout.preferredWidth: root.host.isHorizontal ? 24 : Config.barHeight
+    Layout.preferredWidth: 24
     Layout.preferredHeight: root.host.isHorizontal ? Config.barHeight : 24
 
     Rectangle {
         anchors.fill: parent
         anchors.margins: 3
-        radius: Config.radiusSmall
+        radius: width / 2
         color: mouseArea.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
         Behavior on color {
             ColorAnimation { duration: 180 }
         }
     }
 
-    IconImage {
+    Image {
+        id: trayIcon
         anchors.centerIn: parent
-        source: root.trayItem ? TrayService.getIconSource(root.trayItem.icon) : ""
-        implicitSize: 18
+        width: 18
+        height: 18
+        source: TrayService.getIconSource(root.trayItem.icon)
+        fillMode: Image.PreserveAspectFit
+        asynchronous: true
+        sourceSize: Qt.size(32, 32)
+        smooth: true
+        visible: status === Image.Ready
+    }
+
+    Image {
+        anchors.centerIn: parent
+        width: 18
+        height: 18
+        source: "image://icon/image-missing"
+        fillMode: Image.PreserveAspectFit
+        sourceSize: Qt.size(32, 32)
+        smooth: true
+        visible: trayIcon.status === Image.Error
     }
 
     MouseArea {
@@ -40,7 +56,7 @@ Item {
         onClicked: e => {
             if (e.button === Qt.RightButton) {
                 if (root.trayItem.hasMenu)
-                    root.trayItem.display(root, mouseX, mouseY)
+                    root.trayItem.display(root, e.x, e.y)
                 else
                     root.trayItem.secondaryActivate()
             } else {
