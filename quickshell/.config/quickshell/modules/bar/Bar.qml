@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import Quickshell.Services.SystemTray
 import qs.config
 import qs.services
 import "../../components/"
@@ -310,7 +311,7 @@ PanelWindow {
 
             Item {
                 id: trayItem
-                visible: TrayService.hasItems
+                visible: SystemTray.items.count > 0
                 Layout.preferredWidth: visible ? childrenRect.width : 0
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
@@ -321,10 +322,15 @@ PanelWindow {
                     spacing: 0
 
                     Repeater {
-                        model: TrayService.items
-                        delegate: TrayItem {
-                            host: bar.host
-                            trayItem: modelData
+                        model: SystemTray.items
+
+                        delegate: Item {
+                            required property var modelData
+
+                            TrayItem {
+                                host: bar.host
+                                trayItem: modelData
+                            }
                         }
                     }
                 }
@@ -332,7 +338,7 @@ PanelWindow {
 
             Separator {
                 host: bar.host
-                visible: TrayService.hasItems
+                visible: SystemTray.items.count > 0
             }
 
             Module {

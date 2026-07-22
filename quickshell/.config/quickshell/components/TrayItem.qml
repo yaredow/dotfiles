@@ -27,7 +27,7 @@ Item {
 
     IconImage {
         anchors.centerIn: parent
-        source: TrayService.getIconSource(root.trayItem.icon)
+        source: root.trayItem ? TrayService.getIconSource(root.trayItem.icon) : ""
         implicitSize: 18
     }
 
