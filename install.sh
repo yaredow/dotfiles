@@ -8,7 +8,7 @@ TOTAL_STEPS=10
 step=0
 
 say() {
-  ((step++))
+  step=$((step + 1))
   printf "\n[\033[1;34m%02d/%02d\033[0m] %s\n" "$step" "$TOTAL_STEPS" "$1"
 }
 
