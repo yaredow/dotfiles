@@ -21,8 +21,6 @@ if [[ ! -d "$REPO_DIR/.git" ]]; then
   fi
   echo ":: Cloning dotfiles..."
   git clone "$REPO_URL" "$REPO_DIR"
-  cd "$REPO_DIR"
-  exec "$REPO_DIR/install.sh"
 fi
 
 cd "$REPO_DIR"
