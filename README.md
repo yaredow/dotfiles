@@ -31,10 +31,17 @@ Personal Arch Linux + Hyprland setup built around a centralized theme system. Al
 - Hyprland
 
 ## Usage
+
+### Fresh install
+```sh
+curl -fsSL https://raw.githubusercontent.com/yourusername/dotfiles/main/install.sh | sh
+```
+
+### Existing setup
 ```sh
 git clone https://github.com/yourusername/dotfiles ~/dotfiles
 cd ~/dotfiles
-./install.sh      # bootstrap everything
+./install.sh
 ```
 
 ## Keybinds

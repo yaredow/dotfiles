@@ -1,14 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_URL="https://github.com/yada/dotfiles"
+REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+
+# =============================================================================
+# Self-bootstrap: if running via curl | sh, clone the repo first
+# =============================================================================
+if [[ ! -d "$REPO_DIR/.git" ]]; then
+  echo ":: Cloning dotfiles..."
+  git clone "$REPO_URL" "$REPO_DIR"
+  cd "$REPO_DIR"
+  exec "$REPO_DIR/install.sh"
+fi
+
+cd "$REPO_DIR"
 
 # =============================================================================
 # Preflight
 # =============================================================================
 [[ "$EUID" -eq 0 ]] && { echo "Do not run as root." >&2; exit 1; }
-
-cd "$REPO_DIR"
 
 # =============================================================================
 # Install yay (AUR helper)
@@ -28,7 +39,7 @@ fi
 echo ":: Installing pacman packages..."
 PACMAN_PKGS=()
 while IFS= read -r line; do
-  line="${line%%#*}"        # strip comments
+  line="${line%%#*}"
   line="${line//[[:space:]]/}"
   [[ -z "$line" ]] && continue
   PACMAN_PKGS+=("$line")
@@ -60,7 +71,6 @@ STOW_PACKAGES=()
 for dir in "$REPO_DIR"/*/; do
   pkg="$(basename "$dir")"
   [[ "$pkg" == "scripts" ]] && continue
-  [[ "$pkg" == "rofi" ]] && continue   # rofi removed; stow package kept as reference
   STOW_PACKAGES+=("$pkg")
 done
 

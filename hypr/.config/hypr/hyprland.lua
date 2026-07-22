@@ -1,13 +1,13 @@
 local theme = (function()
-  local loaded, result = pcall(require, "theme")
-  if loaded and type(result) == "table" and result.active1 then
-    return result
-  end
-  return {
-    active1 = "rgba(7aa2f7ee)",
-    active2 = "rgba(bb9af7ee)",
-    inactive = "rgba(565f89aa)",
-  }
+	local loaded, result = pcall(require, "theme")
+	if loaded and type(result) == "table" and result.active1 then
+		return result
+	end
+	return {
+		active1 = "rgba(7aa2f7ee)",
+		active2 = "rgba(bb9af7ee)",
+		inactive = "rgba(565f89aa)",
+	}
 end)()
 
 ------------------
@@ -53,9 +53,13 @@ local runner = "rofi -show run"
 --
 hl.on("hyprland.start", function()
 	hl.exec_cmd("awww-daemon")
-	hl.exec_cmd("bash -c 'pgrep -fx \"wl-paste --watch cliphist store\" >/dev/null || wl-paste --watch cliphist store &'")
+	hl.exec_cmd(
+		"bash -c 'pgrep -fx \"wl-paste --watch cliphist store\" >/dev/null || wl-paste --watch cliphist store &'"
+	)
 	hl.exec_cmd("bash -c 'sleep 0.5 && ~/.local/bin/wallpaper-set.sh'")
-	hl.exec_cmd("bash -c 'sleep 1 && STATE=$HOME/.config/quickshell/state.json && if [[ -f \"$STATE\" ]]; then THEME=$(jq -r \".[\\\"theme.name\\\"] // \\\"tokyonight\\\"\" \"$STATE\"); $HOME/.local/bin/theme-set.sh \"$THEME\"; fi'")
+	hl.exec_cmd(
+		'bash -c \'sleep 1 && STATE=$HOME/.config/quickshell/state.json && if [[ -f "$STATE" ]]; then THEME=$(jq -r ".[\\"theme.name\\"] // \\"tokyonight\\"" "$STATE"); $HOME/.local/bin/theme-set.sh "$THEME"; fi\''
+	)
 	hl.exec_cmd("bash -c 'pgrep -x qs >/dev/null || qs'")
 	hl.exec_cmd("systemctl --user start hyprpolkitagent")
 	hl.exec_cmd("hyprctl setcursor Bibata-Modern-Ice 24")
