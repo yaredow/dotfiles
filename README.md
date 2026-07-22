@@ -37,6 +37,11 @@ Personal Arch Linux + Hyprland setup built around a centralized theme system. Al
 curl -fsSL https://raw.githubusercontent.com/yaredow/dotfiles/main/install.sh | sh
 ```
 
+For a private fork, set `DOTFILES_REPO`:
+```sh
+DOTFILES_REPO="https://token@github.com/youruser/dotfiles.git" curl -fsSL ... | sh
+```
+
 ### Existing setup
 ```sh
 git clone https://github.com/yaredow/dotfiles ~/dotfiles

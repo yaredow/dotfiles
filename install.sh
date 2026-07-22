@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_URL="https://github.com/yada/dotfiles"
+REPO_URL="${DOTFILES_REPO:-https://github.com/yaredow/dotfiles}"
 REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 
 TOTAL_STEPS=10
@@ -16,6 +16,9 @@ say() {
 # Self-bootstrap: if running via curl | sh, clone the repo first
 # =============================================================================
 if [[ ! -d "$REPO_DIR/.git" ]]; then
+  if ! command -v git &>/dev/null; then
+    sudo pacman -S --noconfirm git
+  fi
   echo ":: Cloning dotfiles..."
   git clone "$REPO_URL" "$REPO_DIR"
   cd "$REPO_DIR"
