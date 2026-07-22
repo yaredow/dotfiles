@@ -309,14 +309,9 @@ PanelWindow {
                 Layout.fillHeight: !host.isHorizontal
             }
 
-            Separator {
-                host: bar.host
-            }
-
             Item {
                 id: trayItem
-                visible: SystemTray.items.count > 0
-                Layout.preferredWidth: visible ? childrenRect.width : 0
+                Layout.preferredWidth: childrenRect.width || 24
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
                 Layout.leftMargin: 2
