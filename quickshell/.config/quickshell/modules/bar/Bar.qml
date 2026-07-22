@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import Quickshell.Services.SystemTray
 import qs.config
 import qs.services
 import "../../components/"
@@ -308,24 +309,44 @@ PanelWindow {
                 Layout.fillHeight: !host.isHorizontal
             }
 
-            Item {
-                id: trayItem
-                visible: TrayService.hasItems
-                Layout.preferredWidth: childrenRect.width || 24
-                Layout.preferredHeight: 20
+            Row {
+                id: trayRow
+                spacing: 2
                 Layout.alignment: Qt.AlignVCenter
+                Layout.preferredHeight: 20
 
-                Row {
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
+                Repeater {
+                    id: trayRepeater
+                    model: SystemTray.items
 
-                    Repeater {
-                        model: TrayService.items
+                    delegate: Item {
+                        id: trayDelegate
+                        required property var modelData
+                        implicitWidth: 24
+                        implicitHeight: 24
 
-                        delegate: TrayItem {
-                            required property var modelData
-                            host: bar.host
-                            trayItem: modelData
+                        Image {
+                            anchors.centerIn: parent
+                            width: 18; height: 18
+                            source: modelData.icon
+                            fillMode: Image.PreserveAspectFit
+                            asynchronous: true
+                            sourceSize: Qt.size(32, 32)
+                            smooth: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: e => {
+                                if (e.button === Qt.RightButton && modelData.hasMenu)
+                                    modelData.display(trayDelegate, e.x, e.y)
+                                else if (e.button === Qt.RightButton)
+                                    modelData.secondaryActivate()
+                                else
+                                    modelData.activate()
+                            }
                         }
                     }
                 }
