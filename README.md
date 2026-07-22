@@ -34,7 +34,7 @@ Personal Arch Linux + Hyprland setup built around a centralized theme system. Al
 
 ### Fresh install
 ```sh
-curl -fsSL https://raw.githubusercontent.com/yourusername/dotfiles/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/yaredow/dotfiles/main/install.sh | sh
 ```
 
 ### Existing setup
