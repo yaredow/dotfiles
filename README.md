@@ -4,36 +4,69 @@
 
 # yadot
 
-Personal Arch Linux + Hyprland dotfiles built around a centralized theme system. All configs deploy via GNU Stow and are managed from a unified QML settings panel.
+Personal Arch Linux + Hyprland dotfiles built around a centralized theme system. All configs deploy via GNU Stow and are managed from a unified QML shell.
 
-## Structure
-```
-.
-├── hypr/           # Hyprland config (Lua)
-├── kitty/          # Terminal
-├── quickshell/     # Shell/bar/panels (QML)
-├── theme/          # Central theme system
-├── tmux/           # Terminal multiplexer
-├── nvim/           # Editor
-├── bin/            # Scripts
-├── scripts/        # Bootstrap helpers
-└── install.sh      # Fresh-install bootstrap
-```
+> ⚠️ **Work in progress.** Configs are actively evolving and may break between commits.
 
 ## Features
+
 - **Centralized theme switching** — 3 themes (tokyonight, catppuccin, rosepine) with per-theme wallpapers and fonts
-- **Unified QML shell** — Bar, settings panel, clipboard history, keybinds overlay, launcher, power menu
+- **Unified QML shell** — Bar, app launcher, settings panel, clipboard history, keybinds overlay, lock screen, power menu
 - **Searchable settings panel** — Change theme or font with live search
 - **Clipboard history** — `SUPER + V` opens searchable clipboard manager via cliphist
 - **Keybinds overlay** — `SUPER + /` shows categorized, searchable keybind reference
-- **Wallpaper cycling** — `SUPER + W` cycles wallpapers with smooth transitions
+- **Wallpaper cycling** — `SUPER + W` cycles wallpapers
+- **Hypridle integration** — Auto-lock, DPMS off, and suspend on idle
 - **Fully reproducible** — `git clone` + `install.sh` builds the entire environment
 
+## Stack
+
+| Category          | Tool                                      |
+|-------------------|-------------------------------------------|
+| Compositor        | Hyprland                                  |
+| Shell / Bar       | Quickshell (QML)                          |
+| Terminal          | Kitty                                     |
+| Shell             | Zsh + Starship + antidote                 |
+| Editor            | Neovim (Lua), Zed                         |
+| Launcher          | Quickshell app launcher                   |
+| File Manager      | Yazi, Nemo                                |
+| Multiplexer       | tmux                                      |
+| Media             | mpv, mpd, rmpc, youtube-tui               |
+| Theme System      | colors.json + jq-rendered templates       |
+| Qt Theme          | qt6ct (Fusion + Nerd Fonts)               |
+
+## Structure
+
+```
+.
+├── hypr/           # Hyprland + hypridle config (Lua)
+├── kitty/          # Terminal emulator
+├── quickshell/     # QML shell, bar, panels, lock screen
+├── nvim/           # Neovim config (Lua)
+├── zed/            # Zed editor config
+├── theme/          # Central theme system (colors, templates)
+├── zsh/            # Zsh + antidote plugin config
+├── starship/       # Starship prompt
+├── tmux/           # Terminal multiplexer
+├── mpv/            # Video player
+├── mpd/            # Music daemon
+├── rmpc/           # MPD client
+├── youtube-tui/    # YouTube TUI browser
+├── yazi/           # Terminal file manager
+├── qt6ct/          # Qt6 appearance (Fusion theme)
+├── bin/            # ~/.local/bin scripts
+├── scripts/        # Bootstrap helpers (pacman.txt, yay.txt)
+└── install.sh      # Fresh-install bootstrap
+```
+
+Each top-level folder is a self-contained stow package rooted at `~`.
+
 ## Prerequisites
+
 - Fresh Arch Linux install
 - Hyprland
 
-## Usage
+## Installation
 
 ### Fresh install
 ```sh
@@ -52,18 +85,29 @@ cd ~/dotfiles
 ./install.sh
 ```
 
-## Keybinds
-| Keys | Action |
-|------|--------|
-| `ALT + T` | Terminal |
-| `ALT + F` | File Manager |
-| `ALT + Space` | App launcher |
-| `ALT + W` | Settings panel |
-| `SUPER + V` | Clipboard history |
-| `SUPER + /` | Keybinds reference |
-| `SUPER + W` | Cycle wallpaper |
-| `SUPER + S` | Screenshot |
-| `SUPER + L` | Lock screen |
+### Manual stow
+```sh
+stow */          # symlink all packages
+stow hypr kitty  # or just specific ones
+stow -D hypr     # unlink a package
+```
 
-## Current State
-Actively developed — stable for daily use but iterating on UX.
+## Keybinds
+
+| Keys              | Action              |
+|-------------------|---------------------|
+| `ALT + T`         | Terminal            |
+| `ALT + F`         | File Manager        |
+| `ALT + Space`     | App launcher        |
+| `ALT + W`         | Settings panel      |
+| `SUPER + V`       | Clipboard history   |
+| `SUPER + /`       | Keybinds reference  |
+| `SUPER + W`       | Cycle wallpaper     |
+| `SUPER + S`       | Screenshot          |
+| `SUPER + L`       | Lock screen         |
+| `SUPER + SLASH`   | Keybinds overlay    |
+| `XF86PowerOff`    | Power menu          |
+
+## License
+
+[MIT](LICENSE)
