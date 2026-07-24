@@ -92,6 +92,15 @@ PanelWindow {
             implicitWidth: clockOneLine.implicitWidth + 14
             implicitHeight: clockOneLine.implicitHeight + 8
 
+            property string clockText: TimeService.format("hh:mm")
+
+            Timer {
+                interval: 30000
+                running: true
+                repeat: true
+                onTriggered: clockItem.clockText = TimeService.format("hh:mm")
+            }
+
             Bloom {
                 id: clockBloom
             }
@@ -100,7 +109,7 @@ PanelWindow {
                 id: clockOneLine
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: -1
-                text: TimeService.format("hh:mm")
+                text: clockItem.clockText
                 color: clockMouse.containsMouse ? Config.accentColor : Config.textColor
                 font.family: Config.monoFont
                 font.pixelSize: 12
@@ -145,13 +154,13 @@ PanelWindow {
 
         GridLayout {
             anchors.fill: parent
-            anchors.leftMargin: host.isHorizontal ? 10 : 0
-            anchors.rightMargin: host.isHorizontal ? 10 : 0
-            anchors.topMargin: host.isHorizontal ? 0 : 10
-            anchors.bottomMargin: host.isHorizontal ? 0 : 10
+            anchors.leftMargin: host.isHorizontal ? 8 : 0
+            anchors.rightMargin: host.isHorizontal ? 8 : 0
+            anchors.topMargin: host.isHorizontal ? 0 : 8
+            anchors.bottomMargin: host.isHorizontal ? 0 : 8
             flow: host.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
-            rowSpacing: 4
-            columnSpacing: 4
+            rowSpacing: 2
+            columnSpacing: 2
             columns: host.isHorizontal ? -1 : 1
             rows: host.isHorizontal ? 1 : -1
 
@@ -419,7 +428,6 @@ PanelWindow {
                 glyph: "󰍛"
                 tooltip: "CPU " + SystemMonitorService.cpuUsage + "%"
                 color: SystemMonitorService.cpuUsage > 80 ? Config.accentColor : Config.textColor
-                fontSize: 13
                 fontWeight: Font.Medium
                 onActivated: monitorWindow.visible = !monitorWindow.visible
             }
@@ -433,7 +441,6 @@ PanelWindow {
                     return BluetoothService.connectedDevicesCount > 0 ? "Bluetooth · " + BluetoothService.connectedDevicesCount + " connected" : "Bluetooth on";
                 }
                 color: BluetoothService.isPowered ? Config.textColor : Qt.alpha(Config.textColor, 0.35)
-                fontSize: 13
                 fontWeight: Font.Medium
             }
 
@@ -441,7 +448,6 @@ PanelWindow {
                 host: bar.host
                 glyph: NetworkService.systemIcon
                 tooltip: NetworkService.statusText
-                fontSize: 13
                 fontWeight: Font.Medium
             }
 
@@ -450,7 +456,6 @@ PanelWindow {
                 glyph: AudioService.systemIcon
                 tooltip: AudioService.muted ? "Audio muted · " + Math.round(AudioService.volume * 100) + "%" : "Audio " + Math.round(AudioService.volume * 100) + "%"
                 color: AudioService.muted ? Qt.alpha(Config.textColor, 0.45) : Config.textColor
-                fontSize: 13
                 fontWeight: Font.Medium
                 onRightActivated: AudioService.toggleMute()
             }
@@ -465,7 +470,6 @@ PanelWindow {
                     return s;
                 }
                 color: BatteryService.percentage <= 10 ? Config.errorColor : BatteryService.percentage <= 20 ? Config.accentColor : Config.textColor
-                fontSize: 13
                 fontWeight: Font.Medium
             }
 
@@ -482,7 +486,6 @@ PanelWindow {
                     return NotificationService.count > 0 ? NotificationService.count + " notifications" : "No notifications";
                 }
                 color: NotificationService.dndEnabled ? Qt.alpha(Config.textColor, 0.45) : Config.textColor
-                fontSize: 13
                 fontWeight: Font.Medium
                 onActivated: notifWindow.visible = !notifWindow.visible
                 onRightActivated: NotificationService.toggleDnd()
@@ -493,8 +496,6 @@ PanelWindow {
                 glyph: host.edgeArrow()
                 tooltip: "Move bar"
                 color: Config.subtextColor
-                fontFamily: Config.font
-                fontSize: 13
                 fontWeight: Font.Medium
                 onActivated: host.cycleBarEdge()
             }

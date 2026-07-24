@@ -17,7 +17,12 @@ WlSessionLock {
     }
 
     WlSessionLockSurface {
-        color: Config.backgroundColor
+        color: "transparent"
+
+        Rectangle {
+            anchors.fill: parent
+            color: Config.backgroundColor
+        }
 
         MouseArea {
             anchors.fill: parent
@@ -27,7 +32,7 @@ WlSessionLock {
         Column {
             id: content
             anchors.centerIn: parent
-            spacing: 8
+            spacing: 10
             opacity: 0
 
             Component.onCompleted: fadeIn.start()
@@ -42,6 +47,21 @@ WlSessionLock {
                 easing.type: Easing.OutCubic
             }
 
+            Rectangle {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 72; height: 72
+                radius: width / 2
+                color: Config.surface0Color
+
+                Image {
+                    anchors.centerIn: parent
+                    source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/yadot.svg"
+                    width: 40; height: 40
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                }
+            }
+
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: TimeService.format("hh:mm")
@@ -53,7 +73,7 @@ WlSessionLock {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: TimeService.format("dddd, dd MMMM yyyy")
+                text: Qt.formatDate(new Date(), "dddd, dd MMMM yyyy")
                 font.family: Config.font
                 font.pixelSize: Config.fontSizeNormal
                 color: Config.subtextColor

@@ -12,7 +12,7 @@ Item {
     property string tooltip: ""
     property color color: Config.textColor
     property string fontFamily: Config.font
-    property int fontSize: 12
+    property int fontSize: 13
     property int glyphYOffset: -1
     property int fontWeight: Font.Medium
 
@@ -20,8 +20,8 @@ Item {
     signal rightActivated
 
     Layout.alignment: modItem.host.isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
-    Layout.preferredWidth: modItem.host.isHorizontal ? 24 : Config.barHeight
-    Layout.preferredHeight: modItem.host.isHorizontal ? Config.barHeight : 24
+    Layout.preferredWidth: modItem.host.isHorizontal ? 27 : Config.barHeight
+    Layout.preferredHeight: modItem.host.isHorizontal ? Config.barHeight : 27
 
     Timer {
         id: tipDelay
