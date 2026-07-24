@@ -30,6 +30,7 @@ yazi
 # Hyprland Ecosystem
 # =============================================================================
 hyprland
+hypridle
 awww
 
 xdg-desktop-portal-hyprland

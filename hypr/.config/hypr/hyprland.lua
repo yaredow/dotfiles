@@ -61,6 +61,7 @@ hl.on("hyprland.start", function()
 		'bash -c \'sleep 1 && STATE=$HOME/.config/quickshell/state.json && if [[ -f "$STATE" ]]; then THEME=$(jq -r ".[\\"theme.name\\"] // \\"tokyonight\\"" "$STATE"); $HOME/.local/bin/theme-set.sh "$THEME"; fi\''
 	)
 	hl.exec_cmd("bash -c 'pgrep -x qs >/dev/null || qs'")
+	hl.exec_cmd("bash -c 'pgrep -x hypridle >/dev/null || hypridle'")
 	hl.exec_cmd("systemctl --user start hyprpolkitagent")
 	hl.exec_cmd("hyprctl setcursor Bibata-Modern-Ice 24")
 end)
