@@ -4,7 +4,7 @@ set -euo pipefail
 REPO_URL="${DOTFILES_REPO:-https://github.com/yaredow/dotfiles}"
 REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 
-TOTAL_STEPS=10
+TOTAL_STEPS=11
 step=0
 
 say() {
@@ -77,29 +77,33 @@ fi
 # 4 – Stow all config packages
 # =============================================================================
 say "Stowing dotfiles..."
-STOW_PACKAGES=()
-for dir in "$REPO_DIR"/*/; do
-  pkg="$(basename "$dir")"
-  [[ "$pkg" == "scripts" ]] && continue
-  STOW_PACKAGES+=("$pkg")
-done
+STOW_PACKAGES=(bin hypr kitty mpd mpv nvim qt6ct quickshell rmpc starship theme tmux yazi youtube-tui zed zsh)
 
 stow --target="$HOME" --dir="$REPO_DIR" "${STOW_PACKAGES[@]}"
 
 # =============================================================================
-# 5 – Bootstrap default theme
+# 5 – Bootstrap default state
+# =============================================================================
+say "Bootstrapping quickshell state..."
+mkdir -p "$HOME/.config/quickshell"
+if [[ ! -f "$HOME/.config/quickshell/state.json" ]]; then
+  cp "$REPO_DIR/quickshell/.config/quickshell/state.default.json" "$HOME/.config/quickshell/state.json"
+fi
+
+# =============================================================================
+# 6 – Bootstrap default theme
 # =============================================================================
 say "Setting default theme..."
 "$HOME/.local/bin/theme-set.sh" tokyonight
 
 # =============================================================================
-# 6 – Generate antidote static plugin file
+# 7 – Generate antidote static plugin file
 # =============================================================================
 say "Generating antidote plugin file..."
 zsh -c 'source /usr/share/zsh-antidote/antidote.zsh && antidote bundle < "$HOME/.zsh_plugins.txt" > "$HOME/.zsh_plugins.zsh"' 2>/dev/null || true
 
 # =============================================================================
-# 7 – Enable systemd services
+# 8 – Enable systemd services
 # =============================================================================
 say "Enabling systemd services..."
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
@@ -107,7 +111,7 @@ sudo systemctl enable --now bluetooth.service 2>/dev/null || true
 sudo systemctl enable --now ufw.service 2>/dev/null || true
 
 # =============================================================================
-# 8 – Change default shell to zsh
+# 9 – Change default shell to zsh
 # =============================================================================
 say "Changing default shell to zsh..."
 if [[ "$SHELL" != "$(which zsh)" ]]; then
@@ -117,7 +121,7 @@ else
 fi
 
 # =============================================================================
-# 9 – Setup tmux TPM
+# 10 – Setup tmux TPM
 # =============================================================================
 say "Installing tmux TPM..."
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
@@ -127,7 +131,7 @@ else
 fi
 
 # =============================================================================
-# 10 – Copy default wallpapers
+# 11 – Copy default wallpapers
 # =============================================================================
 say "Copying default wallpapers..."
 mkdir -p "$HOME/.local/wallpapers"

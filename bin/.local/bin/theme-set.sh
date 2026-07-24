@@ -6,6 +6,7 @@ THEME="${1:?Usage: theme-set.sh <tokyonight|catppuccin|rosepine>}"
 THEME_DIR="$THEME_ROOT/themes/$THEME"
 
 [[ -d "$THEME_DIR" ]] || { echo "Theme not found: $THEME"; exit 1; }
+[[ -f "$THEME_DIR/colors.json" ]] || { echo "Missing colors.json in theme: $THEME"; exit 1; }
 
 COLORS=$(cat "$THEME_DIR/colors.json")
 
@@ -15,7 +16,7 @@ cp "$THEME_DIR/colors.json" "$HOME/.config/quickshell/state/colors.json"
 notify-send "Theme" "${THEME}" -t 2000
 
 # Wallpaper first — everything else can wait
-WALLPAPER_MAP='{"tokyonight":"tokyonight","catppuccin":"catppuccin","rosepine":"rose-pine"}'
+WALLPAPER_MAP='{"tokyonight":"tokyonight","catppuccin":"catppuccin","rosepine":"rosepine"}'
 WP_PREFIX=$(echo "$WALLPAPER_MAP" | jq -r ".$THEME")
 WP_FILE=$(find "$HOME/.local/wallpapers" -maxdepth 1 -name "${WP_PREFIX}-1.*" -type f 2>/dev/null | head -1)
 if [[ -n "$WP_FILE" ]]; then
@@ -26,15 +27,14 @@ render() {
   local tpl="$THEME_ROOT/templates/$1.tpl"
   local dst="$2"
   mkdir -p "$(dirname "$dst")"
-  sed_cmd=""
+  local args=()
   for key in crust mantle base surface0 surface1 surface2 overlay0 overlay1 overlay2 \
              text subtext0 subtext1 rosewater flamingo pink mauve red maroon peach \
              yellow green teal sky sapphire blue lavender; do
     val=$(echo "$COLORS" | jq -r ".$key")
-    sed_cmd+=" -e 's/{{$key}}/$val/g'"
-    sed_cmd+=" -e 's/{{${key}_strip}}/${val#\#}/g'"
+    args+=(-e "s|{{${key}}}|${val}|g" -e "s|{{${key}_strip}}|${val#\#}|g")
   done
-  eval "sed $sed_cmd" "$tpl" > "$dst"
+  sed "${args[@]}" "$tpl" > "$dst"
 }
 
 KITTY_THEME="$HOME/.config/kitty/theme.conf"

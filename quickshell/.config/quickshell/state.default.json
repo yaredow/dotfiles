@@ -1,0 +1,46 @@
+{
+  "wallpaper": {
+    "dynamic": true
+  },
+  "theme": {
+    "name": "tokyonight"
+  },
+  "fonts": {
+    "mono": "CaskaydiaCove Nerd Font"
+  },
+  "typography": {
+    "font": "CaskaydiaCove Nerd Font",
+    "monoFont": "CaskaydiaCove Nerd Font Mono",
+    "sizeSmall": 12,
+    "sizeNormal": 14,
+    "sizeLarge": 16
+  },
+  "bar": {
+    "height": 26,
+    "autoHide": false
+  },
+  "opacity": {
+    "background": 0.98
+  },
+  "geometry": {
+    "radiusSmall": 5,
+    "radius": 10,
+    "radiusLarge": 15,
+    "spacing": 8,
+    "padding": 6
+  },
+  "animations": {
+    "short": 100,
+    "normal": 200,
+    "long": 400,
+    "screenshot": true
+  },
+  "notifications": {
+    "width": 350,
+    "imageSize": 40,
+    "timeout": 5000,
+    "spacing": 10
+  },
+  "wallpaper.index": 0,
+  "theme.name": "tokyonight"
+}

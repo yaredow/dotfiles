@@ -78,7 +78,7 @@ PanelWindow {
     Rectangle {
         id: backgroundCanvas
         anchors.fill: parent
-        color: Qt.alpha("black", 0.4)
+        color: Qt.alpha(Config.backgroundColor, 0.85)
 
         opacity: root.active ? 1.0 : 0.0
 

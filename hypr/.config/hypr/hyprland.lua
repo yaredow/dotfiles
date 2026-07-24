@@ -52,7 +52,7 @@ local runner = "rofi -show run"
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function()
-	hl.exec_cmd("awww-daemon")
+	hl.exec_cmd("bash -c 'pgrep -x awww-daemon >/dev/null || awww-daemon'")
 	hl.exec_cmd(
 		"bash -c 'pgrep -fx \"wl-paste --watch cliphist store\" >/dev/null || wl-paste --watch cliphist store &'"
 	)
@@ -75,6 +75,10 @@ end)
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
+hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
+hl.env("GDK_BACKEND", "wayland,x11")
+hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
+hl.env("MOZ_ENABLE_WAYLAND", "1")
 
 -----------------------
 ----- PERMISSIONS -----
@@ -283,7 +287,7 @@ hl.bind("SUPER + W", hl.dsp.exec_cmd("~/.local/bin/wallpaper-cycle.sh"))
 hl.bind("SUPER + SLASH", hl.dsp.exec_cmd("qs ipc call keybinds toggle"))
 hl.bind("SUPER + V", hl.dsp.exec_cmd("qs ipc call clipboard toggle"))
 hl.bind("SUPER + S", hl.dsp.exec_cmd("qs ipc call screenshot start"))
-hl.bind("XF86PowerOff", hl.dsp.exec_cmd("qs ipc call power open"))
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd("qs ipc call power open"), { locked = true })
 hl.bind(secondMod .. " + SPACE", hl.dsp.exec_cmd(runner))
 
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
