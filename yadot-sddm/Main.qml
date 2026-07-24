@@ -18,6 +18,16 @@ Rectangle {
     readonly property int nameRole: 257
     readonly property int sessionNameRole: 260
 
+    readonly property real dp: {
+        var dpr = Screen.devicePixelRatio || 1;
+        if (dpr > 1.0) return 1.0;
+        var h = Screen.height;
+        if (h > 1200) return Math.max(1.0, h / 1080);
+        return 1.0;
+    }
+
+    function px(v) { return v * dp; }
+
     Component.onCompleted: {
         var user = "";
         if (typeof sddm !== "undefined" && sddm.lastUser)
@@ -114,28 +124,28 @@ Rectangle {
         Behavior on opacity { NumberAnimation { duration: 400 } }
 
         Text {
-            anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 80 }
+            anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: px(80) }
             text: {
                 var fmt = root.use24Hour ? "hh:mm" : "h:mm AP";
                 return new Date().toLocaleString(Qt.locale(), fmt);
             }
             color: accent
-            font { family: displayFont; pixelSize: 72; weight: Font.Bold }
+            font { family: displayFont; pixelSize: px(72); weight: Font.Bold }
         }
 
         Text {
-            anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 170 }
+            anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: px(170) }
             text: Qt.formatDate(new Date(), "dddd, MMMM d")
             color: textColor
-            font { family: displayFont; pixelSize: 20 }
+            font { family: displayFont; pixelSize: px(20) }
             opacity: 0.8
         }
 
         Text {
-            anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 60 }
+            anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: px(60) }
             text: "Press any key to unlock"
             color: textColor
-            font { family: displayFont; pixelSize: 15 }
+            font { family: displayFont; pixelSize: px(15) }
             opacity: 0.4
         }
 
@@ -169,31 +179,31 @@ Rectangle {
 
         Rectangle {
             id: card
-            width: 380
-            height: cardLayout.implicitHeight + 80
+            width: px(380)
+            height: cardLayout.implicitHeight + px(80)
             anchors.centerIn: parent
             color: Qt.darker(root.color, 1.0)
             opacity: 0.85
-            radius: 24
+            radius: px(24)
 
             SequentialAnimation {
                 id: shakeAnim
                 loops: 2
-                PropertyAnimation { target: card; property: "x"; to: (parent.width - card.width)/2 - 12; duration: 40 }
-                PropertyAnimation { target: card; property: "x"; to: (parent.width - card.width)/2 + 12; duration: 40 }
+                PropertyAnimation { target: card; property: "x"; to: (parent.width - card.width)/2 - px(12); duration: 40 }
+                PropertyAnimation { target: card; property: "x"; to: (parent.width - card.width)/2 + px(12); duration: 40 }
                 PropertyAnimation { target: card; property: "x"; to: (parent.width - card.width)/2; duration: 40 }
             }
 
             ColumnLayout {
                 id: cardLayout
-                anchors { fill: parent; margins: 40 }
-                spacing: 14
+                anchors { fill: parent; margins: px(40) }
+                spacing: px(14)
 
                 Image {
                     id: yadotLogo
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 64
-                    Layout.preferredHeight: 64
+                    Layout.preferredWidth: px(64)
+                    Layout.preferredHeight: px(64)
                     source: Qt.resolvedUrl("assets/yadot.svg")
                     fillMode: Image.PreserveAspectFit
                     sourceSize: Qt.size(64, 64)
@@ -204,23 +214,23 @@ Rectangle {
                     Layout.alignment: Qt.AlignHCenter
                     text: "Welcome"
                     color: textColor
-                    font { family: displayFont; pixelSize: 24; weight: Font.Bold }
+                    font { family: displayFont; pixelSize: px(24); weight: Font.Bold }
                 }
 
-                Item { Layout.preferredHeight: 8 }
+                Item { Layout.preferredHeight: px(8) }
 
                 TextField {
                     id: usernameField
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 44
+                    Layout.preferredHeight: px(44)
                     color: textColor
-                    font { family: displayFont; pixelSize: 16 }
+                    font { family: displayFont; pixelSize: px(16) }
                     placeholderText: "Username"
                     placeholderTextColor: Qt.lighter(textColor, 0.7)
 
                     background: Rectangle {
                         color: Qt.lighter(root.color, 1.3)
-                        radius: 12
+                        radius: px(12)
                         border.width: parent.activeFocus ? 2 : 0
                         border.color: accent
                     }
@@ -231,17 +241,17 @@ Rectangle {
                 TextField {
                     id: passwordField
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 44
+                    Layout.preferredHeight: px(44)
                     echoMode: TextInput.Password
                     color: textColor
-                    font { family: displayFont; pixelSize: 16 }
+                    font { family: displayFont; pixelSize: px(16) }
                     placeholderText: "Password"
                     placeholderTextColor: Qt.lighter(textColor, 0.7)
                     enabled: !root.loggingIn
 
                     background: Rectangle {
                         color: Qt.lighter(root.color, 1.3)
-                        radius: 12
+                        radius: px(12)
                         border.width: parent.activeFocus ? 2 : 0
                         border.color: accent
                     }
@@ -251,19 +261,19 @@ Rectangle {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: px(8)
 
                     Text {
                         text: "Session:"
                         color: textColor
-                        font { family: displayFont; pixelSize: 13 }
+                        font { family: displayFont; pixelSize: px(13) }
                         opacity: 0.6
                     }
 
                     ComboBox {
                         id: sessionCombo
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 36
+                        Layout.preferredHeight: px(36)
                         model: sessionModel
                         textRole: "name"
 
@@ -271,20 +281,20 @@ Rectangle {
                             text: sessionCombo.currentIndex >= 0 && sessionCombo.displayText
                                 ? sessionCombo.displayText : "Hyprland"
                             color: textColor
-                            font { family: displayFont; pixelSize: 13 }
+                            font { family: displayFont; pixelSize: px(13) }
                             verticalAlignment: Text.AlignVCenter
                         }
 
                         background: Rectangle {
                             color: Qt.lighter(root.color, 1.2)
-                            radius: 8
+                            radius: px(8)
                         }
 
                         indicator: Text {
-                            anchors { right: parent.right; rightMargin: 8; verticalCenter: parent.verticalCenter }
+                            anchors { right: parent.right; rightMargin: px(8); verticalCenter: parent.verticalCenter }
                             text: "▾"
                             color: accent
-                            font.pixelSize: 12
+                            font.pixelSize: px(12)
                         }
                     }
                 }
@@ -292,23 +302,23 @@ Rectangle {
                 Button {
                     id: loginBtn
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 56
-                    Layout.preferredHeight: 56
-                    Layout.topMargin: 8
+                    Layout.preferredWidth: px(56)
+                    Layout.preferredHeight: px(56)
+                    Layout.topMargin: px(8)
                     enabled: !root.loggingIn
                     focusPolicy: Qt.NoFocus
 
                     contentItem: Text {
                         text: root.loggingIn ? "⋯" : "→"
                         color: "white"
-                        font.pixelSize: 26
+                        font.pixelSize: px(26)
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
 
                     background: Rectangle {
                         color: root.loggingIn ? Qt.lighter(accent, 1.5) : (loginBtn.pressed ? Qt.darker(accent, 1.1) : accent)
-                        radius: 28
+                        radius: px(28)
                         opacity: root.loggingIn ? 0.5 : 1.0
                     }
 
@@ -320,7 +330,7 @@ Rectangle {
                     Layout.alignment: Qt.AlignHCenter
                     text: "Num Lock is on"
                     color: accent
-                    font { family: displayFont; pixelSize: 13 }
+                    font { family: displayFont; pixelSize: px(13) }
                     visible: typeof keyboard !== "undefined" && keyboard.numLock === true
                     opacity: visible ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 200 } }
@@ -331,8 +341,8 @@ Rectangle {
 
     // ===== POWER BUTTONS =====
     Row {
-        anchors { top: parent.top; right: parent.right; topMargin: 24; rightMargin: 24 }
-        spacing: 12
+        anchors { top: parent.top; right: parent.right; topMargin: px(24); rightMargin: px(24) }
+        spacing: px(12)
         z: 100
 
         Repeater {
@@ -343,8 +353,8 @@ Rectangle {
             ]
 
             delegate: Rectangle {
-                width: 36; height: 36
-                radius: 18
+                width: px(36); height: px(36)
+                radius: px(18)
                 color: Qt.rgba(1, 1, 1, 0.1)
                 opacity: powerMouse.containsMouse ? 1.0 : 0.5
                 Behavior on opacity { NumberAnimation { duration: 150 } }
@@ -353,7 +363,7 @@ Rectangle {
                     anchors.centerIn: parent
                     text: modelData.icon
                     color: textColor
-                    font.pixelSize: 16
+                    font.pixelSize: px(16)
                 }
 
                 MouseArea {

@@ -14,6 +14,8 @@ alias v=nvim
 alias c=clear
 alias ccwd="cd ~/Documents/code"
 
+alias oc="opencode"
+
 alias update="sudo pacman -Syu"
 alias sp="sudo pacman"
 

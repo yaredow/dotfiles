@@ -18,6 +18,21 @@ if [[ -n "$WP" ]]; then
 fi
 
 mkdir -p "$CONFIG_DIR"
-echo -e "[Theme]\nCurrent=$NAME" > "$CONFIG_DIR/theme.conf"
+
+cat > "$CONFIG_DIR/theme.conf" << EOF
+[Theme]
+Current=$NAME
+EOF
+
+cat > "$CONFIG_DIR/hidpi.conf" << 'EOF'
+[Wayland]
+EnableHiDPI=true
+
+[X11]
+EnableHiDPI=true
+
+[General]
+GreeterEnvironment=QT_SCREEN_SCALE_FACTORS=2,QT_FONT_DPI=192
+EOF
 
 echo "Done. Test: sddm-greeter-qt6 --test-mode --theme $THEME_DIR"
