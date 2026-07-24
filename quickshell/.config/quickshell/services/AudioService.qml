@@ -27,6 +27,10 @@ Singleton {
         volume = val;
     }
 
+    function increaseVolume() { setVolume(Math.min(1, volume + 0.05)); }
+
+    function decreaseVolume() { setVolume(Math.max(0, volume - 0.05)); }
+
     function toggleMute() {
         muteProc.command = ["pactl", "set-sink-mute", "@DEFAULT_SINK@", muted ? "0" : "1"];
         muteProc.running = true;

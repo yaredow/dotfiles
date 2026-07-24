@@ -1,4 +1,5 @@
 module qs.services
+singleton OsdService OsdService.qml
 singleton AudioService AudioService.qml
 singleton BatteryService BatteryService.qml
 singleton BluetoothService BluetoothService.qml

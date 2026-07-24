@@ -10,6 +10,7 @@ import "./modules/notifications/"
 import "./components/"
 import "./modules/screenshot/"
 import "./modules/power/"
+import "./modules/osd/"
 
 ShellRoot {
     id: root
@@ -151,10 +152,40 @@ ShellRoot {
         }
     }
 
+    IpcHandler {
+        target: "osd"
+        function volumeUp(): void {
+            AudioService.increaseVolume();
+            OsdService.showVolume(AudioService.volume, AudioService.muted);
+        }
+        function volumeDown(): void {
+            AudioService.decreaseVolume();
+            OsdService.showVolume(AudioService.volume, AudioService.muted);
+        }
+        function volumeMute(): void {
+            AudioService.toggleMute();
+            OsdService.showVolume(AudioService.volume, AudioService.muted);
+        }
+        function brightnessUp(): void {
+            BrightnessService.increaseBrightness();
+            OsdService.showBrightness(BrightnessService.brightness);
+        }
+        function brightnessDown(): void {
+            BrightnessService.decreaseBrightness();
+            OsdService.showBrightness(BrightnessService.brightness);
+        }
+    }
+
     Loader {
         id: powerLoader
         active: PowerService.overlayVisible
         source: "./modules/power/PowerOverlay.qml"
+    }
+
+    Loader {
+        id: osdLoader
+        active: OsdService.visible
+        source: "./modules/osd/OsdOverlay.qml"
     }
 
     Loader {
