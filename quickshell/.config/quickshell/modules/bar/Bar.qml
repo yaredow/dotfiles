@@ -157,12 +157,8 @@ PanelWindow {
 
             Module {
                 host: bar.host
-                glyph: "󰣇"
+                imageSource: "../../assets/yadot.svg"
                 tooltip: "Menu"
-                color: Config.accentColor
-                fontFamily: Config.font
-                fontSize: 14
-                fontWeight: Font.Medium
                 onActivated: LauncherService.show()
             }
 

@@ -1,7 +1,10 @@
-# Arch + Hyprland Dotfiles
+<p align="center">
+  <img src="quickshell/.config/quickshell/assets/yadot.svg" alt="yadot" width="120" />
+</p>
 
-## Overview
-Personal Arch Linux + Hyprland setup built around a centralized theme system. All configs deploy via GNU Stow and are managed from a unified QML settings panel.
+# yadot
+
+Personal Arch Linux + Hyprland dotfiles built around a centralized theme system. All configs deploy via GNU Stow and are managed from a unified QML settings panel.
 
 ## Structure
 ```

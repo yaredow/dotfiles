@@ -8,6 +8,7 @@ Item {
     required property var host
 
     property string glyph: ""
+    property url imageSource: ""
     property string tooltip: ""
     property color color: Config.textColor
     property string fontFamily: Config.font
@@ -49,6 +50,17 @@ Item {
         id: bloom
     }
 
+    Image {
+        anchors.centerIn: parent
+        width: 20; height: 20
+        source: modItem.imageSource
+        fillMode: Image.PreserveAspectFit
+        asynchronous: true
+        sourceSize: Qt.size(40, 40)
+        smooth: true
+        visible: modItem.imageSource != ""
+    }
+
     Text {
         anchors.centerIn: parent
         anchors.verticalCenterOffset: modItem.glyphYOffset
@@ -57,6 +69,7 @@ Item {
         font.family: modItem.fontFamily
         font.pixelSize: modItem.fontSize
         font.weight: modItem.fontWeight
+        visible: modItem.imageSource == ""
     }
 
     MouseArea {
