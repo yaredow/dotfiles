@@ -8,7 +8,7 @@ Item {
     required property var host
 
     property string glyph: ""
-    property url imageSource: ""
+    property string imageSource: ""
     property string tooltip: ""
     property color color: Config.textColor
     property string fontFamily: Config.font

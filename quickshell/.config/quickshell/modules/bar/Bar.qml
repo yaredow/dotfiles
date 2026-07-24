@@ -157,7 +157,7 @@ PanelWindow {
 
             Module {
                 host: bar.host
-                imageSource: "../../assets/yadot.svg"
+                imageSource: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/yadot.svg"
                 tooltip: "Menu"
                 onActivated: LauncherService.show()
             }
