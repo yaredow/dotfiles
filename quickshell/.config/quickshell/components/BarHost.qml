@@ -22,12 +22,6 @@ Item {
         root.barEdge = edges[(edges.indexOf(root.barEdge) + 1) % 4];
     }
 
-    readonly property var kanjiNum: ["〇", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
-
-    function indexKanji(n) {
-        return n >= 0 && n <= 10 ? kanjiNum[n] : String(n);
-    }
-
     function edgeArrow() {
         return ({
                 top: "↑",
@@ -77,11 +71,12 @@ Item {
         const have = [];
         for (let i = 0; i < wsList.values.length; i++) {
             const id = wsList.values[i].id;
-            if (id >= 1 && id <= 9)
+            if (id >= 1)
                 have.push(id);
         }
-        const set = new Set([...have, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        root.existingWs = [...set].sort((a, b) => a - b).slice(0, 9);
+        const defaults = [1, 2, 3, 4, 5];
+        const all = [...new Set([...have, ...defaults])].sort((a, b) => a - b);
+        root.existingWs = all;
     }
 
     Connections {

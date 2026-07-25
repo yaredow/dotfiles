@@ -176,15 +176,15 @@ PanelWindow {
             }
 
             Repeater {
-                model: 10
+                model: host.existingWs.length
                 delegate: Workspace {
                     required property int index
                     host: bar.host
-                    wsId: index + 1
-                    label: host.indexKanji(index + 1)
-                    active: host.activeWs === (index + 1)
-                    present: host.existingWs.indexOf(index + 1) !== -1
-                    onActivated: Hyprland.executeCommand("workspace " + (index + 1))
+                    wsId: host.existingWs[index]
+                    label: host.existingWs[index]
+                    active: host.activeWs === host.existingWs[index]
+                    present: true
+                    onActivated: Hyprland.executeCommand("workspace " + host.existingWs[index])
                 }
             }
 
@@ -315,8 +315,8 @@ PanelWindow {
 
             Item {
                 id: trayArea
-                Layout.preferredWidth: drawer.width + 24
-                Layout.preferredHeight: 20
+                Layout.preferredWidth: drawer.width + 28
+                Layout.preferredHeight: 28
                 Layout.alignment: Qt.AlignVCenter
 
                 property bool isOpen: false
@@ -388,8 +388,8 @@ PanelWindow {
                     }
 
                     Item {
-                        implicitWidth: 24
-                        implicitHeight: 24
+                        implicitWidth: 28
+                        implicitHeight: 28
 
                         Rectangle {
                             anchors.fill: parent
@@ -404,7 +404,7 @@ PanelWindow {
                             text: "󰅁"
                             color: Config.textColor
                             font.family: Config.font
-                            font.pixelSize: 13
+                            font.pixelSize: 18
                             visible: trayArea.hasItems
                             scale: trayArea.isOpen ? -1 : 1
                             Behavior on scale {

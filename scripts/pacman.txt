@@ -89,6 +89,7 @@ pacman-contrib
 direnv
 hyprpolkitagent
 sddm
+upower
 
 # =============================================================================
 # Networking
