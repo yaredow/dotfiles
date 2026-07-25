@@ -473,6 +473,14 @@ PanelWindow {
                 fontWeight: Font.Medium
             }
 
+            Module {
+                host: bar.host
+                glyph: "󰛊"
+                tooltip: IdleService.caffeineEnabled ? "Keep awake (on)" : "Keep awake (off)"
+                color: IdleService.caffeineEnabled ? Config.accentColor : Config.textColor
+                onActivated: IdleService.toggleCaffeine()
+            }
+
             Separator {
                 host: bar.host
             }
