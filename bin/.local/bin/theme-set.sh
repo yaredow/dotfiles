@@ -52,6 +52,7 @@ fi
 render kitty.conf        "$KITTY_THEME.tmp"
 render hypr-colors.lua   "$HOME/.config/hypr/theme.lua"
 render tmux.conf         "$HOME/.config/tmux/theme.conf"
+render fastfetch.jsonc   "$HOME/.config/fastfetch/config.jsonc"
 
 {
   echo ""
