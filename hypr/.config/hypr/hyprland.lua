@@ -36,11 +36,8 @@ hl.monitor({
 -- Set programs that you use
 local terminal = "kitty"
 local fileManager = "nemo"
-local menu = "hyprlauncher"
 local browser = "firefox"
 local music = "spotify"
-local launcher = "rofi -show drun -show-icons"
-local runner = "rofi -show run"
 
 -------------------
 ---- AUTOSTART ----
@@ -288,14 +285,12 @@ hl.bind("SUPER + SLASH", hl.dsp.exec_cmd("qs ipc call keybinds toggle"))
 hl.bind("SUPER + V", hl.dsp.exec_cmd("qs ipc call clipboard toggle"))
 hl.bind("SUPER + S", hl.dsp.exec_cmd("qs ipc call screenshot start"))
 hl.bind("XF86PowerOff", hl.dsp.exec_cmd("qs ipc call power open"), { locked = true })
-hl.bind(secondMod .. " + SPACE", hl.dsp.exec_cmd(runner))
 
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(
 	secondMod .. " + Q",
 	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")
 )
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 -- hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 
