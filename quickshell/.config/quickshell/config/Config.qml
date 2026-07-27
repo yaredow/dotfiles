@@ -47,7 +47,7 @@ Singleton {
     // ========================================================================
     // GEOMETRY & LAYOUT
     // ========================================================================
-    readonly property int barHeight: _s.bar?.height ?? 26
+    readonly property int barHeight: _s.bar?.height ?? 30
     readonly property bool barAutoHide: _s.bar?.autoHide ?? true
 
     readonly property int radiusSmall: _s.geometry?.radiusSmall ?? 5
