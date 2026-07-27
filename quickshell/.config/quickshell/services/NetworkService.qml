@@ -51,7 +51,7 @@ Singleton {
 
     Process {
         id: impalaProc
-        command: ["kitty", "-e", "impala"]
+        command: ["kitty", "--title", "impala", "-e", "impala"]
         running: false
     }
 

@@ -402,3 +402,33 @@ hl.window_rule({
 	move = "20 monitor_h-120",
 	float = true,
 })
+
+-- TUI overlays (impala, bluetui, btop)
+hl.window_rule({
+	name = "float-impala",
+	match = { title = "^impala$" },
+	float = true,
+	center = true,
+})
+
+hl.window_rule({
+	name = "float-bluetui",
+	match = { title = "^bluetui$" },
+	float = true,
+	center = true,
+})
+
+hl.window_rule({
+	name = "float-btop",
+	match = { title = "^btop$" },
+	float = true,
+	center = true,
+})
+
+hl.window_rule({
+	name = "float-satty",
+	match = { class = "^com\\.gabm\\.satty$" },
+	float = true,
+	center = true,
+	size = "900 700",
+})

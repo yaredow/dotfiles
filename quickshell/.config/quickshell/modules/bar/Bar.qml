@@ -523,7 +523,7 @@ PanelWindow {
 
     Process {
         id: btopProc
-        command: ["kitty", "-e", "btop"]
+        command: ["kitty", "--title", "btop", "-e", "btop"]
         running: false
     }
 }

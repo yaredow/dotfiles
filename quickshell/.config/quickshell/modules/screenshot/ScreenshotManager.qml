@@ -292,7 +292,7 @@ Scope {
         const cropImage = `magick "${sourcePath}" -crop ${scaledWidth}x${scaledHeight}+${scaledX}+${scaledY} +repage "${outputPath}"`;
         const checkAndCopy = `[ -f "${outputPath}" ] && wl-copy < "${outputPath}"`;
         const checkAndNotify = `[ -f "${outputPath}" ] && notify-send -i accessories-screenshot -a "Screenshot" "Screenshot Saved!" "Path: ${outputPath}"`;
-        const sattyAction = `magick "${sourcePath}" -crop ${scaledWidth}x${scaledHeight}+${scaledX}+${scaledY} png:- | satty --filename - --output-filename "${outputPath}" --early-exit --init-tool brush --disable-notifications`;
+        const sattyAction = `magick "${sourcePath}" -crop ${scaledWidth}x${scaledHeight}+${scaledX}+${scaledY} png:- | satty --filename - --output-filename "${outputPath}" --early-exit --init-tool brush --disable-notifications --resize smart`;
 
         // Cleanup all per-monitor temp files
         let cleanPaths = [];

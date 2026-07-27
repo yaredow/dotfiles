@@ -174,6 +174,17 @@ PanelWindow {
                     if (SettingsService.selectedIndex < SettingsService.filteredItems.length - 1)
                         SettingsService.selectedIndex++
                 }
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_J && (event.modifiers & Qt.ControlModifier)) {
+                        if (SettingsService.selectedIndex < SettingsService.filteredItems.length - 1)
+                            SettingsService.selectedIndex++;
+                        event.accepted = true;
+                    } else if (event.key === Qt.Key_K && (event.modifiers & Qt.ControlModifier)) {
+                        if (SettingsService.selectedIndex > 0)
+                            SettingsService.selectedIndex--;
+                        event.accepted = true;
+                    }
+                }
             }
 
             ListView {

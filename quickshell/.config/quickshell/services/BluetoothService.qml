@@ -84,7 +84,7 @@ Singleton {
 
     Process {
         id: bluetuiProc
-        command: ["kitty", "-e", "bluetui"]
+        command: ["kitty", "--title", "bluetui", "-e", "bluetui"]
         running: false
     }
 

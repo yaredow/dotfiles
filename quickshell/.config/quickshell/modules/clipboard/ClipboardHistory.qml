@@ -29,7 +29,6 @@ PanelWindow {
     color: "transparent"
 
     function hide() {
-        clipboardPanel.forceActiveFocus();
         ClipboardService.hide();
     }
 
@@ -156,11 +155,21 @@ PanelWindow {
 
                             Keys.onEscapePressed: root.hide()
                             Keys.onReturnPressed: {
+                                const idx = ClipboardService.selectedIndex;
                                 root.hide();
-                                Qt.callLater(ClipboardService.selectCurrent);
+                                Qt.callLater(() => ClipboardService.selectItem(idx));
                             }
                             Keys.onUpPressed: ClipboardService.navigateUp()
                             Keys.onDownPressed: ClipboardService.navigateDown()
+                            Keys.onPressed: event => {
+                                if (event.key === Qt.Key_J && (event.modifiers & Qt.ControlModifier)) {
+                                    ClipboardService.navigateDown();
+                                    event.accepted = true;
+                                } else if (event.key === Qt.Key_K && (event.modifiers & Qt.ControlModifier)) {
+                                    ClipboardService.navigateUp();
+                                    event.accepted = true;
+                                }
+                            }
 
                             Component.onCompleted: {
                                 ClipboardService.query = "";
@@ -251,11 +260,12 @@ PanelWindow {
                             propagateComposedEvents: true
 
                             onClicked: mouse => {
+                                const idx = delegateItem.index;
                                 if (delegateItem.isSelected) {
-                                    clipboardPanel.forceActiveFocus();
-                                    ClipboardService.selectItem(delegateItem.index);
+                                    ClipboardService.hide();
+                                    Qt.callLater(() => ClipboardService.selectItem(idx));
                                 } else {
-                                    ClipboardService.selectedIndex = delegateItem.index;
+                                    ClipboardService.selectedIndex = idx;
                                 }
                             }
                         }

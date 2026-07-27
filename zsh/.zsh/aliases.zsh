@@ -1,11 +1,11 @@
 # ==============================
 # File listing (eza — modern ls)
 # ==============================
-alias ls="eza --icons --color=always"
-alias l="eza --icons"                     # short list with icons
-alias ll="eza -lh --icons --git"          # long list with icons + git status
-alias la="eza -lha --icons --git"         # long list, all files, icons + git
-alias tree="eza --icons --tree"           # tree view (replaces `tree` command)
+alias ls="eza --color=always"
+alias l="eza"                              # short list
+alias ll="eza -lh --git"                   # long list with git status
+alias la="eza -lha --git"                  # long list, all files + git
+alias tree="eza --tree"                    # tree view (replaces `tree` command)
 
 # ==============================
 # Package management

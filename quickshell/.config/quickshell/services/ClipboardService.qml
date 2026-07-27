@@ -34,7 +34,6 @@ Singleton {
     function hide() {
         visible = false;
         query = "";
-        selectedIndex = 0;
     }
 
     function toggle() {
@@ -46,7 +45,7 @@ Singleton {
         if (index < 0 || index >= filteredEntries.length) return;
 
         const entry = filteredEntries[index];
-        selectProc.command = ["sh", "-c", "echo " + shellEscape(entry.line) + " | cliphist decode | wl-copy --paste-once & sleep 0.3 && wtype -M ctrl v -m ctrl && wait"];
+        selectProc.command = ["sh", "-c", "echo " + shellEscape(entry.line) + " | cliphist decode | wl-copy && sleep 0.15 && wtype -M ctrl v -m ctrl"];
         selectProc.running = true;
     }
 
