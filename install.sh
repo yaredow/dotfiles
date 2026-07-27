@@ -77,7 +77,7 @@ fi
 # 4 – Stow all config packages
 # =============================================================================
 say "Stowing dotfiles..."
-STOW_PACKAGES=(bin fastfetch hypr kitty mpd mpv nvim qt6ct quickshell rmpc starship theme tmux yazi youtube-tui zed zsh)
+STOW_PACKAGES=(bin electron fastfetch hypr kitty mpd mpv nvim qt6ct quickshell rmpc starship theme tmux yazi youtube-tui zed zsh)
 
 stow --target="$HOME" --dir="$REPO_DIR" "${STOW_PACKAGES[@]}"
 
