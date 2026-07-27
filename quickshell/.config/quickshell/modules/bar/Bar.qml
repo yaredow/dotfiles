@@ -8,8 +8,8 @@ import Quickshell.Io
 import qs.config
 import qs.services
 import "../../components/"
-import "../notifications/"
 import "../calendar/"
+import "../notifications/"
 
 PanelWindow {
     id: bar
@@ -154,7 +154,7 @@ PanelWindow {
                 onClicked: {
                     clockTipDelay.stop();
                     host.hideTooltip("Calendar");
-                    calendarWindow.visible = !calendarWindow.visible;
+                    calendarPopup.revealed = !calendarPopup.revealed;
                 }
             }
         }
@@ -565,9 +565,8 @@ PanelWindow {
         }
     }
 
-    CalendarWindow {
-        id: calendarWindow
-        visible: false
+    CalendarPopup {
+        id: calendarPopup
     }
 
     NotificationWindow {
