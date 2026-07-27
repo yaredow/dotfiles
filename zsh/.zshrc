@@ -50,6 +50,11 @@ for file in ~/.zsh/*.zsh; do
 done
 
 # ==============================
+# atuin (shell history)
+# ==============================
+eval "$(atuin init zsh)"
+
+# ==============================
 # zoxide
 # ==============================
 eval "$(zoxide init zsh)"

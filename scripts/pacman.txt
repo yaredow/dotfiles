@@ -90,6 +90,7 @@ xdg-utils
 # System Utilities
 # =============================================================================
 ripgrep
+atuin
 git-delta
 btop
 fastfetch
