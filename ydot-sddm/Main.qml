@@ -200,11 +200,11 @@ Rectangle {
                 spacing: px(14)
 
                 Image {
-                    id: yadotLogo
+                    id: ydotLogo
                     Layout.alignment: Qt.AlignHCenter
                     Layout.preferredWidth: px(64)
                     Layout.preferredHeight: px(64)
-                    source: Qt.resolvedUrl("assets/yadot.svg")
+                    source: Qt.resolvedUrl("assets/ydot.svg")
                     fillMode: Image.PreserveAspectFit
                     sourceSize: Qt.size(64, 64)
                     asynchronous: true

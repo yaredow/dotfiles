@@ -55,7 +55,7 @@ WlSessionLock {
 
                 Image {
                     anchors.centerIn: parent
-                    source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/yadot.svg"
+                    source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/ydot.svg"
                     width: 40; height: 40
                     fillMode: Image.PreserveAspectFit
                     smooth: true

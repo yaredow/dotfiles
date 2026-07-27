@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="quickshell/.config/quickshell/assets/yadot.svg" alt="yadot" width="120" />
+   <img src="quickshell/.config/quickshell/assets/ydot.svg" alt="ydot" width="120" />
 </p>
 
-# yadot
+# ydot
 
 Personal Arch Linux + Hyprland dotfiles built around a centralized theme system. All configs deploy via GNU Stow and are managed from a unified QML shell.
 

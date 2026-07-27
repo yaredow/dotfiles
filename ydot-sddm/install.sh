@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-NAME="yadot"
+NAME="ydot"
 SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
 THEME_DIR="/usr/share/sddm/themes/$NAME"
 CONFIG_DIR="/etc/sddm.conf.d"
 
-echo "Installing yadot SDDM theme..."
+echo "Installing ydot SDDM theme..."
 
 mkdir -p "$THEME_DIR"
 cp -r "$SRC_DIR/Main.qml" "$SRC_DIR/metadata.desktop" "$SRC_DIR/theme.conf" "$SRC_DIR/assets" "$THEME_DIR/"

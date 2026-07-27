@@ -1,5 +1,5 @@
-<svg width="200" height="200" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="yadot">
-  <title>yadot</title>
+<svg width="200" height="200" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ydot">
+  <title>ydot</title>
   <desc>Geometric y mark with a floating dot representing dotfiles</desc>
 
   <g fill="none" stroke="#c0caf5" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">

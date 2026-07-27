@@ -1,4 +1,4 @@
-# yadot — dotfiles
+# ydot — dotfiles
 
 Arch Linux + Hyprland dotfiles with a centralized theme system. All config deploys via GNU Stow.
 
