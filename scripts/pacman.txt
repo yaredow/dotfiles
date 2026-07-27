@@ -91,6 +91,7 @@ xdg-utils
 # =============================================================================
 ripgrep
 atuin
+tldr
 git-delta
 btop
 fastfetch
