@@ -178,10 +178,6 @@ PanelWindow {
                 onActivated: LauncherService.show()
             }
 
-            Separator {
-                host: bar.host
-            }
-
             Repeater {
                 model: host.existingWs.length
                 delegate: Workspace {
@@ -191,7 +187,7 @@ PanelWindow {
                     label: host.existingWs[index]
                     active: host.activeWs === host.existingWs[index]
                     present: true
-                    onActivated: Hyprland.dispatch("workspace " + host.existingWs[index])
+                    onActivated: Hyprland.dispatch('hl.dsp.focus({ workspace = ' + host.existingWs[index] + ' })')
                 }
             }
 
