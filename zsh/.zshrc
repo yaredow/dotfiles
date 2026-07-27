@@ -36,6 +36,7 @@ compinit
 # ==============================
 # Keybindings
 # ==============================
+bindkey -v  # vi mode for command-line editing (Esc to enter normal mode)
 bindkey '^[[A' history-beginning-search-backward
 bindkey '^[[B' history-beginning-search-forward
 bindkey '^r' history-incremental-search-backward
