@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import qs.config
 
 PanelWindow {
@@ -26,6 +27,13 @@ PanelWindow {
     WlrLayershell.namespace: "qs_modules"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
     WlrLayershell.exclusiveZone: -1
+
+    HyprlandFocusGrab {
+        id: focusGrab
+        windows: [root]
+        active: false
+        onCleared: root.revealed = false
+    }
 
     Rectangle {
         id: card
@@ -319,6 +327,9 @@ PanelWindow {
             root.monthOffset = 0;
             root.tick++;
             root.selectedDay = (new Date()).getDate();
+            Qt.callLater(() => focusGrab.active = true);
+        } else {
+            focusGrab.active = false;
         }
     }
 }
