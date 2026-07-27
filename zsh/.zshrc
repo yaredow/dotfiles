@@ -37,6 +37,7 @@ compinit
 # Keybindings
 # ==============================
 bindkey -v  # vi mode for command-line editing (Esc to enter normal mode)
+bindkey '^f' autosuggest-accept        # Ctrl+f to accept autosuggestion
 bindkey '^[[A' history-beginning-search-backward
 bindkey '^[[B' history-beginning-search-forward
 bindkey '^r' history-incremental-search-backward
