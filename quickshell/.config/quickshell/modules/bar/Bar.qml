@@ -191,7 +191,7 @@ PanelWindow {
                     label: host.existingWs[index]
                     active: host.activeWs === host.existingWs[index]
                     present: true
-                    onActivated: Hyprland.executeCommand("workspace " + host.existingWs[index])
+                    onActivated: Hyprland.dispatch("workspace " + host.existingWs[index])
                 }
             }
 
