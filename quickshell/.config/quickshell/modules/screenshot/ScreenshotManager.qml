@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import qs.config
+import qs.services
 
 Scope {
     id: root
@@ -129,6 +130,25 @@ Scope {
     function startCapture() {
         prepareCapture();
         hyprctlMonitors.running = true;
+    }
+
+    function startRecording() {
+        if (RecordingService.recording || !root.hasSelection)
+            return;
+
+        const scale = root.hyprlandMonitor?.scale || 1;
+        const x = Math.round(root.selectionX * scale);
+        const y = Math.round(root.selectionY * scale);
+        const w = Math.round(root.selectionWidth * scale);
+        const h = Math.round(root.selectionHeight * scale);
+        const geometry = `${x},${y} ${w}x${h}`;
+
+        root.active = false;
+        RecordingService.startRecording(geometry);
+    }
+
+    function stopRecording() {
+        RecordingService.stopRecording();
     }
 
     function tempPathForScreen(screenName: string): string {

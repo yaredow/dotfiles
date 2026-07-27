@@ -181,6 +181,14 @@ PanelWindow {
     }
 
     Shortcut {
+        sequence: "Return"
+        onActivated: {
+            if (root.screenshot.hasSelection)
+                root.screenshot.confirmSelection();
+        }
+    }
+
+    Shortcut {
         sequence: "r"
         onActivated: root.screenshot.setMode("region")
     }
@@ -200,6 +208,7 @@ PanelWindow {
     // =================================================================
 
     ControlBar {
+        id: controlBar
         visible: root.isActiveMonitor
         screenshot: root.screenshot
         z: 10

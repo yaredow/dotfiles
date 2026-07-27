@@ -19,3 +19,4 @@ singleton LockService LockService.qml
 singleton LauncherService LauncherService.qml
 singleton SettingsService SettingsService.qml
 singleton ClipboardService ClipboardService.qml
+singleton RecordingService RecordingService.qml

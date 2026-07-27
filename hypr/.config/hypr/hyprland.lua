@@ -285,6 +285,7 @@ hl.bind("SUPER + W", hl.dsp.exec_cmd("~/.local/bin/wallpaper-cycle.sh"))
 hl.bind("SUPER + SLASH", hl.dsp.exec_cmd("qs ipc call keybinds toggle"))
 hl.bind("SUPER + V", hl.dsp.exec_cmd("qs ipc call clipboard toggle"))
 hl.bind("SUPER + S", hl.dsp.exec_cmd("qs ipc call screenshot start"))
+hl.bind("SUPER + R", hl.dsp.exec_cmd("qs ipc call screenshot recordtoggle"))
 hl.bind("XF86PowerOff", hl.dsp.exec_cmd("qs ipc call power open"), { locked = true })
 
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())

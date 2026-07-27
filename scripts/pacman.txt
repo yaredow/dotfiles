@@ -81,6 +81,7 @@ brightnessctl
 grim
 slurp
 satty
+wf-recorder
 wl-clipboard
 cliphist
 wtype

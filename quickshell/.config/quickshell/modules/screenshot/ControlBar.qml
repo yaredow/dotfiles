@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import qs.config
+import qs.services
 
 Rectangle {
     id: root
@@ -181,6 +182,44 @@ Rectangle {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.screenshot.editSelection()
+                    }
+                }
+            }
+
+            // Record button
+            Item {
+                width: root.screenshot.hasSelection ? 44 : 0
+                height: 42
+                visible: root.screenshot.hasSelection
+                clip: true
+
+                Behavior on width {
+                    NumberAnimation {
+                        duration: Config.animDurationShort
+                    }
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    radius: width / 2
+                    color: recordArea.containsMouse ? Config.surface2Color : Config.surface1Color
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: RecordingService.recording ? "󰄻" : "󰐊"
+                        font.family: Config.font
+                        font.pixelSize: Config.fontSizeIcon
+                        color: RecordingService.recording ? Config.errorColor : (recordArea.containsMouse ? Config.textColor : Config.accentColor)
+                    }
+
+                    MouseArea {
+                        id: recordArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: RecordingService.recording ? root.screenshot.stopRecording() : root.screenshot.startRecording()
                     }
                 }
             }

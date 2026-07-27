@@ -225,6 +225,13 @@ ShellRoot {
         function edit(): void {
             if (screenshotLoader.item) screenshotLoader.item.editSelection();
         }
+        function recordtoggle(): void {
+            if (RecordingService.recording) {
+                RecordingService.stopRecording();
+            } else {
+                root.screenshotActive = true;
+            }
+        }
     }
 
     Loader {

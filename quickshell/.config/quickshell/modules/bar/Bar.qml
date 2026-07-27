@@ -482,6 +482,53 @@ PanelWindow {
                 onActivated: IdleService.toggleCaffeine()
             }
 
+            Item {
+                visible: RecordingService.recording
+                Layout.preferredWidth: RecordingService.recording ? 44 : 0
+                Layout.preferredHeight: 20
+                Layout.alignment: Qt.AlignVCenter
+                clip: true
+
+                Behavior on Layout.preferredWidth {
+                    NumberAnimation { duration: Config.animDurationShort }
+                }
+
+                Row {
+                    anchors.centerIn: parent
+                    spacing: 4
+
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 8
+                        height: 8
+                        radius: width / 2
+                        color: Config.errorColor
+
+                        SequentialAnimation on opacity {
+                            loops: Animation.Infinite
+                            NumberAnimation { from: 1; to: 0.3; duration: 800; easing.type: Easing.InOutQuad }
+                            NumberAnimation { from: 0.3; to: 1; duration: 800; easing.type: Easing.InOutQuad }
+                        }
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "REC"
+                        color: Config.errorColor
+                        font.family: Config.monoFont
+                        font.pixelSize: 9
+                        font.weight: Font.Bold
+                        font.letterSpacing: 1
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: Quickshell.execDetached(["qs", "ipc", "call", "screenshot", "recordtoggle"])
+                }
+            }
+
             Separator {
                 host: bar.host
             }
