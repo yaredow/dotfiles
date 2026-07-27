@@ -154,7 +154,7 @@ PanelWindow {
                 onClicked: {
                     clockTipDelay.stop();
                     host.hideTooltip("Calendar");
-                    calendarPopup.revealed = !calendarPopup.revealed;
+                    calendarPopup.visible = !calendarPopup.visible;
                 }
             }
         }

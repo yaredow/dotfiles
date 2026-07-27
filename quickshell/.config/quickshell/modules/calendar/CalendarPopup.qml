@@ -9,83 +9,55 @@ PanelWindow {
     id: root
 
     property bool revealed: false
-    property real _reveal: revealed ? 1 : 0
 
     property int monthOffset: 0
     property int selectedDay: 0
     property int tick: 0
 
-    visible: revealed || _reveal > 0.001
+    visible: revealed
     color: "transparent"
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
-    exclusionMode: ExclusionMode.Ignore
+    anchors.top: true
+    margins.top: Config.barHeight + 10
+
+    implicitWidth: 322
+    implicitHeight: bodyCol.implicitHeight + 34
+
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "qs_modules"
-    WlrLayershell.keyboardFocus: revealed ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-
-    Behavior on _reveal {
-        NumberAnimation {
-            duration: root.revealed ? 220 : 140
-            easing.type: root.revealed ? Easing.OutCubic : Easing.InCubic
-        }
-    }
-
-    Rectangle {
-        anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.3)
-        opacity: root._reveal
-        Behavior on opacity {
-            NumberAnimation {
-                duration: root.revealed ? 220 : 140
-            }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: root.revealed = false
-    }
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    WlrLayershell.exclusiveZone: -1
 
     Rectangle {
         id: card
-        width: 322
-        height: bodyCol.implicitHeight + 34
+        anchors.fill: parent
         radius: Config.radiusLarge
         color: Config.backgroundTransparentColor
         border.color: Config.surface2Color
         border.width: 1
+        clip: true
 
-        anchors.centerIn: parent
+        opacity: root.revealed ? 1 : 0
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 100
+            }
+        }
 
         transform: Scale {
             origin.x: card.width / 2
-            origin.y: card.height / 2
-            xScale: root._reveal
-            yScale: root._reveal
+            origin.y: 0
+            xScale: root.revealed ? 1 : 0.95
+            yScale: root.revealed ? 1 : 0.95
         }
 
-        MouseArea {
-            anchors.fill: parent
+        Behavior on transform {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutExpo
+            }
         }
 
-        focus: root.revealed
-        Keys.onPressed: function(event) {
-            if (event.key === Qt.Key_Escape) {
-                root.revealed = false;
-                event.accepted = true;
-                return;
-            }
-            if (event.key === Qt.Key_Q) {
-                root.revealed = false;
-                event.accepted = true;
-                return;
-            }
-        }
+        Keys.onEscapePressed: root.revealed = false
 
         Column {
             id: bodyCol
@@ -342,8 +314,8 @@ PanelWindow {
         return days[d.getDay()] + " \u00B7 " + root.selectedDay + " " + months[d.getMonth()] + " " + d.getFullYear();
     }
 
-    onRevealedChanged: {
-        if (revealed) {
+    onVisibleChanged: {
+        if (visible) {
             root.monthOffset = 0;
             root.tick++;
             root.selectedDay = (new Date()).getDate();
