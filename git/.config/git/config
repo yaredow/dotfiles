@@ -11,7 +11,7 @@
   light = false
   side-by-side = true
   line-numbers = true
-  syntax-theme = tokyonight
+  syntax-theme = Nord
 
 [interactive]
   diffFilter = delta --color-only
@@ -70,4 +70,5 @@
   wip = add . && commit -m "wip"
   nah = reset --hard && clean -fd
   contrib = shortlog -sn --no-merges
+  aliases = config --get-regexp alias
   graph = log --graph --oneline --decorate --all
