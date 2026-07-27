@@ -449,6 +449,7 @@ PanelWindow {
                 glyph: NetworkService.systemIcon
                 tooltip: NetworkService.statusText
                 fontWeight: Font.Medium
+                onActivated: NetworkService.launchImpala()
             }
 
             Module {
