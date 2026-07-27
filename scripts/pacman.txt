@@ -22,6 +22,7 @@ tmux
 kitty
 starship
 fzf
+fd
 zoxide
 eza
 yazi
@@ -63,6 +64,11 @@ pipewire-pulse
 wireplumber
 pavucontrol
 playerctl
+bat
+mpd
+mpc
+rmpc
+cava
 
 # =============================================================================
 # Brightness

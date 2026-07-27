@@ -50,6 +50,7 @@ local music = "spotify"
 --
 hl.on("hyprland.start", function()
 	hl.exec_cmd("bash -c 'pgrep -x awww-daemon >/dev/null || awww-daemon'")
+	hl.exec_cmd("bash -c 'pgrep -x mpd >/dev/null || mpd ~/.config/mpd/mpd.conf'")
 	hl.exec_cmd(
 		"bash -c 'pgrep -fx \"wl-paste --watch cliphist store\" >/dev/null || wl-paste --watch cliphist store &'"
 	)
