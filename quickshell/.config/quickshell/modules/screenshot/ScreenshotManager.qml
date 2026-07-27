@@ -136,12 +136,14 @@ Scope {
         if (RecordingService.recording || !root.hasSelection)
             return;
 
-        const scale = root.hyprlandMonitor?.scale || 1;
-        const x = Math.round(root.selectionX * scale);
-        const y = Math.round(root.selectionY * scale);
-        const w = Math.round(root.selectionWidth * scale);
-        const h = Math.round(root.selectionHeight * scale);
-        const geometry = `${x},${y} ${w}x${h}`;
+        const monitorIpc = root.monitorsFromIpc.find(m => m.name === root.hyprlandMonitor?.name);
+        const offX = monitorIpc ? monitorIpc.x : 0;
+        const offY = monitorIpc ? monitorIpc.y : 0;
+        const x = Math.round(offX + root.selectionX);
+        const y = Math.round(offY + root.selectionY);
+        const w = Math.round(root.selectionWidth);
+        const h = Math.round(root.selectionHeight);
+        const geometry = `${w}x${h}+${x}+${y}`;
 
         root.active = false;
         RecordingService.startRecording(geometry);
