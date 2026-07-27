@@ -4,11 +4,11 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import Quickshell.Io
 import qs.config
 import qs.services
 import "../../components/"
 import "../notifications/"
-import "../systemMonitor/"
 import "../calendar/"
 
 PanelWindow {
@@ -426,10 +426,9 @@ PanelWindow {
             Module {
                 host: bar.host
                 glyph: "󰍛"
-                tooltip: "CPU " + SystemMonitorService.cpuUsage + "%"
-                color: SystemMonitorService.cpuUsage > 80 ? Config.accentColor : Config.textColor
+                tooltip: "System Monitor"
                 fontWeight: Font.Medium
-                onActivated: monitorWindow.visible = !monitorWindow.visible
+                onActivated: btopProc.running = true
             }
 
             Module {
@@ -517,13 +516,14 @@ PanelWindow {
         visible: false
     }
 
-    SystemMonitorWindow {
-        id: monitorWindow
-        visible: false
-    }
-
     NotificationWindow {
         id: notifWindow
         visible: false
+    }
+
+    Process {
+        id: btopProc
+        command: ["kitty", "-e", "btop"]
+        running: false
     }
 }

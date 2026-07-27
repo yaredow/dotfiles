@@ -7,7 +7,6 @@ singleton BrightnessService BrightnessService.qml
 singleton NetworkService NetworkService.qml
 singleton NotificationService NotificationService.qml
 singleton StateService StateService.qml
-singleton SystemMonitorService SystemMonitorService.qml
 singleton TimeService TimeService.qml
 singleton TrayService TrayService.qml
 singleton WindowManagerService WindowManagerService.qml
