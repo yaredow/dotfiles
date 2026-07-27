@@ -13,8 +13,6 @@ COLORS=$(cat "$THEME_DIR/colors.json")
 mkdir -p "$HOME/.config/quickshell/state"
 cp "$THEME_DIR/colors.json" "$HOME/.config/quickshell/state/colors.json"
 
-notify-send "Theme" "${THEME}" -t 2000
-
 # Wallpaper first — everything else can wait
 WALLPAPER_MAP='{"tokyonight":"tokyonight","catppuccin":"catppuccin","rosepine":"rose-pine"}'
 WP_PREFIX=$(echo "$WALLPAPER_MAP" | jq -r ".$THEME")
