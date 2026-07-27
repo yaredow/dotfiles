@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Bluetooth
 
 Singleton {
@@ -76,6 +77,16 @@ Singleton {
     function toggleDiscoverable() { if (adapter) adapter.discoverable = !adapter.discoverable }
     function getIsConnecting(device) { return device && device.state === BluetoothDeviceState.Connecting }
     function forgetDevice(device) { if (device) device.forget() }
+
+    function launchBluetoothTui() {
+        bluetuiProc.running = true
+    }
+
+    Process {
+        id: bluetuiProc
+        command: ["kitty", "-e", "bluetui"]
+        running: false
+    }
 
     function getDeviceIcon(device) {
         if (!device) return ""

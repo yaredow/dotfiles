@@ -38,16 +38,12 @@ Item {
         anchors.fill: parent
         anchors.margins: 3
         radius: Config.radiusSmall
-        color: mouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
+        color: mouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.10) : "transparent"
         Behavior on color {
             ColorAnimation {
                 duration: 180
             }
         }
-    }
-
-    Bloom {
-        id: bloom
     }
 
     Image {
@@ -79,7 +75,6 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
         onEntered: {
-            bloom.fire(mouseX, mouseY);
             if (modItem.tooltip)
                 tipDelay.restart();
         }

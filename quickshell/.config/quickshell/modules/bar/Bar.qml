@@ -442,6 +442,7 @@ PanelWindow {
                 }
                 color: BluetoothService.isPowered ? Config.textColor : Qt.alpha(Config.textColor, 0.35)
                 fontWeight: Font.Medium
+                onActivated: BluetoothService.launchBluetoothTui()
             }
 
             Module {
