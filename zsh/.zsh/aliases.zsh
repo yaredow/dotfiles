@@ -80,6 +80,14 @@ fkill() {
   [[ -n "$pid" ]] && echo "$pid" | xargs kill -9
 }
 
+# fif - find in files using ripgrep + fzf
+fif() {
+  if [[ ! "$#" -gt 0 ]]; then echo "Usage: fif <pattern>"; return 1; fi
+  rg --line-number --no-heading "$@" |
+    fzf --delimiter : --preview 'bat --color=always --line-range :500 {1}' |
+    awk -F: '{print $1}' | xargs -r ${EDITOR:-nvim}
+}
+
 # ==============================
 # Other
 # ==============================

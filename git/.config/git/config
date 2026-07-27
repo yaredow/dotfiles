@@ -1,0 +1,73 @@
+[user]
+  email = yaredyilma11@gmail.com
+  name = yaredow
+
+[core]
+  pager = delta
+  whitespace = trailing-space,space-before-tab
+
+[delta]
+  navigate = true
+  light = false
+  side-by-side = true
+  line-numbers = true
+  syntax-theme = tokyonight
+
+[interactive]
+  diffFilter = delta --color-only
+
+[merge]
+  conflictStyle = zdiff3
+
+[pull]
+  rebase = true
+
+[push]
+  autoSetupRemote = true
+  default = simple
+
+[fetch]
+  prune = true
+
+[rebase]
+  autoSquash = true
+  autoStash = true
+
+[init]
+  defaultBranch = main
+
+[alias]
+  lg = log --graph --oneline --decorate --all
+  lga = log --graph --oneline --decorate --all --simplify-by-decoration
+  lp = log --oneline -10
+  co = checkout
+  cob = checkout -b
+  br = branch
+  bra = branch -a
+  ci = commit
+  ciam = commit -a --amend --no-edit
+  st = status -s
+  df = diff
+  dfc = diff --cached
+  unstage = restore --staged
+  last = log -1 HEAD
+  discard = restore
+  amend = commit --amend --no-edit
+  re = rebase
+  rec = rebase --continue
+  res = rebase --skip
+  rea = rebase --abort
+  ri = rebase --interactive
+  rh = reset HEAD
+  rbh = reset --hard HEAD
+  cp = cherry-pick
+  cpa = cherry-pick --abort
+  cpc = cherry-pick --continue
+  undo = reset --soft HEAD~1
+  who = shortlog -sn
+  tags = tag -n1 --list
+  sb = show-branch
+  wip = add . && commit -m "wip"
+  nah = reset --hard && clean -fd
+  contrib = shortlog -sn --no-merges
+  graph = log --graph --oneline --decorate --all
