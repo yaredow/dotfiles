@@ -101,10 +101,6 @@ PanelWindow {
                 onTriggered: clockItem.clockText = TimeService.format("hh:mm")
             }
 
-            Bloom {
-                id: clockBloom
-            }
-
             Text {
                 id: clockOneLine
                 anchors.centerIn: parent
@@ -131,13 +127,24 @@ PanelWindow {
                 }
             }
 
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 3
+                radius: width / 2
+                color: clockMouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 180
+                    }
+                }
+            }
+
             MouseArea {
                 id: clockMouse
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onEntered: {
-                    clockBloom.fire(mouseX, mouseY);
                     clockTipDelay.restart();
                 }
                 onExited: {

@@ -39,10 +39,6 @@ Item {
         easing.type: Easing.OutCubic
     }
 
-    Bloom {
-        id: bloom
-    }
-
     Text {
         id: num
         property real slideX: 0
@@ -74,15 +70,26 @@ Item {
     }
 
     MouseArea {
+        id: wsMouse
         anchors.fill: parent
         anchors.margins: -2
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onEntered: {
-            bloom.fire(mouseX, mouseY);
-        }
         onClicked: {
             wsCell.activated();
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: 3
+        radius: width / 2
+        color: wsMouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
+        Behavior on color {
+            ColorAnimation {
+                duration: 180
+            }
+        }
+        z: -1
     }
 }
