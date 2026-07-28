@@ -20,12 +20,16 @@ if [[ ! -d "$REPO_DIR/.git" ]]; then
     sudo pacman -S --noconfirm git
   fi
   echo ":: Cloning dotfiles..."
+  rm -rf "$REPO_DIR"
   git clone "$REPO_URL" "$REPO_DIR"
 fi
 
 cd "$REPO_DIR"
 
 [[ "$EUID" -eq 0 ]] && { echo "Do not run as root." >&2; exit 1; }
+
+# Stale pacman lock → hang, kill it
+sudo rm -f /var/lib/pacman/db.lck
 
 # =============================================================================
 # 1 – Install yay (AUR helper)
@@ -53,7 +57,17 @@ while IFS= read -r line; do
   PACMAN_PKGS+=("$line")
 done < "$REPO_DIR/scripts/pacman.txt"
 
-sudo pacman -S --needed --noconfirm "${PACMAN_PKGS[@]}"
+if ! sudo pacman -S --needed --noconfirm "${PACMAN_PKGS[@]}"; then
+  echo "  batch failed, retrying one-by-one..."
+  FAILED=()
+  for pkg in "${PACMAN_PKGS[@]}"; do
+    pacman -Q "$pkg" &>/dev/null && continue
+    sudo pacman -S --noconfirm "$pkg" || FAILED+=("$pkg")
+  done
+  if [[ ${#FAILED[@]} -gt 0 ]]; then
+    echo "  WARNING: ${#FAILED[@]} packages failed to install: ${FAILED[*]}"
+  fi
+fi
 
 # =============================================================================
 # 3 – Install AUR packages
@@ -68,7 +82,13 @@ while IFS= read -r line; do
 done < "$REPO_DIR/scripts/yay.txt"
 
 if [[ ${#YAY_PKGS[@]} -gt 0 ]]; then
-  yay -S --needed --noconfirm "${YAY_PKGS[@]}"
+  if ! yay -S --needed --noconfirm "${YAY_PKGS[@]}"; then
+    echo "  batch failed, retrying one-by-one..."
+    for pkg in "${YAY_PKGS[@]}"; do
+      yay -Q "$pkg" &>/dev/null && continue
+      yay -S --needed --noconfirm "$pkg" || true
+    done
+  fi
 else
   echo "  none to install"
 fi
