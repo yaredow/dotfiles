@@ -33,7 +33,7 @@ cd "$REPO_DIR"
 say "Installing yay (AUR helper)..."
 if ! command -v yay &>/dev/null; then
   sudo pacman -S --needed --noconfirm base-devel git
-  mkdir -p /tmp/yay-build
+  rm -rf /tmp/yay-build
   git clone https://aur.archlinux.org/yay.git /tmp/yay-build
   (cd /tmp/yay-build && makepkg -si --noconfirm)
   rm -rf /tmp/yay-build
@@ -79,7 +79,7 @@ fi
 say "Stowing dotfiles..."
 STOW_PACKAGES=(bin electron fastfetch hypr kitty mpd mpv nvim qt6ct quickshell rmpc starship theme tmux yazi youtube-tui zed zsh)
 
-stow --target="$HOME" --dir="$REPO_DIR" "${STOW_PACKAGES[@]}"
+stow --restow --target="$HOME" --dir="$REPO_DIR" "${STOW_PACKAGES[@]}"
 
 # =============================================================================
 # 5 – Bootstrap default state
@@ -115,7 +115,7 @@ sudo systemctl enable --now ufw.service 2>/dev/null || true
 # =============================================================================
 say "Changing default shell to zsh..."
 if [[ "$SHELL" != "$(which zsh)" ]]; then
-  chsh -s "$(which zsh)"
+  sudo chsh -s "$(which zsh)" "$USER"
 else
   echo "  already zsh"
 fi

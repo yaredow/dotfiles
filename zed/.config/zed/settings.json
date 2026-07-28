@@ -88,10 +88,10 @@
     "dock": "left",
     "default_profile": "write",
     "default_model": {
-      "effort": "medium",
+      "effort": "low",
       "enable_thinking": true,
-      "provider": "openai-subscribed",
-      "model": "gpt-5.5",
+      "provider": "x_ai",
+      "model": "grok-4.3",
     },
   },
   "languages": {

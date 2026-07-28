@@ -17,7 +17,7 @@ cp "$THEME_DIR/colors.json" "$HOME/.config/quickshell/state/colors.json"
 WALLPAPER_MAP='{"tokyonight":"tokyonight","catppuccin":"catppuccin","rosepine":"rose-pine"}'
 WP_PREFIX=$(echo "$WALLPAPER_MAP" | jq -r ".$THEME")
 WP_FILE=$(find "$HOME/.local/wallpapers" -maxdepth 1 -name "${WP_PREFIX}-1.*" -type f 2>/dev/null | head -1)
-if [[ -n "$WP_FILE" ]]; then
+if [[ -n "$WP_FILE" ]] && [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
   awww img "$WP_FILE" --transition-type grow --transition-step 30 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null || true
 fi
 
