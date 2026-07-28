@@ -129,13 +129,14 @@ say "Enabling systemd services..."
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
 sudo systemctl enable --now bluetooth.service 2>/dev/null || true
 sudo systemctl enable --now ufw.service 2>/dev/null || true
+sudo systemctl enable sddm 2>/dev/null || true
 
 # =============================================================================
 # 9 – Change default shell to zsh
 # =============================================================================
 say "Changing default shell to zsh..."
 if [[ "$SHELL" != "$(which zsh)" ]]; then
-  sudo chsh -s "$(which zsh)" "$USER"
+  sudo usermod -s "$(which zsh)" "$USER"
 else
   echo "  already zsh"
 fi
@@ -157,7 +158,7 @@ say "Copying default wallpapers..."
 mkdir -p "$HOME/.local/wallpapers"
 for img in "$REPO_DIR/theme/.config/theme/wallpapers"/*.jpg; do
   [[ -f "$img" ]] && cp -n "$img" "$HOME/.local/wallpapers/"
-done
+done 2>/dev/null || true
 
 mkdir -p "$HOME/.local/share"
 
