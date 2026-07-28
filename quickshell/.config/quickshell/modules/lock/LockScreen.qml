@@ -110,7 +110,7 @@ WlSessionLock {
                 }
 
                 Item {
-                    Layout.preferredHeight: 8
+                    Layout.preferredHeight: 48
                 }
 
                 // User Tag

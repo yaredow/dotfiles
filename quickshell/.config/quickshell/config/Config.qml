@@ -28,7 +28,7 @@ Singleton {
     readonly property color subtextColor: _p.subtext0 ?? "#a6adc8"
     readonly property color subtextReverseColor: _p.overlay0 ?? "#6c7086"
 
-    readonly property color accentColor: _p.mauve ?? "#cba6f7"
+    readonly property color accentColor: _p.blue ?? "#7aa2f7"
     readonly property color successColor: _p.green ?? "#a6e3a1"
     readonly property color warningColor: _p.yellow ?? "#f9e2af"
     readonly property color errorColor: _p.red ?? "#f38ba8"
