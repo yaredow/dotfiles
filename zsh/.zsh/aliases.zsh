@@ -63,7 +63,7 @@ fe() {
 fv() {
   local files
   files=$(fd -e mp4 -e mkv -e avi -e webm -e mov -e flv --hidden --follow --exclude .git --exclude Android --exclude node_modules . ~ |
-    fzf -m --query="${(j: :)@}" --delimiter=/ --with-nth='-1' --preview 'ffprobe -hide_banner {} 2>&1 | head -20')
+    fzf -m --query="${(j: :)@}" --delimiter=/ --with-nth='-1')
   if [[ -n "$files" ]]; then
     nohup mpv --no-terminal ${(f)files} >/dev/null 2>&1 &
     exec true
