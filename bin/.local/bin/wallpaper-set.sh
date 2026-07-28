@@ -18,8 +18,16 @@ WP_NUM=$(( INDEX + 1 ))
 WP_FILE=$(find "$WALLPAPER_DIR" -maxdepth 1 -name "${WP_PREFIX}-${WP_NUM}.*" -type f 2>/dev/null | head -1)
 
 if [[ -z "$WP_FILE" ]]; then
-  notify-send "Wallpaper" "No wallpaper found: ${WP_PREFIX}-${WP_NUM}" -t 3000
+  WP_FILE=$(find "$WALLPAPER_DIR" -maxdepth 1 -name "${WP_PREFIX}-1.*" -type f 2>/dev/null | head -1)
+fi
+
+if [[ -z "$WP_FILE" ]]; then
+  notify-send "Wallpaper" "No wallpaper found for ${THEME}" -t 3000
   exit 1
 fi
 
-awww img "$WP_FILE" --transition-type grow --transition-step 30 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null || true
+awww img "$WP_FILE" --transition-type grow --transition-step 30 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null || {
+  awww-daemon 2>/dev/null &
+  sleep 0.5
+  awww img "$WP_FILE" --transition-type grow --transition-step 30 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null || true
+}

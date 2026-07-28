@@ -20,7 +20,13 @@ WP_NUM=$(( NEXT_INDEX + 1 ))
 WP_FILE=$(find "$WALLPAPER_DIR" -maxdepth 1 -name "${WP_PREFIX}-${WP_NUM}.*" -type f 2>/dev/null | head -1)
 
 if [[ -z "$WP_FILE" ]]; then
-  notify-send "Wallpaper" "No wallpaper found: ${WP_PREFIX}-${WP_NUM}" -t 3000
+  NEXT_INDEX=0
+  WP_NUM=1
+  WP_FILE=$(find "$WALLPAPER_DIR" -maxdepth 1 -name "${WP_PREFIX}-1.*" -type f 2>/dev/null | head -1)
+fi
+
+if [[ -z "$WP_FILE" ]]; then
+  notify-send "Wallpaper" "No wallpaper found: ${WP_PREFIX}" -t 3000
   exit 1
 fi
 
