@@ -62,9 +62,12 @@ fe() {
 # fv - find video files and play with mpv (detached)
 fv() {
   local files
-  files=$(fd -e mp4 -e mkv -e avi -e webm -e mov -e flv "$@" |
-    fzf -m --preview 'ffprobe -hide_banner {} 2>&1 | head -20')
-  [[ -n "$files" ]] && nohup mpv --no-terminal ${(f)files} >/dev/null 2>&1 &
+  files=$(fd -e mp4 -e mkv -e avi -e webm -e mov -e flv --hidden --follow --exclude .git --exclude Android --exclude node_modules . ~ |
+    fzf -m --query="${(j: :)@}" --delimiter=/ --with-nth='-1' --preview 'ffprobe -hide_banner {} 2>&1 | head -20')
+  if [[ -n "$files" ]]; then
+    nohup mpv --no-terminal ${(f)files} >/dev/null 2>&1 &
+    exec true
+  fi
 }
 
 # fcd - cd into selected directory
