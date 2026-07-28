@@ -1,6 +1,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
 import Quickshell
 import Quickshell.Wayland
 import qs.config
@@ -19,9 +21,20 @@ WlSessionLock {
     WlSessionLockSurface {
         color: "transparent"
 
+        // Wallpaper background
+        Image {
+            anchors.fill: parent
+            source: WallpaperService.currentWallpaper ? "file://" + WallpaperService.currentWallpaper : ""
+            fillMode: Image.PreserveAspectCrop
+            visible: source !== ""
+            smooth: true
+            asynchronous: true
+        }
+
+        // Dark dimming / translucent backdrop overlay following theme colors
         Rectangle {
             anchors.fill: parent
-            color: Config.backgroundColor
+            color: Qt.alpha(Config.backgroundColor, Config.backgroundOpacity)
         }
 
         MouseArea {
@@ -29,180 +42,264 @@ WlSessionLock {
             onClicked: passwordInput.forceActiveFocus()
         }
 
-        Column {
-            id: content
+        // Main Content (Borderless floating layout)
+        Item {
+            id: mainCard
             anchors.centerIn: parent
-            spacing: 10
-            opacity: 0
+            width: 380
+            height: cardContent.implicitHeight + 48
 
-            Component.onCompleted: fadeIn.start()
+            ColumnLayout {
+                id: cardContent
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 24
+                spacing: Config.spacing + 4
+                opacity: 0
 
-            NumberAnimation {
-                id: fadeIn
-                target: content
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: Config.animDurationLong
-                easing.type: Easing.OutCubic
-            }
+                Component.onCompleted: fadeIn.start()
 
-            Rectangle {
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: 72; height: 72
-                radius: width / 2
-                color: Config.surface0Color
-
-                Image {
-                    anchors.centerIn: parent
-                    source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/ydot.svg"
-                    width: 40; height: 40
-                    fillMode: Image.PreserveAspectFit
-                    smooth: true
+                NumberAnimation {
+                    id: fadeIn
+                    target: cardContent
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: Config.animDurationLong
+                    easing.type: Easing.OutCubic
                 }
-            }
 
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: TimeService.format("hh:mm")
-                font.family: Config.font
-                font.pixelSize: 64
-                font.bold: true
-                color: Config.accentColor
-            }
+                // Avatar / Branding Ring
+                Rectangle {
+                    Layout.alignment: Qt.AlignHCenter
+                    width: 76
+                    height: 76
+                    radius: width / 2
+                    color: Qt.alpha(Config.surface1Color, 0.6)
+                    border.width: 2
+                    border.color: Qt.alpha(Config.accentColor, 0.6)
 
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: Qt.formatDate(new Date(), "dddd, dd MMMM yyyy")
-                font.family: Config.font
-                font.pixelSize: Config.fontSizeNormal
-                color: Config.subtextColor
-            }
-
-            Item {
-                width: 1
-                height: 24
-            }
-
-            Rectangle {
-                id: passwordField
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: 280
-                height: 44
-                radius: Config.radius
-                color: Config.surface0Color
-                border.width: 2
-                border.color: LockService.failed ? Config.errorColor : passwordInput.activeFocus ? Config.accentColor : Config.surface2Color
-
-                Behavior on border.color {
-                    ColorAnimation {
-                        duration: Config.animDurationShort
+                    Image {
+                        anchors.centerIn: parent
+                        source: "file://" + Quickshell.env("HOME") + "/.config/quickshell/assets/ydot.svg"
+                        width: 42
+                        height: 42
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
                     }
                 }
 
-                property real shakeX: 0
-                transform: Translate {
-                    x: passwordField.shakeX
+                // Clock
+                Text {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: TimeService.format("hh:mm")
+                    font.family: Config.font
+                    font.pixelSize: 52
+                    font.bold: true
+                    color: Config.accentColor
                 }
 
-                Row {
-                    visible: !LockService.authenticating
-                    anchors.centerIn: parent
+                // Date
+                Text {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: Qt.formatDate(new Date(), "dddd, dd MMMM yyyy")
+                    font.family: Config.font
+                    font.pixelSize: Config.fontSizeNormal
+                    color: Config.subtextColor
+                }
+
+                Item {
+                    Layout.preferredHeight: 8
+                }
+
+                // User Tag
+                RowLayout {
+                    Layout.alignment: Qt.AlignHCenter
                     spacing: 6
 
-                    Repeater {
-                        model: passwordInput.text.length
+                    Text {
+                        text: "󰀉"
+                        font.family: Config.font
+                        font.pixelSize: Config.fontSizeSmall
+                        color: Config.accentColor
+                    }
 
-                        Rectangle {
-                            required property int index
-                            readonly property bool isLast: index === passwordInput.text.length - 1
-                            width: 10
-                            height: 10
-                            radius: width / 2
-                            color: Config.accentColor
-                            scale: isLast ? 0.5 : 1
-                            opacity: isLast ? 1.0 : 0.8
+                    Text {
+                        text: Quickshell.env("USER")
+                        color: Config.textColor
+                        font.family: Config.font
+                        font.pixelSize: Config.fontSizeNormal
+                        font.weight: Font.DemiBold
+                    }
+                }
 
-                            Component.onCompleted: scale = isLast ? 1.2 : 1
+                // Password Input Display
+                Rectangle {
+                    id: passwordField
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredWidth: 280
+                    Layout.preferredHeight: 46
+                    radius: Config.radius
+                    color: Qt.alpha(Config.surface1Color, 0.7)
+                    border.width: 1.5
+                    border.color: LockService.failed ? Config.errorColor : passwordInput.activeFocus ? Config.accentColor : Qt.alpha(Config.surface2Color, 0.5)
 
-                            Behavior on scale {
-                                NumberAnimation {
-                                    duration: Config.animDuration
-                                    easing.type: Easing.OutBack
+                    Behavior on border.color {
+                        ColorAnimation {
+                            duration: Config.animDurationShort
+                        }
+                    }
+
+                    property real shakeX: 0
+                    transform: Translate {
+                        x: passwordField.shakeX
+                    }
+
+                    Row {
+                        visible: !LockService.authenticating
+                        anchors.centerIn: parent
+                        spacing: 8
+
+                        Repeater {
+                            model: passwordInput.text.length
+
+                            Rectangle {
+                                required property int index
+                                readonly property bool isLast: index === passwordInput.text.length - 1
+                                width: 10
+                                height: 10
+                                radius: width / 2
+                                color: Config.accentColor
+                                scale: isLast ? 1.2 : 1.0
+                                opacity: isLast ? 1.0 : 0.85
+
+                                Behavior on scale {
+                                    NumberAnimation {
+                                        duration: Config.animDuration
+                                        easing.type: Easing.OutBack
+                                    }
                                 }
-                            }
 
-                            Behavior on opacity {
-                                NumberAnimation {
-                                    duration: Config.animDuration
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: Config.animDuration
+                                    }
                                 }
                             }
                         }
                     }
+
+                    Text {
+                        anchors.centerIn: parent
+                        visible: (passwordInput.text.length === 0) || (LockService.authenticating)
+                        text: LockService.authenticating ? "Verifying..." : "Enter password..."
+                        color: LockService.authenticating ? Config.accentColor : Config.mutedColor
+                        font.family: Config.font
+                        font.pixelSize: Config.fontSizeNormal
+                    }
+
+                    SequentialAnimation {
+                        id: shakeAnim
+                        NumberAnimation {
+                            target: passwordField
+                            property: "shakeX"
+                            to: 12
+                            duration: 40
+                        }
+                        NumberAnimation {
+                            target: passwordField
+                            property: "shakeX"
+                            to: -10
+                            duration: 40
+                        }
+                        NumberAnimation {
+                            target: passwordField
+                            property: "shakeX"
+                            to: 8
+                            duration: 40
+                        }
+                        NumberAnimation {
+                            target: passwordField
+                            property: "shakeX"
+                            to: -6
+                            duration: 40
+                        }
+                        NumberAnimation {
+                            target: passwordField
+                            property: "shakeX"
+                            to: 0
+                            duration: 40
+                        }
+                    }
                 }
 
+                // Error message display
                 Text {
-                    anchors.centerIn: parent
-                    visible: (passwordInput.text.length === 0) || (LockService.authenticating)
-                    text: LockService.authenticating ? "Verifying..." : "Enter password..."
-                    color: LockService.authenticating ? Config.accentColor : Config.mutedColor
+                    Layout.alignment: Qt.AlignHCenter
+                    visible: LockService.failed
+                    text: LockService.failMessage
+                    color: Config.errorColor
                     font.family: Config.font
-                    font.pixelSize: Config.fontSizeNormal
+                    font.pixelSize: Config.fontSizeSmall
                 }
-
-                SequentialAnimation {
-                    id: shakeAnim
-                    NumberAnimation {
-                        target: passwordField
-                        property: "shakeX"
-                        to: 12
-                        duration: 40
-                    }
-                    NumberAnimation {
-                        target: passwordField
-                        property: "shakeX"
-                        to: -10
-                        duration: 40
-                    }
-                    NumberAnimation {
-                        target: passwordField
-                        property: "shakeX"
-                        to: 8
-                        duration: 40
-                    }
-                    NumberAnimation {
-                        target: passwordField
-                        property: "shakeX"
-                        to: -6
-                        duration: 40
-                    }
-                    NumberAnimation {
-                        target: passwordField
-                        property: "shakeX"
-                        to: 0
-                        duration: 40
-                    }
-                }
-            }
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                visible: LockService.failed
-                text: LockService.failMessage
-                color: Config.errorColor
-                font.family: Config.font
-                font.pixelSize: Config.fontSizeSmall
-            }
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: Quickshell.env("USER")
-                color: Config.subtextColor
-                font.family: Config.font
-                font.pixelSize: Config.fontSizeNormal
             }
         }
 
+        // Quick Power Action Bar (Borderless floating layout)
+        Item {
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 32
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: 48
+            width: powerRow.implicitWidth + 32
+
+            RowLayout {
+                id: powerRow
+                anchors.centerIn: parent
+                spacing: 16
+
+                Repeater {
+                    model: [
+                        { icon: "󰒲", label: "Suspend", action: function() { PowerService.suspend(); } },
+                        { icon: "󰜉", label: "Reboot", action: function() { PowerService.reboot(); } },
+                        { icon: "󰐥", label: "Shutdown", action: function() { PowerService.shutdown(); } }
+                    ]
+
+                    delegate: Rectangle {
+                        required property var modelData
+                        width: 36
+                        height: 36
+                        radius: Config.radiusSmall
+                        color: btnMouse.containsMouse ? Qt.alpha(Config.surface2Color, 0.6) : "transparent"
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Config.animDurationShort
+                            }
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: parent.modelData.icon
+                            font.family: Config.font
+                            font.pixelSize: Config.fontSizeIcon
+                            color: btnMouse.containsMouse ? Config.accentColor : Config.textColor
+                        }
+
+                        MouseArea {
+                            id: btnMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: parent.modelData.action()
+                        }
+                    }
+                }
+            }
+        }
+
+        // Hidden TextInput for receiving keypresses
         TextInput {
             id: passwordInput
             width: 1
@@ -241,7 +338,7 @@ WlSessionLock {
             id: fadeOut
 
             NumberAnimation {
-                target: content
+                target: mainCard
                 property: "opacity"
                 to: 0
                 duration: Config.animDurationLong
@@ -257,3 +354,4 @@ WlSessionLock {
         }
     }
 }
+

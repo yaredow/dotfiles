@@ -4,7 +4,7 @@ set -euo pipefail
 REPO_URL="${DOTFILES_REPO:-https://github.com/yaredow/dotfiles}"
 REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 
-TOTAL_STEPS=11
+TOTAL_STEPS=12
 step=0
 
 say() {
@@ -132,7 +132,13 @@ sudo systemctl enable --now ufw.service 2>/dev/null || true
 sudo systemctl enable sddm 2>/dev/null || true
 
 # =============================================================================
-# 9 – Change default shell to zsh
+# 9 – Install ydot SDDM theme
+# =============================================================================
+say "Installing ydot SDDM theme..."
+sudo bash "$REPO_DIR/ydot-sddm/install.sh" "$HOME"
+
+# =============================================================================
+# 10 – Change default shell to zsh
 # =============================================================================
 say "Changing default shell to zsh..."
 if [[ "$SHELL" != "$(which zsh)" ]]; then
@@ -142,7 +148,7 @@ else
 fi
 
 # =============================================================================
-# 10 – Setup tmux TPM
+# 11 – Setup tmux TPM
 # =============================================================================
 say "Installing tmux TPM..."
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
@@ -152,7 +158,7 @@ else
 fi
 
 # =============================================================================
-# 11 – Copy default wallpapers
+# 12 – Copy default wallpapers
 # =============================================================================
 say "Copying default wallpapers..."
 mkdir -p "$HOME/.local/wallpapers"
