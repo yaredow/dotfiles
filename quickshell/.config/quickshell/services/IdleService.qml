@@ -10,15 +10,43 @@ Singleton {
     id: root
 
     property bool caffeineEnabled: false
-    property bool dpmsEnabled: true
 
-    readonly property bool mediaPlaying: false
-    property bool systemInhibited: false
+    readonly property bool displayInhibited: caffeineEnabled
 
-    function lock() { LockService.lock(); }
-    function toggleCaffeine() { caffeineEnabled = !caffeineEnabled; }
-    function dpmsOn() {}
-    function dpmsOff() {}
+    function toggleCaffeine() {
+        caffeineEnabled = !caffeineEnabled
+        if (caffeineEnabled) {
+            inhibitorProc.command = [
+                "systemd-inhibit",
+                "--what=handle-lid-switch:sleep:idle",
+                "--who=ydot",
+                "--why=Keep awake",
+                "--mode=block",
+                "sleep", "infinity"
+            ]
+            inhibitorProc.running = true
+        }
+    }
+
+    onCaffeineEnabledChanged: {
+        if (!caffeineEnabled) {
+            if (inhibitorProc.running) {
+                killInhibitor.running = true
+            }
+            inhibitorProc.running = false
+        }
+    }
+
+    Process {
+        id: inhibitorProc
+        running: false
+    }
+
+    Process {
+        id: killInhibitor
+        command: ["pkill", "-f", "systemd-inhibit.*ydot"]
+        running: false
+    }
 
     PanelWindow {
         id: inhibitorWindow

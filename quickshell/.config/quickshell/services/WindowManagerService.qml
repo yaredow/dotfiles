@@ -4,6 +4,8 @@ import Quickshell
 
 Singleton {
     property var openModules: ({})
+    property int closePulse: 0
+    property string closeExclude: ""
 
     readonly property bool anyModuleOpen: {
         for (var key in openModules) {
@@ -19,5 +21,10 @@ Singleton {
 
     function registerClose(name) {
         openModules[name] = false;
+    }
+
+    function closeAllExcept(name) {
+        closeExclude = name
+        closePulse++
     }
 }

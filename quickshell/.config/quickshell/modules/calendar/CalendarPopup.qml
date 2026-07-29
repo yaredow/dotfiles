@@ -1,139 +1,307 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import qs.config
 
 PanelWindow {
     id: root
 
     property bool revealed: false
-
+    property bool isClosing: false
     property int monthOffset: 0
-    property int selectedDay: 0
-    property int tick: 0
+    property var today: new Date()
 
-    visible: revealed
+    visible: revealed || isClosing
     color: "transparent"
-    anchors.top: true
-    margins.top: Config.barHeight + 10
 
-    implicitWidth: 322
-    implicitHeight: bodyCol.implicitHeight + 34
+    anchors {
+        top: true
+        left: true
+        right: true
+    }
+    margins.top: Config.barHeight + 8
+
+    implicitWidth: 1920
+    implicitHeight: bodyCol.implicitHeight + 44
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "qs_modules"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
     WlrLayershell.exclusiveZone: -1
 
-    HyprlandFocusGrab {
-        id: focusGrab
-        windows: [root]
-        active: false
-        onCleared: root.revealed = false
+    // ---- Today tracking -----
+    readonly property string todayKey: today.getFullYear() + "-"
+        + pad2(today.getMonth() + 1) + "-"
+        + pad2(today.getDate())
+
+    readonly property int viewYear: {
+        var d = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1)
+        return d.getFullYear()
+    }
+    readonly property int viewMonth: {
+        var d = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1)
+        return d.getMonth()
+    }
+    readonly property bool viewingCurrentMonth: monthOffset === 0
+
+    readonly property int weekStart: 1
+
+    // ---- Year progress ----
+    readonly property int dayOfYear: {
+        var start = new Date(today.getFullYear(), 0, 1)
+        return Math.floor((today.getTime() - start.getTime()) / 86400000) + 1
+    }
+    readonly property int daysInYear: {
+        return dayOfYearForDate(today.getFullYear(), 11, 31)
+    }
+    readonly property real yearDone: {
+        var d = daysInYear
+        if (d <= 0) return 0
+        return Math.max(0, Math.min(1, (dayOfYear - 1) / d))
+    }
+    readonly property int yearDonePercent: Math.round(yearDone * 100)
+
+    function dayOfYearForDate(y, m, d) {
+        var start = new Date(y, 0, 1)
+        var end = new Date(y, m, d)
+        return Math.floor((end.getTime() - start.getTime()) / 86400000) + 1
     }
 
+    function pad2(n) { return n < 10 ? "0" + n : "" + n }
+
+    // ---- ISO week (port from Omarchy Model.js) ----
+    function isoWeek(y, m, d) {
+        var date = new Date(Date.UTC(y, m, d))
+        var weekday = date.getUTCDay() || 7
+        date.setUTCDate(date.getUTCDate() + 4 - weekday)
+        var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1))
+        return Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+    }
+
+    // ---- Month grid with ISO weeks (port from Omarchy) ----
+    readonly property var weeks: {
+        var y = viewYear, m = viewMonth, start = weekStart
+        var leading = (new Date(y, m, 1).getDay() - start + 7) % 7
+        var cursor = new Date(y, m, 1 - leading)
+        var tkey = todayKey
+        var rows = []
+
+        for (var w = 0; w < 6; w++) {
+            var days = []
+            var thursday = null
+            for (var d = 0; d < 7; d++) {
+                var cy = cursor.getFullYear(), cm = cursor.getMonth(), cd = cursor.getDate()
+                var wd = cursor.getDay()
+                var key = cy + "-" + pad2(cm + 1) + "-" + pad2(cd)
+                if (wd === 4) thursday = { y: cy, m: cm, d: cd }
+                days.push({
+                    day: cd, inMonth: cm === m && cy === y,
+                    weekend: wd === 0 || wd === 6, today: key === tkey
+                })
+                cursor.setDate(cursor.getDate() + 1)
+            }
+            var anchor = thursday || days[0]
+            rows.push({ week: isoWeek(anchor.y, anchor.m, anchor.d), days: days })
+        }
+        return rows
+    }
+
+    readonly property var weekdays: {
+        var order = []
+        for (var i = 0; i < 7; i++)
+            order.push((weekStart + i) % 7)
+        return order
+    }
+
+    function weekdayLabel(wd) {
+        return Qt.locale().dayName(wd, Locale.ShortFormat).replace(/\.$/, "").toUpperCase()
+    }
+
+    function goToToday() {
+        monthOffset = 0
+    }
+
+    function openCalendar() {
+        root.today = new Date()
+        root.monthOffset = 0
+        root.revealed = true
+        root.isClosing = false
+        Qt.callLater(function() { card.forceActiveFocus() })
+    }
+
+    function closeCalendar() {
+        if (!root.revealed || root.isClosing) return
+        root.isClosing = true
+        root.revealed = false
+        closeTimer.restart()
+    }
+
+    Timer {
+        id: closeTimer
+        interval: 250
+        onTriggered: root.isClosing = false
+    }
+
+    // ---- Auto-refresh ----
+    Timer {
+        id: dayRefresh
+        interval: 30000
+        running: root.revealed
+        repeat: true
+        onTriggered: {
+            var now = new Date()
+            var oldKey = root.todayKey
+            root.today = now
+            if (oldKey !== root.todayKey && root.viewingCurrentMonth)
+                root.goToToday()
+        }
+    }
+
+    // ---- Focus / escape ----
+    onVisibleChanged: {
+        if (visible) {
+            card.forceActiveFocus()
+        }
+    }
+
+    // Click outside → close
+    MouseArea {
+        anchors.fill: parent
+        z: -1
+        onClicked: root.closeCalendar()
+    }
+
+    // ---- Centered card ----
     Rectangle {
         id: card
-        anchors.fill: parent
-        radius: Config.radiusLarge
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: 360
+        height: bodyCol.implicitHeight + 32
+        radius: Config.radius
         color: Config.backgroundTransparentColor
-        border.color: Config.surface2Color
-        border.width: 1
+        border.color: Config.surface3Color
+        border.width: 2
         clip: true
 
-        opacity: root.revealed ? 1 : 0
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 100
-            }
-        }
+        opacity: root.isClosing ? 0 : (root.revealed ? 1 : 0)
+        Behavior on opacity { NumberAnimation { duration: 200 } }
 
         transform: Scale {
-            origin.x: card.width / 2
-            origin.y: 0
-            xScale: root.revealed ? 1 : 0.95
-            yScale: root.revealed ? 1 : 0.95
+            origin.x: card.width / 2; origin.y: 0
+            xScale: root.isClosing ? 0.95 : (root.revealed ? 1 : 0.95)
+            yScale: root.isClosing ? 0.95 : (root.revealed ? 1 : 0.95)
+        }
+        Behavior on transform { NumberAnimation { duration: 200; easing.type: Easing.OutExpo } }
+
+        Keys.onEscapePressed: root.closeCalendar()
+        Keys.onPressed: function(event) {
+            if (event.key === Qt.Key_T) { root.goToToday(); event.accepted = true }
+            else if (event.key === Qt.Key_Left) { root.monthOffset--; event.accepted = true }
+            else if (event.key === Qt.Key_Right) { root.monthOffset++; event.accepted = true }
+            else if (event.key === Qt.Key_Up) { root.monthOffset -= 12; event.accepted = true }
+            else if (event.key === Qt.Key_Down) { root.monthOffset += 12; event.accepted = true }
         }
 
-        Behavior on transform {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutExpo
+        // ---- Scroll wheel ----
+        MouseArea {
+            anchors.fill: parent
+            onWheel: function(event) {
+                if (event.angleDelta.y > 0) root.monthOffset--
+                else if (event.angleDelta.y < 0) root.monthOffset++
             }
         }
-
-        Keys.onEscapePressed: root.revealed = false
 
         Column {
             id: bodyCol
             anchors.fill: parent
-            anchors.margins: 17
-            spacing: 12
+            anchors.margins: 16
+            spacing: 8
 
+            // ---------- Hero: calendar icon + "July 29" ----------
             Item {
                 width: parent.width
-                height: 43
+                height: Math.max(heroRow.implicitHeight, 56)
 
-                Column {
-                    anchors.left: parent.left
+                Row {
+                    id: heroRow
+                    anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
+                    spacing: 14
 
                     Text {
-                        text: root.monthName
-                        color: Config.textColor
-                        font.family: Config.monoFont
-                        font.pixelSize: 19
-                        font.letterSpacing: 4
-                        font.weight: Font.Medium
+                        anchors.baseline: heroDate.baseline
+                        text: "󰃭"
+                        color: heroMouse.containsMouse && !root.viewingCurrentMonth
+                            ? Config.accentColor : Config.textColor
+                        font.family: Config.font
+                        font.pixelSize: 36
                     }
 
                     Text {
-                        text: root.year
-                        color: Config.subtextColor
-                        font.family: Config.monoFont
-                        font.pixelSize: 11
-                        font.letterSpacing: 2
+                        id: heroDate
+                        text: Qt.formatDate(root.today, "MMMM d")
+                        color: heroMouse.containsMouse && !root.viewingCurrentMonth
+                            ? Config.accentColor : Config.textColor
+                        font.family: Config.font
+                        font.pixelSize: 38
+                        font.weight: Font.Bold
                     }
                 }
 
-                Row {
+                MouseArea {
+                    id: heroMouse
+                    x: heroRow.x; y: heroRow.y
+                    width: heroRow.width; height: heroRow.height
+                    enabled: !root.viewingCurrentMonth
+                    hoverEnabled: enabled
+                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    onClicked: root.goToToday()
+                }
+            }
+
+            // ---------- Year progress bar ----------
+            Item {
+                width: parent.width
+                height: 20
+
+                Text {
+                    id: yearLabel
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: root.today.getFullYear()
+                    color: Qt.darker(Config.textColor, 1.5)
+                    font.family: Config.monoFont
+                    font.pixelSize: Config.fontSizeSmall
+                    font.letterSpacing: 1
+                }
+
+                Text {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 12
+                    text: root.yearDonePercent + "%"
+                    color: Config.textColor
+                    font.family: Config.monoFont
+                    font.pixelSize: Config.fontSizeSmall
+                }
 
-                    CalendarChevron {
-                        text: "\u2039"
-                        restColor: Config.subtextColor
-                        onTriggered: {
-                            root.monthOffset--;
-                            root.tick++;
-                            root.selectedDay = 0;
-                        }
-                    }
+                Rectangle {
+                    anchors.left: yearLabel.right
+                    anchors.right: parent.right
+                    anchors.leftMargin: 10
+                    anchors.rightMargin: 32
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 5
+                    radius: 2
+                    color: Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.12)
 
-                    CalendarChevron {
-                        text: "\u2022"
-                        restColor: Config.subtextColor
-                        font.pixelSize: 19
-                        onTriggered: {
-                            root.monthOffset = 0;
-                            root.tick++;
-                            root.selectedDay = (new Date()).getDate();
-                        }
-                    }
-
-                    CalendarChevron {
-                        text: "\u203A"
-                        restColor: Config.subtextColor
-                        onTriggered: {
-                            root.monthOffset++;
-                            root.tick++;
-                            root.selectedDay = 0;
-                        }
+                    Rectangle {
+                        width: Math.round(parent.width * root.yearDone)
+                        height: parent.height
+                        radius: parent.radius
+                        color: Config.accentColor
+                        Behavior on width { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
                     }
                 }
             }
@@ -141,195 +309,169 @@ PanelWindow {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: Config.surface1Color
+                color: Qt.alpha(Config.textColor, 0.1)
             }
 
+            // ---------- Weekday header ----------
             Row {
                 width: parent.width
                 spacing: 0
 
-                Repeater {
-                    model: ["MO", "TU", "WE", "TH", "FR", "SA", "SU"]
-
-                    delegate: Item {
-                        required property string modelData
-                        required property int index
-
-                        width: parent.width / 7
-                        height: 22
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: modelData
-                            color: index >= 5 ? Config.accentColor : Config.subtextColor
-                            opacity: index >= 5 ? 0.85 : 0.7
-                            font.family: Config.monoFont
-                            font.pixelSize: 12
-                            font.letterSpacing: 2
-                        }
-                    }
-                }
-            }
-
-            Grid {
-                columns: 7
-                rowSpacing: 2
-                columnSpacing: 0
-                width: parent.width
+                Item { width: 32; height: 16 }
 
                 Repeater {
-                    model: root.calendarCells
+                    model: root.weekdays
 
-                    delegate: Item {
-                        id: dayCell
+                    Item {
                         required property var modelData
-                        required property int index
-
-                        width: parent.width / 7
-                        height: 34
-
-                        readonly property int dayOfWeek: index % 7
-                        readonly property bool isWeekend: dayOfWeek >= 5
-                        readonly property bool isCurrentMonth: modelData.day !== 0
-                        readonly property bool isToday: modelData.today
-                        readonly property bool isSelected: isCurrentMonth && root.selectedDay === modelData.day
-
-                        readonly property color textColor: {
-                            if (isToday)
-                                return Config.textReverseColor;
-                            if (!isCurrentMonth)
-                                return Config.subtextColor;
-                            if (isWeekend)
-                                return Config.accentColor;
-                            return Config.textColor;
-                        }
-
-                        Rectangle {
-                            anchors.centerIn: parent
-                            width: 29
-                            height: 29
-                            radius: 14
-                            color: Config.accentColor
-                            visible: dayCell.isToday
-                            antialiasing: true
-                        }
-
-                        Rectangle {
-                            anchors.centerIn: parent
-                            width: 29
-                            height: 29
-                            radius: 14
-                            color: Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.08)
-                            visible: dayMouse.containsMouse && !dayCell.isToday && dayCell.isCurrentMonth
-                            antialiasing: true
-                        }
-
-                        Rectangle {
-                            anchors.centerIn: parent
-                            width: 29
-                            height: 29
-                            radius: 14
-                            color: "transparent"
-                            border.color: Config.accentColor
-                            border.width: 1
-                            visible: dayCell.isSelected && !dayCell.isToday
-                            antialiasing: true
-                        }
+                        width: (parent.width - 32) / 7
+                        height: 16
 
                         Text {
                             anchors.centerIn: parent
-                            text: dayCell.modelData.day === 0 ? "" : dayCell.modelData.day
-                            color: dayCell.textColor
-                            opacity: dayCell.isCurrentMonth ? 1.0 : 0.35
+                            text: root.weekdayLabel(modelData)
+                            color: Qt.darker(Config.textColor, 1.5)
                             font.family: Config.monoFont
-                            font.pixelSize: 15
-                            font.weight: dayCell.isToday ? Font.Medium : Font.Light
-                        }
-
-                        MouseArea {
-                            id: dayMouse
-                            anchors.fill: parent
-                            hoverEnabled: dayCell.isCurrentMonth
-                            enabled: dayCell.isCurrentMonth
-                            cursorShape: dayCell.isCurrentMonth ? Qt.PointingHandCursor : Qt.ArrowCursor
-                            onClicked: root.selectedDay = dayCell.modelData.day
+                            font.pixelSize: Config.fontSizeSmall - 1
+                            font.letterSpacing: 1
+                            font.weight: Font.Bold
                         }
                     }
                 }
             }
 
+            // ---------- Month grid (6 rows of 7 + week numbers) ----------
+            Column {
+                width: parent.width
+                spacing: 2
+
+                Repeater {
+                    model: root.weeks
+
+                    delegate: Row {
+                        required property var modelData
+                        width: parent.width
+                        spacing: 0
+
+                        Item {
+                            width: 32
+                            height: 26
+                            Text {
+                                anchors.centerIn: parent
+                                text: modelData.week
+                                color: Qt.darker(Config.textColor, 1.9)
+                                font.family: Config.monoFont
+                                font.pixelSize: Config.fontSizeSmall - 1
+                            }
+                        }
+
+                        Repeater {
+                            model: modelData.days
+
+                            delegate: Item {
+                                required property var modelData
+                                property bool dayToday: modelData.today
+                                property bool dayInMonth: modelData.inMonth
+                                property bool dayWeekend: modelData.weekend
+
+                                width: (parent.width - 32) / 7
+                                height: 26
+
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 24; height: 24
+                                    radius: 12
+                                    color: "transparent"
+                                    border.width: dayToday ? 1 : 0
+                                    border.color: Config.accentColor
+                                }
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: modelData.day
+                                    color: dayInMonth
+                                        ? (dayWeekend ? Qt.darker(Config.textColor, 1.45) : Config.textColor)
+                                        : Qt.darker(Config.textColor, 2.2)
+                                    opacity: dayInMonth ? 1.0 : 0.35
+                                    font.family: Config.monoFont
+                                    font.pixelSize: Config.fontSizeSmall + 1
+                                    font.weight: dayToday ? Font.Bold : Font.Normal
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ---------- Separator line after grid ----------
             Rectangle {
                 width: parent.width
                 height: 1
-                color: Config.surface1Color
-                visible: root.selectedDay > 0
+                color: Qt.alpha(Config.textColor, 0.1)
             }
 
-            Text {
+            // ---------- Month navigation ----------
+            Item {
                 width: parent.width
-                visible: root.selectedDay > 0
-                text: root.selectedDayDetail
-                color: Config.textColor
-                font.family: Config.monoFont
-                font.pixelSize: 11
-                font.letterSpacing: 2
+                height: monthLabel.implicitHeight + 8
+
+                Text {
+                    id: monthLabel
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 130
+                    horizontalAlignment: Text.AlignHCenter
+                    text: Qt.formatDate(new Date(root.viewYear, root.viewMonth, 1), "MMMM yyyy").toUpperCase()
+                    color: Qt.darker(Config.textColor, 1.4)
+                    font.family: Config.monoFont
+                    font.pixelSize: Config.fontSizeSmall + 1
+                    font.letterSpacing: 1
+                }
+
+                Chevron {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    glyph: "󰅁"
+                    onTriggered: root.monthOffset--
+                }
+
+                Chevron {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    glyph: "󰅂"
+                    onTriggered: root.monthOffset++
+                }
             }
         }
     }
 
-    readonly property var calendarCells: {
-        root.tick;
-        const offset = root.monthOffset;
-        const now = new Date();
-        const first = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-        const year = first.getFullYear();
-        const month = first.getMonth();
-        const lastDay = new Date(year, month + 1, 0).getDate();
-        const startDay = (first.getDay() + 6) % 7;
-        const today = new Date();
-        const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
-        const cells = [];
-        for (let i = 0; i < startDay; i++)
-            cells.push({day: 0, today: false});
-        for (let d = 1; d <= lastDay; d++)
-            cells.push({day: d, today: isCurrentMonth && d === today.getDate()});
-        while (cells.length < 42)
-            cells.push({day: 0, today: false});
-        return cells;
-    }
+    // ---- Inline chevron component ----
+    component Chevron: Item {
+        property string glyph: ""
+        signal triggered
 
-    readonly property string monthName: {
-        const months = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE",
-                        "JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
-        const now = new Date();
-        return months[(now.getMonth() + root.monthOffset + 12000) % 12];
-    }
+        width: 28; height: 28
+        scale: chevronMouse.containsMouse ? 1.1 : 1.0
 
-    readonly property string year: {
-        const now = new Date();
-        const d = new Date(now.getFullYear(), now.getMonth() + root.monthOffset, 1);
-        return String(d.getFullYear());
-    }
+        Behavior on scale { NumberAnimation { duration: 120 } }
 
-    readonly property string selectedDayDetail: {
-        if (root.selectedDay <= 0)
-            return "";
-        const days = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
-        const months = ["JAN","FEB","MAR","APR","MAY","JUN",
-                        "JUL","AUG","SEP","OCT","NOV","DEC"];
-        const now = new Date();
-        const d = new Date(now.getFullYear(), now.getMonth() + root.monthOffset, root.selectedDay);
-        return days[d.getDay()] + " \u00B7 " + root.selectedDay + " " + months[d.getMonth()] + " " + d.getFullYear();
-    }
+        Text {
+            anchors.centerIn: parent
+            text: glyph
+            color: chevronMouse.containsMouse ? Config.accentColor : Config.subtextColor
+            font.family: Config.font
+            font.pixelSize: 20
 
-    onVisibleChanged: {
-        if (visible) {
-            root.monthOffset = 0;
-            root.tick++;
-            root.selectedDay = (new Date()).getDate();
-            Qt.callLater(() => focusGrab.active = true);
-        } else {
-            focusGrab.active = false;
+            Behavior on color { ColorAnimation { duration: 120 } }
+        }
+
+        MouseArea {
+            id: chevronMouse
+            anchors.fill: parent
+            anchors.margins: -6
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: parent.triggered()
         }
     }
 }

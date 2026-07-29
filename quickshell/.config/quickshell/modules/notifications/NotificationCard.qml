@@ -227,7 +227,7 @@ Item {
                             color: Config.textColor
                             font.family: Config.font
                             font.pixelSize: Config.fontSizeNormal
-                            font.bold: true
+                            font.weight: Font.Bold
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                             textFormat: Text.StyledText
@@ -238,7 +238,7 @@ Item {
                             color: root.isUrgent ? Config.errorColor : Config.accentColor
                             font.family: Config.font
                             font.pixelSize: 10
-                            font.bold: true
+                            font.weight: Font.Bold
                             opacity: 0.8
                         }
                     }

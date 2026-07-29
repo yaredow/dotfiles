@@ -83,14 +83,25 @@ PanelWindow {
         if (visible) {
             isClosing = false;
             isOpening = true;
-            if (moduleName !== "")
+            if (moduleName !== "") {
+                WindowManagerService.closeAllExcept(moduleName);
                 WindowManagerService.registerOpen(moduleName);
+            }
             grabTimer.restart();
         } else {
             focusGrab.active = false;
             isOpening = false;
             if (moduleName !== "")
                 WindowManagerService.registerClose(moduleName);
+        }
+    }
+
+    Connections {
+        target: WindowManagerService
+        function onClosePulseChanged() {
+            if (root.moduleName === "" || !root.visible || root.isClosing) return
+            if (WindowManagerService.closeExclude === root.moduleName) return
+            root.closeWindow()
         }
     }
 
@@ -109,9 +120,9 @@ PanelWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             color: Config.backgroundTransparentColor
-            radius: Config.radiusLarge
-            border.width: 1.0
-            border.color: Config.surface2Color
+            radius: Config.radius
+            border.width: 2
+            border.color: Config.surface3Color
             clip: true
 
             transformOrigin: root.anchorSide === "left" ? Item.TopLeft : Item.TopRight

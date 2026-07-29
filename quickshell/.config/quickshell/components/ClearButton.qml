@@ -40,8 +40,9 @@ Rectangle {
         Text {
             visible: text !== ""
             text: root.text
+            font.family: Config.font
             font.pixelSize: Config.fontSizeSmall
-            font.bold: true
+            font.weight: Font.Bold
             color: root.baseColor
             Layout.alignment: Qt.AlignVCenter
         }

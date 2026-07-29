@@ -9,8 +9,8 @@ Rectangle {
     Layout.alignment: horizontal ? Qt.AlignVCenter : Qt.AlignHCenter
     Layout.preferredWidth: horizontal ? 1 : 12
     Layout.preferredHeight: horizontal ? 12 : 1
-    Layout.leftMargin: horizontal ? 4 : 0
-    Layout.rightMargin: horizontal ? 4 : 0
+    Layout.leftMargin: horizontal ? 2 : 0
+    Layout.rightMargin: horizontal ? 2 : 0
     Layout.topMargin: horizontal ? 0 : 4
     Layout.bottomMargin: horizontal ? 0 : 4
     color: Config.sepColor

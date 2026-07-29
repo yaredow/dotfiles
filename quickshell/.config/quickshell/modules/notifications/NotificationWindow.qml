@@ -53,10 +53,10 @@ QsPopupWindow {
 
                 Text {
                     text: "Notifications"
-                    font.family: Config.font
-                    font.bold: true
-                    font.pixelSize: Config.fontSizeLarge
                     color: Config.textColor
+                    font.family: Config.font
+                    font.pixelSize: Config.fontSizeLarge
+                    font.weight: Font.Bold
                 }
 
                 Text {
@@ -208,6 +208,7 @@ QsPopupWindow {
                     text: NotificationService.dndEnabled ? "Do Not Disturb" : "No notifications"
                     font.family: Config.font
                     font.pixelSize: Config.fontSizeNormal
+                    font.weight: Font.Medium
                     color: NotificationService.dndEnabled ? Config.warningColor : Config.subtextColor
                     opacity: 0.7
                 }

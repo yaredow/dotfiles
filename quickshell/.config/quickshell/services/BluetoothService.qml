@@ -18,7 +18,7 @@ Singleton {
     readonly property string systemIcon: {
         if (!isPowered) return "󰂲"
         if (devicesList.some(dev => dev.connected)) return "󰂱"
-        return ""
+        return "󰂯"
     }
 
     readonly property var connectedDevices: devicesList.filter(dev => dev.connected)

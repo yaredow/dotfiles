@@ -15,9 +15,12 @@ Item {
     property int fontSize: 13
     property int glyphYOffset: -1
     property int fontWeight: Font.DemiBold
+    property bool panelOpen: false
+    property bool wheelEnabled: false
 
     signal activated
     signal rightActivated
+    signal wheeled(int delta)
 
     Layout.alignment: modItem.host.isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
     Layout.preferredWidth: modItem.host.isHorizontal ? 27 : Config.barHeight
@@ -46,26 +49,47 @@ Item {
         }
     }
 
-    Image {
-        anchors.centerIn: parent
-        width: 20; height: 20
-        source: modItem.imageSource
-        fillMode: Image.PreserveAspectFit
-        asynchronous: true
-        sourceSize: Qt.size(40, 40)
-        smooth: true
-        visible: modItem.imageSource != ""
+    Item {
+        anchors.fill: parent
+        scale: mouse.containsMouse ? 1.1 : 1.0
+
+        Behavior on scale {
+            NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+        }
+
+        Image {
+            anchors.centerIn: parent
+            width: 20; height: 20
+            source: modItem.imageSource
+            fillMode: Image.PreserveAspectFit
+            asynchronous: true
+            sourceSize: Qt.size(40, 40)
+            smooth: true
+            visible: modItem.imageSource != ""
+        }
+
+        Text {
+            anchors.centerIn: parent
+            anchors.verticalCenterOffset: modItem.glyphYOffset
+            text: modItem.glyph
+            color: modItem.color
+            font.family: modItem.fontFamily
+            font.pixelSize: modItem.fontSize
+            font.weight: modItem.fontWeight
+            visible: modItem.imageSource == ""
+        }
     }
 
-    Text {
-        anchors.centerIn: parent
-        anchors.verticalCenterOffset: modItem.glyphYOffset
-        text: modItem.glyph
-        color: modItem.color
-        font.family: modItem.fontFamily
-        font.pixelSize: modItem.fontSize
-        font.weight: modItem.fontWeight
-        visible: modItem.imageSource == ""
+    Rectangle {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        width: 12
+        height: 2
+        radius: 1
+        color: Config.accentColor
+        opacity: modItem.panelOpen ? 0.9 : 0
+        Behavior on opacity { NumberAnimation { duration: 120 } }
     }
 
     MouseArea {
@@ -89,6 +113,10 @@ Item {
                 modItem.rightActivated();
             else
                 modItem.activated();
+        }
+        onWheel: function(event) {
+            if (modItem.wheelEnabled)
+                modItem.wheeled(event.angleDelta.y > 0 ? 1 : -1)
         }
     }
 }

@@ -69,13 +69,33 @@ Singleton {
         }
     }
 
+    readonly property var _chargingIcons: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
+    readonly property var _defaultIcons:  ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+
+    readonly property int _iconIndex: mainBattery
+        ? Math.max(0, Math.min(9, Math.floor(mainBattery.percentage * 10)))
+        : 0
+
+    readonly property bool _batteryPresent: mainBattery && mainBattery.isPresent
+    readonly property bool _isFullyCharged: state === UPowerDeviceState.FullyCharged
+    readonly property bool _isPendingCharge: state === UPowerDeviceState.PendingCharge
+    readonly property bool _thresholdActive: {
+        if (!_batteryPresent || UPower.onBattery) return false
+        if (_isPendingCharge) return true
+        if (_isFullyCharged && mainBattery.percentage < 0.99) return true
+        if (!isCharging || mainBattery.percentage >= 0.99) return false
+        var rate = mainBattery["chargeRate"]
+        var ttf = mainBattery["timeToFull"]
+        if (rate !== undefined && Number(rate) <= 0.2) return true
+        if (ttf !== undefined && Number(ttf) >= 8 * 60 * 60) return true
+        return false
+    }
+
     function getBatteryIcon() {
-        if (state === UPowerDeviceState.Charging) return "󰂄"
-        const p = percentage
-        if (p >= 90) return "󰁹"
-        if (p >= 60) return "󰂀"
-        if (p >= 40) return "󰁾"
-        if (p >= 10) return "󰁼"
-        return "󰁺"
+        if (!_batteryPresent) return ""
+        if (_thresholdActive) return _defaultIcons[_iconIndex]
+        if (_isFullyCharged) return "󰂅"
+        if (!UPower.onBattery) return _chargingIcons[_iconIndex]
+        return _defaultIcons[_iconIndex]
     }
 }

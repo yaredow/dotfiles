@@ -46,8 +46,9 @@ Rectangle {
         Text {
             visible: root.text !== ""
             text: root.text
+            font.family: Config.font
             font.pixelSize: Config.fontSizeSmall
-            font.bold: true
+            font.weight: Font.Bold
             color: mouseArea.containsMouse ? root.hoverTextColor : root.textColor
         }
     }

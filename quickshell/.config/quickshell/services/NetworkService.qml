@@ -12,25 +12,29 @@ Singleton {
     property string activeSsid: ""
     property int activeSignal: 0
     property bool wifiEnabled: false
+    property bool ethernetActive: false
 
-    readonly property string systemIcon: {
-        if (!wifiEnabled)
-            return String.fromCodePoint(0xF092E);
-        if (activeSsid)
-            return getWifiIcon(activeSignal);
-        return String.fromCodePoint(0xF092B);
+    readonly property var _wifiIcons: ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
+
+    readonly property string connectionKind: {
+        if (ethernetActive) return "ethernet"
+        if (wifiEnabled && activeSsid) return "wifi"
+        return "disconnected"
     }
 
-    function getWifiIcon(signal) {
-        if (signal > 80)
-            return String.fromCodePoint(0xF0928);
-        if (signal > 60)
-            return String.fromCodePoint(0xF0925);
-        if (signal > 40)
-            return String.fromCodePoint(0xF0922);
-        if (signal > 20)
-            return String.fromCodePoint(0xF091F);
-        return String.fromCodePoint(0xF092B);
+    function wifiIconFor(strength) {
+        if (strength > 80) return _wifiIcons[4]
+        if (strength > 60) return _wifiIcons[3]
+        if (strength > 40) return _wifiIcons[2]
+        if (strength > 20) return _wifiIcons[1]
+        return _wifiIcons[0]
+    }
+
+    readonly property string systemIcon: {
+        if (connectionKind === "ethernet") return "󰈀"
+        if (connectionKind === "wifi") return wifiIconFor(activeSignal)
+        if (!wifiEnabled) return "󰤮"
+        return "󰤮"
     }
 
     readonly property string statusText: {
@@ -57,7 +61,6 @@ Singleton {
 
     Process {
         id: toggleProc
-        property bool _targetState: false
         command: root.wifiEnabled
             ? ["sh", "-c", "rfkill block wifi"]
             : ["sh", "-c", "rfkill unblock wifi"]
@@ -82,7 +85,6 @@ Singleton {
 
     Process {
         id: rfkillProc
-        property string _lastIface: ""
         command: ["sh", "-c", "rfkill list wifi 2>/dev/null | grep -q 'Soft blocked: no' && echo enabled || echo disabled"]
         stdout: SplitParser {
             onRead: data => {
@@ -121,6 +123,16 @@ Singleton {
         }
     }
 
+    Process {
+        id: ethernetProc
+        command: ["sh", "-c", "ip -4 route show default 2>/dev/null | head -1 | grep -qE 'dev (en|eth)' && echo yes || echo no"]
+        stdout: SplitParser {
+            onRead: data => {
+                root.ethernetActive = (data.trim() === "yes");
+            }
+        }
+    }
+
     Timer {
         id: statusRefresh
         interval: 5000
@@ -128,6 +140,7 @@ Singleton {
         repeat: true
         onTriggered: {
             rfkillProc.running = true;
+            ethernetProc.running = true;
             if (root.wifiInterface && root.wifiEnabled)
                 linkProc.running = true;
         }

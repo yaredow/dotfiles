@@ -10,6 +10,7 @@ import "../../components/"
 import "../calendar/"
 import "../notifications/"
 import "../battery/"
+import "../audio/"
 
 PanelWindow {
     id: bar
@@ -44,7 +45,7 @@ PanelWindow {
             anchors.top: host.barEdge === "bottom" ? parent.top : undefined
             anchors.bottom: host.barEdge === "top" ? parent.bottom : undefined
             height: 1
-            color: Config.sepColor
+            color: Config.surface2Color
         }
 
         Rectangle {
@@ -58,76 +59,84 @@ PanelWindow {
         }
 
         Item {
-            id: clockItem
+            id: centerSection
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
+            height: parent.height
             z: 10
 
-            implicitWidth: clockOneLine.implicitWidth + 14
-            implicitHeight: clockOneLine.implicitHeight + 8
-
-            property string clockText: TimeService.format("hh:mm")
-
-            Timer {
-                interval: 30000
-                running: true
-                repeat: true
-                onTriggered: clockItem.clockText = TimeService.format("hh:mm")
-            }
-
-            Text {
-                id: clockOneLine
+            // Clock
+            Item {
+                id: clockItem
                 anchors.centerIn: parent
-                text: clockItem.clockText
-                color: clockMouse.containsMouse ? Config.accentColor : Config.textColor
-                font.family: Config.monoFont
-                font.pixelSize: 12
-                font.letterSpacing: 2
-                font.weight: Font.DemiBold
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 180
+
+                implicitWidth: clockOneLine.implicitWidth + 14
+                implicitHeight: clockOneLine.implicitHeight + 8
+
+                property var clockFormats: ["hh:mm", "dddd hh:mm", "ddd d MMM hh:mm"]
+                property int formatIndex: 0
+
+                function cycleFormat() {
+                    formatIndex = (formatIndex + 1) % clockFormats.length
+                    clockText = TimeService.format(clockFormats[formatIndex])
+                }
+
+                function currentFormat() {
+                    return clockFormats[formatIndex]
+                }
+
+                property string clockText: TimeService.format(clockFormats[0])
+
+                Timer {
+                    interval: 30000
+                    running: true
+                    repeat: true
+                    onTriggered: clockItem.clockText = TimeService.format(clockItem.currentFormat())
+                }
+
+                Text {
+                    id: clockOneLine
+                    anchors.centerIn: parent
+                    text: clockItem.clockText
+                    color: clockMouse.containsMouse ? Config.accentColor : Config.textColor
+                    font.family: Config.monoFont
+                    font.pixelSize: 12
+                    font.letterSpacing: 2
+                    font.weight: Font.DemiBold
+                    Behavior on color { ColorAnimation { duration: 180 } }
+                }
+
+                Timer {
+                    id: clockTipDelay
+                    interval: 320
+                    onTriggered: {
+                        const p = clockItem.mapToItem(null, clockItem.width / 2, clockItem.height / 2);
+                        host.showTooltip("Calendar", p.x, p.y);
                     }
                 }
-            }
 
-            Timer {
-                id: clockTipDelay
-                interval: 320
-                onTriggered: {
-                    const p = clockItem.mapToItem(null, clockItem.width / 2, clockItem.height / 2);
-                    host.showTooltip("Calendar", p.x, p.y);
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    radius: width / 2
+                    color: clockMouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
+                    Behavior on color { ColorAnimation { duration: 180 } }
                 }
-            }
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 3
-                radius: width / 2
-                color: clockMouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 180
+                MouseArea {
+                    id: clockMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    cursorShape: Qt.PointingHandCursor
+                    onEntered: { clockTipDelay.restart() }
+                    onExited: { clockTipDelay.stop(); host.hideTooltip("Calendar") }
+                    onClicked: e => {
+                        clockTipDelay.stop(); host.hideTooltip("Calendar")
+                        if (e.button === Qt.RightButton) { clockItem.cycleFormat(); return }
+                        if (calendarPopup.revealed) calendarPopup.closeCalendar()
+                        else calendarPopup.openCalendar()
                     }
-                }
-            }
-
-            MouseArea {
-                id: clockMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onEntered: {
-                    clockTipDelay.restart();
-                }
-                onExited: {
-                    clockTipDelay.stop();
-                    host.hideTooltip("Calendar");
-                }
-                onClicked: {
-                    clockTipDelay.stop();
-                    host.hideTooltip("Calendar");
-                    calendarPopup.revealed = !calendarPopup.revealed;
                 }
             }
         }
@@ -140,7 +149,7 @@ PanelWindow {
             anchors.bottomMargin: host.isHorizontal ? 0 : 8
             flow: host.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
             rowSpacing: 2
-            columnSpacing: 2
+            columnSpacing: 3
             columns: host.isHorizontal ? -1 : 1
             rows: host.isHorizontal ? 1 : -1
 
@@ -155,7 +164,9 @@ PanelWindow {
                 host: bar.host
             }
 
-            Workspace {}
+            Workspace {
+                Layout.alignment: Qt.AlignVCenter
+            }
 
             Item {
                 id: musicItem
@@ -166,7 +177,7 @@ PanelWindow {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.leftMargin: 2
 
-                property real musicAnimW: present ? musicContent.width + 24 : 0
+                property real musicAnimW: present ? musicPill.width : 0
                 Behavior on musicAnimW {
                     NumberAnimation {
                         duration: 220
@@ -174,40 +185,50 @@ PanelWindow {
                     }
                 }
 
+                readonly property string labelText: (MprisService.artist && MprisService.artist !== "Unknown")
+                    ? MprisService.title + "  —  " + MprisService.artist
+                    : MprisService.title
+
+                readonly property string playerIcon: {
+                    var id = (MprisService.identity || "").toLowerCase()
+                    if (id.indexOf("spotify") !== -1) return "󰓇"
+                    if (id.indexOf("firefox") !== -1 || id.indexOf("chromium") !== -1 || id.indexOf("chrome") !== -1) return "󰈹"
+                    if (id.indexOf("vlc") !== -1) return "󰕼"
+                    if (id.indexOf("mpv") !== -1) return "󰈸"
+                    if (id.indexOf("youtube") !== -1 || id.indexOf("yt") !== -1) return "󰗃"
+                    return "󰝚"
+                }
+
                 readonly property string tipText: MprisService.artist !== "Unknown" ? MprisService.title + " - " + MprisService.artist : MprisService.title
 
                 Rectangle {
-                    anchors.fill: parent
+                    id: musicPill
+                    width: Math.min(labelFull.implicitWidth + 36, 280)
+                    height: parent.height
                     radius: height / 2
                     color: Config.accentColor
                     clip: true
                     opacity: musicMouse.containsMouse ? 1.0 : 0.9
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: 180
-                        }
-                    }
+                    Behavior on opacity { NumberAnimation { duration: 180 } }
 
                     Row {
-                        id: musicContent
-                        anchors.centerIn: parent
-                        spacing: 5
+                        anchors.left: parent.left
+                        anchors.leftMargin: 10
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 6
 
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: String.fromCodePoint(0xF001)
+                            text: musicItem.playerIcon
                             color: Config.textReverseColor
                             font.family: Config.font
-                            font.pixelSize: 9
-                            font.weight: Font.Medium
+                            font.pixelSize: 12
                         }
 
                         Text {
-                            id: musicLabel
+                            id: labelFull
                             anchors.verticalCenter: parent.verticalCenter
-                            readonly property int maxChars: 20
-                            readonly property bool isTitleTruncated: MprisService.title.length > maxChars
-                            text: isTitleTruncated ? MprisService.title.slice(0, maxChars - 2) + ".." : MprisService.title
+                            text: musicItem.labelText
                             color: Config.textReverseColor
                             font.family: Config.monoFont
                             font.pixelSize: 10
@@ -216,26 +237,17 @@ PanelWindow {
                     }
 
                     Rectangle {
+                        visible: labelFull.implicitWidth > (parent.width - 36)
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         height: parent.height
-                        width: 40
+                        width: 36
                         radius: parent.radius
-                        visible: musicLabel.isTitleTruncated
                         gradient: Gradient {
                             orientation: Gradient.Horizontal
-                            GradientStop {
-                                position: 0.0
-                                color: Qt.rgba(Config.accentColor.r, Config.accentColor.g, Config.accentColor.b, 0)
-                            }
-                            GradientStop {
-                                position: 0.6
-                                color: Config.accentColor
-                            }
-                            GradientStop {
-                                position: 1.0
-                                color: Config.accentColor
-                            }
+                            GradientStop { position: 0.0; color: Qt.rgba(Config.accentColor.r, Config.accentColor.g, Config.accentColor.b, 0) }
+                            GradientStop { position: 0.5; color: Config.accentColor }
+                            GradientStop { position: 1.0; color: Config.accentColor }
                         }
                     }
                 }
@@ -244,8 +256,8 @@ PanelWindow {
                     id: musicTipDelay
                     interval: 320
                     onTriggered: {
-                        const p = musicItem.mapToItem(null, musicItem.width / 2, musicItem.height / 2);
-                        host.showTooltip(musicItem.tipText, p.x, p.y);
+                        const p = musicItem.mapToItem(null, musicPill.width / 2, musicPill.height / 2)
+                        host.showTooltip(musicItem.tipText, p.x, p.y)
                     }
                 }
 
@@ -256,19 +268,12 @@ PanelWindow {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                     cursorShape: Qt.PointingHandCursor
                     onEntered: musicTipDelay.restart()
-                    onExited: {
-                        musicTipDelay.stop();
-                        host.hideTooltip(musicItem.tipText);
-                    }
+                    onExited: { musicTipDelay.stop(); host.hideTooltip(musicItem.tipText) }
                     onClicked: e => {
-                        musicTipDelay.stop();
-                        host.hideTooltip(musicItem.tipText);
-                        if (e.button === Qt.RightButton)
-                            MprisService.next();
-                        else if (e.button === Qt.MiddleButton)
-                            MprisService.previous();
-                        else
-                            MprisService.playPause();
+                        musicTipDelay.stop(); host.hideTooltip(musicItem.tipText)
+                        if (e.button === Qt.RightButton) MprisService.next()
+                        else if (e.button === Qt.MiddleButton) MprisService.previous()
+                        else MprisService.playPause()
                     }
                 }
             }
@@ -407,6 +412,7 @@ PanelWindow {
                 color: BluetoothService.isPowered ? Config.textColor : Qt.alpha(Config.textColor, 0.35)
                 fontWeight: Font.Medium
                 onActivated: BluetoothService.launchBluetoothTui()
+                onRightActivated: BluetoothService.togglePower()
             }
 
             Module {
@@ -423,7 +429,14 @@ PanelWindow {
                 tooltip: AudioService.muted ? "Audio muted · " + Math.round(AudioService.volume * 100) + "%" : "Audio " + Math.round(AudioService.volume * 100) + "%"
                 color: AudioService.muted ? Qt.alpha(Config.textColor, 0.45) : Config.textColor
                 fontWeight: Font.Medium
+                wheelEnabled: true
+                panelOpen: audioPanel.visible
+                onActivated: audioPanel.visible = !audioPanel.visible
                 onRightActivated: AudioService.toggleMute()
+                onWheeled: function(delta) {
+                    if (delta > 0) AudioService.increaseVolume()
+                    else AudioService.decreaseVolume()
+                }
             }
 
             Module {
@@ -437,6 +450,7 @@ PanelWindow {
                 }
                 color: BatteryService.percentage <= 10 ? Config.errorColor : BatteryService.percentage <= 20 ? Config.accentColor : Config.textColor
                 fontWeight: Font.Medium
+                panelOpen: batteryPanel.visible
                 onActivated: batteryPanel.visible = !batteryPanel.visible
             }
 
@@ -445,6 +459,7 @@ PanelWindow {
                 glyph: "󰛊"
                 tooltip: IdleService.caffeineEnabled ? "Keep awake (on)" : "Keep awake (off)"
                 color: IdleService.caffeineEnabled ? Config.accentColor : Config.textColor
+                fontWeight: Font.Medium
                 onActivated: IdleService.toggleCaffeine()
             }
 
@@ -509,17 +524,9 @@ PanelWindow {
                 }
                 color: NotificationService.dndEnabled ? Qt.alpha(Config.textColor, 0.45) : Config.textColor
                 fontWeight: Font.Medium
+                panelOpen: notifWindow.visible
                 onActivated: notifWindow.visible = !notifWindow.visible
                 onRightActivated: NotificationService.toggleDnd()
-            }
-
-            Module {
-                host: bar.host
-                glyph: host.edgeArrow()
-                tooltip: "Move bar"
-                color: Config.subtextColor
-                fontWeight: Font.Medium
-                onActivated: host.cycleBarEdge()
             }
         }
     }
@@ -535,6 +542,11 @@ PanelWindow {
 
     BatteryPanel {
         id: batteryPanel
+        visible: false
+    }
+
+    AudioPanel {
+        id: audioPanel
         visible: false
     }
 
