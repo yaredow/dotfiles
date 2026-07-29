@@ -9,6 +9,7 @@ import qs.services
 import "../../components/"
 import "../calendar/"
 import "../notifications/"
+import "../battery/"
 
 PanelWindow {
     id: bar
@@ -436,6 +437,7 @@ PanelWindow {
                 }
                 color: BatteryService.percentage <= 10 ? Config.errorColor : BatteryService.percentage <= 20 ? Config.accentColor : Config.textColor
                 fontWeight: Font.Medium
+                onActivated: batteryPanel.visible = !batteryPanel.visible
             }
 
             Module {
@@ -528,6 +530,11 @@ PanelWindow {
 
     NotificationWindow {
         id: notifWindow
+        visible: false
+    }
+
+    BatteryPanel {
+        id: batteryPanel
         visible: false
     }
 

@@ -56,8 +56,8 @@ PanelWindow {
             height: totalHeight
             radius: Config.radiusLarge
             color: Config.backgroundTransparentColor
-            border.color: Qt.alpha(Config.accentColor, 0.2)
-            border.width: 1
+            border.color: Qt.alpha(Config.accentColor, 0.6)
+            border.width: 2
 
             Behavior on height {
                 NumberAnimation {
@@ -88,8 +88,8 @@ PanelWindow {
                             Layout.fillHeight: true
 
                             color: Config.textColor
-                            font.family: Config.font
-                            font.pixelSize: Config.fontSizeLarge
+                            font.family: Config.monoFont
+                            font.pixelSize: Config.fontSizeNormal
                             verticalAlignment: TextInput.AlignVCenter
                             selectByMouse: true
                             placeholderText: LauncherService.mode === "files" ? "Search videos…" : "Search apps…"
@@ -154,7 +154,7 @@ PanelWindow {
                                 id: countText
                                 anchors.centerIn: parent
                                 text: LauncherService.filteredApps.length
-                                font.family: Config.font
+                                font.family: Config.monoFont
                                 font.pixelSize: Config.fontSizeSmall
                                 color: Config.subtextColor
                             }
@@ -171,7 +171,7 @@ PanelWindow {
                                 id: modeLabel
                                 anchors.centerIn: parent
                                 text: "Videos"
-                                font.family: Config.font
+                                font.family: Config.monoFont
                                 font.pixelSize: Config.fontSizeSmall
                                 color: Config.textColor
                             }
@@ -193,7 +193,7 @@ PanelWindow {
                             Text {
                                 anchors.centerIn: parent
                                 text: "󰅖"
-                                font.family: Config.font
+                                font.family: Config.monoFont
                                 font.pixelSize: Config.fontSizeSmall
                                 color: Config.subtextColor
                             }
@@ -323,8 +323,8 @@ PanelWindow {
                                     Layout.fillWidth: true
                                     text: delegateItem.modelData?.name ?? ""
                                     color: Config.textColor
-                                    font.family: Config.font
-                                    font.pixelSize: Config.fontSizeNormal
+                                    font.family: Config.monoFont
+                                    font.pixelSize: Config.fontSizeSmall
                                     font.weight: delegateItem.isSelected ? Font.DemiBold : Font.Normal
                                     elide: Text.ElideRight
                                 }
@@ -333,7 +333,7 @@ PanelWindow {
                                     Layout.fillWidth: true
                                     text: delegateItem.modelData?.comment || delegateItem.modelData?.genericName || ""
                                     color: Config.subtextColor
-                                    font.family: Config.font
+                                    font.family: Config.monoFont
                                     font.pixelSize: Config.fontSizeSmall
                                     elide: Text.ElideRight
                                     visible: text !== ""
@@ -344,7 +344,7 @@ PanelWindow {
                                 visible: delegateItem.isSelected
                                 text: "󰌑"
                                 color: Config.accentColor
-                                font.family: Config.font
+                                font.family: Config.monoFont
                                 font.pixelSize: Config.fontSizeSmall
                             }
                         }
@@ -380,8 +380,8 @@ PanelWindow {
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: LauncherService.query ? "󰅖" : "󰑓"
-                            font.family: Config.font
-                            font.pixelSize: Config.fontSizeIconLarge
+                            font.family: Config.monoFont
+                            font.pixelSize: Config.fontSizeIcon
                             color: Config.mutedColor
 
                             RotationAnimator on rotation {
@@ -397,8 +397,8 @@ PanelWindow {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: LauncherService.query ? "No results" : "Type to search"
                             color: Config.subtextColor
-                            font.family: Config.font
-                            font.pixelSize: Config.fontSizeNormal
+                            font.family: Config.monoFont
+                            font.pixelSize: Config.fontSizeSmall
                         }
                     }
 
