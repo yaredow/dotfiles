@@ -86,7 +86,7 @@ QsPopupWindow {
 
     function profileIcon(name) {
         if (name === "power-saver") return "󰾆"
-        if (name === "balanced") return ""
+        if (name === "balanced") return ""
         if (name === "performance") return ""
         return ""
     }
