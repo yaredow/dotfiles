@@ -51,13 +51,6 @@ Item {
             root.tooltipShown = false;
     }
 
-    // ---------- Idle dim ----------
-    IdleMonitor {
-        id: idleMonitor
-        enabled: true
-        timeout: 60
-        respectInhibitors: true
-    }
-    readonly property bool isIdle: idleMonitor.isIdle
+
 
 }

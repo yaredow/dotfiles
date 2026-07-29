@@ -92,7 +92,7 @@ PanelWindow {
                             font.pixelSize: Config.fontSizeLarge
                             verticalAlignment: TextInput.AlignVCenter
                             selectByMouse: true
-                            placeholderText: "Search apps..."
+                            placeholderText: LauncherService.mode === "files" ? "Search videos…" : "Search apps…"
                             placeholderTextColor: Config.mutedColor
                             background: null
 
@@ -157,6 +157,23 @@ PanelWindow {
                                 font.family: Config.font
                                 font.pixelSize: Config.fontSizeSmall
                                 color: Config.subtextColor
+                            }
+                        }
+
+                        Rectangle {
+                            visible: LauncherService.mode === "files"
+                            Layout.preferredWidth: modeLabel.implicitWidth + 12
+                            Layout.preferredHeight: 22
+                            radius: height / 2
+                            color: Config.accentColor
+
+                            Text {
+                                id: modeLabel
+                                anchors.centerIn: parent
+                                text: "Videos"
+                                font.family: Config.font
+                                font.pixelSize: Config.fontSizeSmall
+                                color: Config.textColor
                             }
                         }
 
@@ -287,6 +304,8 @@ PanelWindow {
                                     width: 32
                                     height: 32
                                     source: {
+                                        if (delegateItem.modelData?._type === "file")
+                                            return Qt.resolvedUrl("cinema.svg");
                                         const icon = delegateItem.modelData?.icon ?? "";
                                         return icon ? "image://icon/" + icon : "image://icon/application-x-executable";
                                     }
@@ -405,6 +424,15 @@ PanelWindow {
                     }
                 }
             }
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+F"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (LauncherService.visible)
+                LauncherService.toggleFileMode();
         }
     }
 

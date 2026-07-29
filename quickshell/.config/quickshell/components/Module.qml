@@ -14,7 +14,7 @@ Item {
     property string fontFamily: Config.font
     property int fontSize: 13
     property int glyphYOffset: -1
-    property int fontWeight: Font.Medium
+    property int fontWeight: Font.DemiBold
 
     signal activated
     signal rightActivated

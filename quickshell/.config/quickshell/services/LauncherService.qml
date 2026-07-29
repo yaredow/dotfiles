@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
 
 Singleton {
     id: root
@@ -10,10 +11,15 @@ Singleton {
     property bool visible: false
     property string query: ""
     property int selectedIndex: 0
+    property string mode: "apps"
+    property var fileResults: []
 
     property int _refreshToken: 0
 
     readonly property var filteredApps: {
+        if (root.mode === "files")
+            return root.fileResults;
+
         void root._refreshToken;
         let apps = DesktopEntries.applications.values;
 
@@ -56,7 +62,44 @@ Singleton {
         return [...nameMatches, ...descMatches].slice(0, apps.length);
     }
 
+    readonly property string homeDir: Quickshell.env("HOME")
+
+    Process {
+        id: fileSearchProc
+        property var _buffer: []
+        stdout: SplitParser {
+            onRead: data => {
+                const trimmed = data.trim();
+                if (trimmed)
+                    fileSearchProc._buffer.push(trimmed);
+            }
+        }
+        onStarted: fileSearchProc._buffer = []
+        onExited: {
+            root.fileResults = fileSearchProc._buffer.map(fullPath => {
+                fullPath = fullPath.replace(/\/+$/, '');
+                const idx = fullPath.lastIndexOf('/');
+                const name = idx >= 0 ? fullPath.slice(idx + 1) : fullPath;
+                const parentDir = idx >= 0 ? fullPath.slice(0, idx) : '';
+                return {
+                    _type: "file",
+                    name: name,
+                    filePath: fullPath,
+                    icon: "video-x-generic",
+                    comment: parentDir
+                };
+            });
+        }
+    }
+
+    Timer {
+        id: fileSearchDebounce
+        interval: 150
+        onTriggered: root.runFileSearch()
+    }
+
     function show() {
+        mode = "apps";
         _refreshToken++;
         query = "";
         selectedIndex = 0;
@@ -66,6 +109,13 @@ Singleton {
     function hide() {
         visible = false;
         query = "";
+        selectedIndex = 0;
+    }
+
+    function toggleFileMode() {
+        mode = mode === "apps" ? "files" : "apps";
+        query = "";
+        fileResults = [];
         selectedIndex = 0;
     }
 
@@ -81,6 +131,12 @@ Singleton {
             return;
 
         console.log("[Launcher] Launching:", entry.name);
+
+        if (entry._type === "file") {
+            Quickshell.execDetached(["mpv", entry.filePath]);
+            hide();
+            return;
+        }
 
         let cmd = entry.execString;
         cmd = cmd.replace(/%[uUfFdDnNickvm]/g, "").trim();
@@ -108,7 +164,23 @@ Singleton {
         }
     }
 
+    function runFileSearch() {
+        const q = root.query.trim();
+        if (!q) {
+            fileResults = [];
+            return;
+        }
+        fileSearchProc.command = ["fd", "-t", "f",
+            "-E", ".cache", "-E", "Android", "-E", ".local", "-E", ".npm", "-E", ".cargo", "-E", ".rustup",
+            "-e", "mp4", "-e", "mkv", "-e", "avi", "-e", "mov", "-e", "webm", "-e", "m4v", "-e", "flv",
+            "-i", "--max-results", "15", q, root.homeDir];
+        fileSearchProc.running = false;
+        fileSearchProc.running = true;
+    }
+
     onQueryChanged: {
         selectedIndex = 0;
+        if (root.mode === "files")
+            fileSearchDebounce.restart();
     }
 }

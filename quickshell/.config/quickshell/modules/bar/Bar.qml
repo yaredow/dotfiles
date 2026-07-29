@@ -35,32 +35,6 @@ PanelWindow {
         color: Config.backgroundTransparentColor
 
         opacity: 1.0
-        states: State {
-            name: "idle"
-            when: host.isIdle
-            PropertyChanges {
-                target: slabBg
-                opacity: 0.7
-            }
-        }
-        transitions: [
-            Transition {
-                to: "idle"
-                NumberAnimation {
-                    property: "opacity"
-                    duration: 6000
-                    easing.type: Easing.OutQuart
-                }
-            },
-            Transition {
-                from: "idle"
-                NumberAnimation {
-                    property: "opacity"
-                    duration: 6000
-                    easing.type: Easing.OutQuad
-                }
-            }
-        ]
 
         Rectangle {
             visible: host.isHorizontal
@@ -103,13 +77,12 @@ PanelWindow {
             Text {
                 id: clockOneLine
                 anchors.centerIn: parent
-                anchors.verticalCenterOffset: -1
                 text: clockItem.clockText
                 color: clockMouse.containsMouse ? Config.accentColor : Config.textColor
                 font.family: Config.monoFont
                 font.pixelSize: 12
                 font.letterSpacing: 2
-                font.weight: Font.Medium
+                font.weight: Font.DemiBold
                 Behavior on color {
                     ColorAnimation {
                         duration: 180
