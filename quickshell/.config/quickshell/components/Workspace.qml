@@ -1,95 +1,267 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Hyprland
 import qs.config
 
 Item {
-    id: wsCell
-    required property var host
+    id: root
 
-    property int wsId: 0
-    property string label: ""
-    property bool active: false
-    property bool present: false
-    signal activated()
+    readonly property int itemWidth: 14
+    readonly property int itemHeight: 14
+    readonly property int activeWidth: 27
+    readonly property int activeHeight: 16
+    readonly property int itemSpacing: 4
+    readonly property int visibleCount: 5
+    readonly property int totalWorkspaces: 99
 
-    Layout.alignment: host.isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
-    Layout.preferredWidth: host.isHorizontal ? 20 : Config.barHeight
-    Layout.preferredHeight: host.isHorizontal ? Config.barHeight : 20
+    readonly property var parentWindow: QsWindow.window
+    readonly property var parentScreen: parentWindow?.screen ?? null
 
-    onActiveChanged: {
-        if (active && host.lastDirection !== 0) {
-            slideHome.stop();
-            if (host.isHorizontal) {
-                num.slideX = host.lastDirection * 2;
-                num.slideY = 0;
-            } else {
-                num.slideY = host.lastDirection * 2;
-                num.slideX = 0;
+    property var currentMonitor: {
+        if (!Hyprland)
+            return null;
+        return (parentScreen ? Hyprland.monitorFor(parentScreen) : null) ?? Hyprland.focusedMonitor ?? null;
+    }
+
+    readonly property string monitorName: currentMonitor?.name ?? ""
+    property var activeWorkspace: currentMonitor?.activeWorkspace ?? null
+
+    property string manualSpecialName: ""
+    readonly property bool isSpecialWorkspace: manualSpecialName !== ""
+
+    readonly property string specialWorkspaceName: {
+        if (!isSpecialWorkspace)
+            return "";
+        return manualSpecialName.startsWith("special:") ? manualSpecialName.substring(8) : manualSpecialName;
+    }
+
+    property int activeId: (activeWorkspace && activeWorkspace.id > 0) ? activeWorkspace.id : 1
+    property int monitorOffset: Math.floor((activeId - 1) / 100) * 100
+    readonly property int relativeActiveId: Math.max(1, Math.min(activeId - monitorOffset, totalWorkspaces))
+
+    readonly property real viewportWidth: (itemWidth * visibleCount) + (activeWidth - itemWidth) + (itemSpacing * (visibleCount - 1))
+    readonly property real itemStep: itemWidth + itemSpacing
+
+    implicitWidth: isSpecialWorkspace ? specialIndicator.width : viewportWidth
+    implicitHeight: activeHeight + 4
+
+    readonly property var specialWorkspaces: ({
+            "whatsapp": {
+                icon: "󰖣",
+                color: Config.successColor,
+                name: "WhatsApp"
+            },
+            "spotify": {
+                icon: "󰓇",
+                color: Config.accentColor,
+                name: "Music"
+            },
+            "magic": {
+                icon: "󰀘",
+                color: Config.warningColor,
+                name: "Magic"
             }
-            slideHome.start();
+        })
+
+    property string cachedIcon: "󰀘"
+    property string cachedName: ""
+    property color cachedColor: Config.accentColor
+
+    readonly property var currentSpecialConfig: {
+        if (!isSpecialWorkspace)
+            return null;
+        return specialWorkspaces[specialWorkspaceName] ?? {
+            icon: "󰀘",
+            color: Config.accentColor,
+            name: specialWorkspaceName.charAt(0).toUpperCase() + specialWorkspaceName.slice(1)
+        };
+    }
+
+    onCurrentSpecialConfigChanged: {
+        if (currentSpecialConfig) {
+            cachedIcon = currentSpecialConfig.icon;
+            cachedName = currentSpecialConfig.name;
+            cachedColor = currentSpecialConfig.color;
         }
     }
 
-    NumberAnimation {
-        id: slideHome
-        target: num
-        properties: "slideX,slideY"
-        to: 0
-        duration: 180
-        easing.type: Easing.OutCubic
+    readonly property int targetIndex: relativeActiveId - 1
+    readonly property real targetScrollX: {
+        let centerOffset = Math.floor(visibleCount / 2);
+        let maxScrollIndex = totalWorkspaces - visibleCount;
+        let firstVisible = Math.max(0, Math.min(targetIndex - centerOffset, maxScrollIndex));
+        return firstVisible * itemStep;
     }
 
-    Text {
-        id: num
-        property real slideX: 0
-        property real slideY: 0
-        anchors.centerIn: parent
-        anchors.horizontalCenterOffset: slideX
-        anchors.verticalCenterOffset: slideY - 1
-        text: wsCell.label !== "" ? wsCell.label : wsCell.wsId
-        color: wsCell.active ? Config.accentColor : (wsCell.present ? Config.textColor : Config.subtextColor)
-        opacity: wsCell.active ? 1.0 : (wsCell.present ? 0.78 : 0.35)
-        font.family: Config.font
-        font.pixelSize: wsCell.active ? 15 : 13
-        font.weight: Font.Medium
-        Behavior on color {
-            ColorAnimation {
-                duration: 120
-            }
-        }
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 120
-            }
-        }
-        Behavior on font.pixelSize {
-            NumberAnimation {
-                duration: 120
-            }
+    property real animatedScrollX: targetScrollX
+    Behavior on animatedScrollX {
+        NumberAnimation {
+            duration: Config.animDurationLong
+            easing.type: Easing.OutQuint
         }
     }
 
-    MouseArea {
-        id: wsMouse
-        anchors.fill: parent
-        anchors.margins: -2
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            wsCell.activated();
+    property var occupiedWorkspaces: ({})
+    function updateOccupiedWorkspaces() {
+        if (!Hyprland || !Hyprland.workspaces)
+            return;
+        let newObj = {};
+        for (let ws of Hyprland.workspaces.values) {
+            if (ws && ws.id > 0)
+                newObj[ws.id] = true;
+        }
+        occupiedWorkspaces = newObj;
+    }
+
+    Component.onCompleted: updateOccupiedWorkspaces()
+
+    Timer {
+        id: occupiedUpdateTimer
+        interval: 10
+        onTriggered: root.updateOccupiedWorkspaces()
+    }
+
+    Connections {
+        target: Hyprland
+        function onRawEvent(event) {
+            if (!event)
+                return;
+            if (event.name === "activespecial") {
+                let parts = event.data.split(',');
+                let wsName = parts[0] || "";
+                let targetMonitor = parts[1] || "";
+                if (targetMonitor === "" || targetMonitor === root.monitorName) {
+                    root.manualSpecialName = wsName;
+                }
+            }
+            if (event.name === "workspace") {
+                root.manualSpecialName = "";
+                occupiedUpdateTimer.restart();
+            }
+            const refreshEvents = ["createworkspace", "destroyworkspace", "movewindow", "openwindow", "closewindow"];
+            if (refreshEvents.includes(event.name))
+                occupiedUpdateTimer.restart();
         }
     }
 
+    // =========================================================================
+    // SPECIAL WORKSPACE INDICATOR
+    // =========================================================================
     Rectangle {
-        anchors.fill: parent
-        anchors.margins: 3
-        radius: width / 2
-        color: wsMouse.containsMouse ? Qt.rgba(Config.textColor.r, Config.textColor.g, Config.textColor.b, 0.07) : "transparent"
-        Behavior on color {
-            ColorAnimation {
-                duration: 180
+        id: specialIndicator
+        visible: opacity > 0
+        anchors.centerIn: parent
+
+        opacity: root.isSpecialWorkspace ? (specialHover.hovered ? 0.8 : 1.0) : 0
+        scale: root.isSpecialWorkspace ? 1.0 : 0.9
+        property int yOffset: root.isSpecialWorkspace ? 0 : 5
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: yOffset
+
+        width: specialContent.width + Config.padding * 3
+        height: root.activeHeight
+        radius: Config.radius
+
+        color: root.cachedColor
+        border.width: 1
+
+        Behavior on opacity { NumberAnimation { duration: Config.animDurationShort } }
+        Behavior on scale { NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutCubic } }
+        Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutCubic } }
+        Behavior on color { ColorAnimation { duration: Config.animDuration } }
+
+        Row {
+            id: specialContent
+            anchors.centerIn: parent
+            spacing: Config.padding * 0.8
+
+            Text {
+                text: root.cachedIcon
+                font { family: Config.font; pixelSize: Config.fontSizeLarge }
+                color: Config.textReverseColor
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Text {
+                text: root.cachedName
+                font { family: Config.font; bold: true; pixelSize: Config.fontSizeNormal }
+                color: Config.textReverseColor
+                anchors.verticalCenter: parent.verticalCenter
             }
         }
-        z: -1
+
+        TapHandler {
+            onTapped: {
+                if (root.specialWorkspaceName)
+                    Hyprland.dispatch("togglespecialworkspace " + root.specialWorkspaceName);
+            }
+        }
+        HoverHandler {
+            id: specialHover
+            cursorShape: Qt.PointingHandCursor
+        }
+    }
+
+    // =========================================================================
+    // NORMAL WORKSPACES LIST
+    // =========================================================================
+    Item {
+        id: workspacesContainer
+        visible: !root.isSpecialWorkspace
+        opacity: visible ? 1 : 0
+        width: root.viewportWidth
+        height: parent.height
+        anchors.centerIn: parent
+        clip: true
+
+        Behavior on opacity { NumberAnimation { duration: Config.animDuration } }
+
+        Item {
+            id: container
+            x: -root.animatedScrollX
+            width: (root.totalWorkspaces * root.itemStep) + (root.activeWidth - root.itemWidth)
+            height: parent.height
+
+            Repeater {
+                model: root.totalWorkspaces
+
+                delegate: Rectangle {
+                    id: workspaceItem
+                    required property int index
+                    readonly property int workspaceId: root.monitorOffset + index + 1
+                    readonly property bool isActive: workspaceId === root.activeId
+                    readonly property bool isEmpty: root.occupiedWorkspaces[workspaceId] !== true
+
+                    x: (index > root.targetIndex) ? (index * root.itemStep) + (root.activeWidth - root.itemWidth) : (index * root.itemStep)
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: isActive ? root.activeWidth : root.itemWidth
+                    height: isActive ? root.activeHeight : root.itemHeight
+                    radius: Config.radius
+                    color: isActive ? Config.accentColor : (!isEmpty ? Config.surface3Color : Qt.alpha(Config.surface2Color, 0.65))
+                    opacity: !isActive ? (workspaceHover.hovered ? 0.8 : 1.0) : 1
+
+                    Behavior on x { NumberAnimation { duration: Config.animDurationShort } }
+                    Behavior on width { NumberAnimation { duration: Config.animDurationShort } }
+                    Behavior on height { NumberAnimation { duration: Config.animDurationShort } }
+                    Behavior on color { ColorAnimation { duration: Config.animDuration } }
+                    Behavior on opacity { NumberAnimation { duration: Config.animDurationShort } }
+
+                    TapHandler {
+                        onTapped: {
+                            if (!workspaceItem.isActive)
+                                Hyprland.dispatch("workspace " + workspaceItem.workspaceId);
+                        }
+                    }
+
+                    HoverHandler {
+                        id: workspaceHover
+                        cursorShape: !workspaceItem.isActive ? Qt.PointingHandCursor : undefined
+                    }
+                }
+            }
+        }
     }
 }

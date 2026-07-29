@@ -3,7 +3,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Io
 import qs.config
 import qs.services
@@ -182,18 +181,7 @@ PanelWindow {
                 host: bar.host
             }
 
-            Repeater {
-                model: host.existingWs.length
-                delegate: Workspace {
-                    required property int index
-                    host: bar.host
-                    wsId: host.existingWs[index]
-                    label: host.existingWs[index]
-                    active: host.activeWs === host.existingWs[index]
-                    present: true
-                    onActivated: Hyprland.dispatch('hl.dsp.focus({ workspace = ' + host.existingWs[index] + ' })')
-                }
-            }
+            Workspace {}
 
             Item {
                 id: musicItem
