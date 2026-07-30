@@ -11,8 +11,8 @@ alias tree="eza --tree"                    # tree view (replaces `tree` command)
 # Package management
 # ==============================
 alias sp="sudo pacman"
-alias sps="sudo pacman -S"
-alias spu="sudo pacman -Syu"
+alias sps="sudo pacman -S --noconfirm"
+alias spu="sudo pacman -Syu --noconfirm"
 
 # ==============================
 # Git

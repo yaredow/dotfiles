@@ -9,6 +9,12 @@ hypr/.config/hypr/theme.lua
 nvim/.config/nvim/lua/theme.lua
 fastfetch/.config/fastfetch/config.jsonc
 btop/.config/btop/themes/theme.theme
+qutebrowser/.config/qutebrowser/theme.py
+
+# User-local qutebrowser data
+qutebrowser/.config/qutebrowser/quickmarks
+qutebrowser/.config/qutebrowser/bookmarks/
+qutebrowser/.config/qutebrowser/userscripts/__pycache__/
 
 # Local noise (mpd runtime also covered by mpd/.config/mpd/.gitignore)
 nvim/.config/nvim/nvim.log

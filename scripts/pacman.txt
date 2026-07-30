@@ -47,6 +47,13 @@ zed
 # Browser
 # =============================================================================
 firefox
+qutebrowser
+python-adblock
+hunspell-en_us
+bitwarden-cli
+rofi
+xclip
+xdotool
 
 # =============================================================================
 # Development

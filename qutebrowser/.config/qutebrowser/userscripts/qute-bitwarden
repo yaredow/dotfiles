@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+# qute-bitwarden — Bitwarden CLI integration for qutebrowser
+#
+# Usage:
+#   :spawn --userscript qute-bitwarden fill [search-term]
+#   :spawn --userscript qute-bitwarden get [search-term]
+#   :spawn --userscript qute-bitwarden totp
+#   :spawn --userscript qute-bitwarden user [search-term]
+#   :spawn --userscript qute-bitwarden pass [search-term]
+#
+# Requires: bw (bitwarden-cli), unlocked vault (BW_SESSION env).
+# Copy results to clipboard (xclip/wl-copy).
+
+set -euo pipefail
+
+ACTION="${1:-get}"
+QUERY="${2:-}"
+
+die() { echo "qute-bitwarden: $*" >&2; exit 1; }
+
+# Check bw installed
+command -v bw >/dev/null 2>&1 || die "bw (bitwarden-cli) not installed"
+
+# Check session
+if [[ -z "${BW_SESSION:-}" ]]; then
+    die "BW_SESSION not set. Run 'export BW_SESSION=\$(bw unlock --raw)' in a terminal"
+fi
+
+# Check clipboard tool
+if command -v wl-copy >/dev/null 2>&1; then
+    CLIP="wl-copy"
+elif command -v xclip >/dev/null 2>&1; then
+    CLIP="xclip -selection clipboard"
+else
+    die "no clipboard tool (install wl-clipboard or xclip)"
+fi
+
+# Get current URL from qutebrowser via QUTE_URL env (set by qutebrowser when spawning userscripts)
+URL="${QUTE_URL:-}"
+
+# Get domain for search
+get_domain() {
+    echo "$1" | sed -e 's|^https\?://||' -e 's|^www\.||' -e 's|/.*||'
+}
+
+case "$ACTION" in
+    fill)
+        # Try to get password for current domain
+        if [[ -z "$QUERY" ]]; then
+            [[ -z "$URL" ]] && die "no QUTE_URL; provide a search term"
+            QUERY=$(get_domain "$URL")
+        fi
+        ITEM=$(bw list items --search "$QUERY" 2>/dev/null | jq -r '.[0] // empty')
+        [[ -z "$ITEM" ]] && die "no item matching '$QUERY'"
+        USER=$(echo "$ITEM" | jq -r '.login.username // empty')
+        PASS=$(echo "$ITEM" | jq -r '.login.password // empty')
+        NAME=$(echo "$ITEM" | jq -r '.name')
+        if [[ -n "$PASS" ]]; then
+            echo -n "$PASS" | $CLIP
+            notify-send "qute-bitwarden" "Password for '$NAME' copied" 2>/dev/null || true
+        fi
+        if [[ -n "$USER" ]]; then
+            # Also copy username for reference
+            echo "$USER"
+        fi
+        ;;
+    get|password|pass)
+        if [[ -z "$QUERY" ]]; then
+            # Try domain first, then list all
+            if [[ -n "$URL" ]]; then
+                QUERY=$(get_domain "$URL")
+            fi
+            if [[ -z "$QUERY" ]]; then
+                bw list items --search "" 2>/dev/null | jq -r '.[] | "\(.name)\t\(.id)"' | ${DMENU:-rofi -dmenu -i -p "bitwarden:"} | awk -F'\t' '{print $2}' > /tmp/bw-selected
+                ID=$(cat /tmp/bw-selected 2>/dev/null || true)
+                [[ -z "$ID" ]] && exit 0
+                PASS=$(bw get password "$ID" 2>/dev/null)
+                echo -n "$PASS" | $CLIP
+                notify-send "qute-bitwarden" "Password copied" 2>/dev/null || true
+                exit 0
+            fi
+        fi
+        ITEM=$(bw list items --search "$QUERY" 2>/dev/null | jq -r '.[0] // empty')
+        [[ -z "$ITEM" ]] && die "no item matching '$QUERY'"
+        PASS=$(echo "$ITEM" | jq -r '.login.password // empty')
+        NAME=$(echo "$ITEM" | jq -r '.name')
+        if [[ -n "$PASS" ]]; then
+            echo -n "$PASS" | $CLIP
+            notify-send "qute-bitwarden" "Password for '$NAME' copied" 2>/dev/null || true
+        else
+            die "no password in item"
+        fi
+        ;;
+    user|username)
+        if [[ -z "$QUERY" ]]; then
+            [[ -n "$URL" ]] && QUERY=$(get_domain "$URL")
+            [[ -z "$QUERY" ]] && die "provide a search term"
+        fi
+        ITEM=$(bw list items --search "$QUERY" 2>/dev/null | jq -r '.[0] // empty')
+        [[ -z "$ITEM" ]] && die "no item matching '$QUERY'"
+        USER=$(echo "$ITEM" | jq -r '.login.username // empty')
+        if [[ -n "$USER" ]]; then
+            echo -n "$USER" | $CLIP
+            notify-send "qute-bitwarden" "Username copied" 2>/dev/null || true
+        else
+            die "no username in item"
+        fi
+        ;;
+    totp)
+        ITEM_ID=$(bw list items --search "${QUERY:-$(get_domain "$URL")}" 2>/dev/null | jq -r '.[0].id // empty')
+        [[ -z "$ITEM_ID" ]] && die "no item matching"
+        CODE=$(bw get totp "$ITEM_ID" 2>/dev/null) || die "no TOTP in item"
+        echo -n "$CODE" | $CLIP
+        notify-send "qute-bitwarden" "TOTP $CODE copied" 2>/dev/null || true
+        ;;
+    *)
+        echo "Usage: qute-bitwarden {fill|get|user|totp} [search-term]" >&2
+        exit 1
+        ;;
+esac

@@ -22,10 +22,10 @@ api_key: YOUR API KEY HERE
 shell: sh
 legacy_input_handling: false
 env:
-  download-path: ~/Downloads/%(title)s-%(id)s.%(ext)s
-  browser: xdg-open
   terminal-emulator: kitty -e
   youtube-downloader: yt-dlp
+  download-path: ~/Downloads/%(title)s-%(id)s.%(ext)s
+  browser: xdg-open
   save-path: ~/.local/share/youtube-tui/saved/
   video-player: mpv
 block_list:

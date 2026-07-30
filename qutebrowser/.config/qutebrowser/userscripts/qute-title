@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""qute-title — set window title from current page (useful for tiling WMs).
+
+Usage:
+    :spawn --userscript qute-title         (set title to current page title)
+    :spawn --userscript qute-title <text>  (set title to arbitrary text)
+"""
+import subprocess
+import sys
+
+TITLE = sys.argv[1] if len(sys.argv) > 1 else None
+
+
+def get_page_title():
+    """Get current page title via qutebrowser."""
+    try:
+        r = subprocess.run(
+            ["qcmd", "title"],
+            capture_output=True, text=True, timeout=5
+        )
+        if r.returncode == 0:
+            return r.stdout.strip()
+    except Exception:
+        pass
+
+    # Fallback: try to extract from current page
+    try:
+        r = subprocess.run(
+            ["qutebrowser", ":debug-pyeval", "tabbed_browser.widget().window().windowTitle()"],
+            capture_output=True, text=True, timeout=5
+        )
+        if r.returncode == 0:
+            return r.stdout.strip()
+    except Exception:
+        pass
+
+    return ""
+
+
+def set_window_title(title):
+    """Set WM_NAME via xdotool or hyprctl."""
+    if not title:
+        return
+
+    # Strip " - qutebrowser" suffix
+    title = title.replace(" - qutebrowser", "").strip()
+
+    # Try xdotool first
+    try:
+        subprocess.run(
+            ["xdotool", "getactivewindow", "set_window", "--name", title],
+            check=True, capture_output=True, timeout=5
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        pass
+
+    # Try hyprctl (Hyprland)
+    try:
+        # Get current workspace and active window
+        r = subprocess.run(
+            ["hyprctl", "activewindow", "-j"],
+            capture_output=True, text=True, timeout=5
+        )
+        if r.returncode == 0:
+            import json
+            win = json.loads(r.stdout)
+            addr = win.get("address", "")
+            if addr:
+                subprocess.run(
+                    ["hyprctl", "dispatch", "renamewindow", title],
+                    check=False, capture_output=True, timeout=5
+                )
+    except (FileNotFoundError, Exception):
+        pass
+
+
+if __name__ == "__main__":
+    if TITLE:
+        set_window_title(TITLE)
+    else:
+        title = get_page_title()
+        if title:
+            set_window_title(title)
