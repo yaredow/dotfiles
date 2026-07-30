@@ -26,9 +26,12 @@
   "sapphire": "#7aa2f7",
   "blue": "#7aa2f7",
   "lavender": "#bb9af7",
-  "wallpaper": "tokyonight.jpg",
   "fonts": {
     "mono": "CaskaydiaCove Nerd Font",
     "size": 10
+  },
+  "integrations": {
+    "nvim": "tokyonight-night",
+    "starship": "tokyonight_night"
   }
 }

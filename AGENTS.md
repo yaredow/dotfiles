@@ -7,10 +7,9 @@ Arch Linux + Hyprland dotfiles with a centralized theme system. All config deplo
 Each top-level directory is a **stow package** rooted at `~`, unless listed in `scripts/stow-exclude.txt`.
 
 ```
-stow */                    # rough; prefer install.sh or the package list
 stow hypr kitty            # specific packages
 stow -D hypr               # remove symlinks
-./install.sh               # full bootstrap (discovers packages automatically)
+./install.sh               # full bootstrap (auto-discovers packages)
 ```
 
 ### Stow packages vs non-packages
@@ -18,21 +17,51 @@ stow -D hypr               # remove symlinks
 | Kind | Examples | How deployed |
 |------|----------|--------------|
 | Stow package | `hypr/`, `kitty/`, `nvim/`, `quickshell/`, `theme/`, `bin/`, … | `stow` → `~` |
-| Non-package | `scripts/`, `sddm/`, `ydot-sddm/` | install helpers / root installers only |
+| Non-package | `scripts/`, `sddm/`, `ydot-sddm/`, `starship/` | helpers / templates only |
 
-Adding a new app config: create `appname/.config/...` and it is picked up automatically. To keep a top-level dir out of stow, add its name to `scripts/stow-exclude.txt`.
+`starship/` is **not** stowed — `theme-set.sh` renders `starship.toml` from the theme template into `~/.config/starship.toml`.
+
+Adding a new app config: create `appname/.config/...` (picked up automatically). To keep a top-level dir out of stow, add its name to `scripts/stow-exclude.txt`.
 
 ## Theme system
 
-Central color system in `theme/.config/theme/themes/<name>/colors.json`. Three themes:
-tokyonight, catppuccin, rosepine.
+Source of truth: `theme/.config/theme/themes/<name>/colors.json`.
 
-- `theme-set.sh <name>` renders `sed` templates (`*.tpl`) with `{{key}}` / `{{key_strip}}` placeholders
-- Templates live in `theme/.config/theme/templates/` — kitty, hypr, tmux, fastfetch, btop
-- `theme-set.sh` also switches starship palette, neovim theme, wallpaper, and writes to state.json
-- Wallpaper cycling: `wallpaper-cycle.sh` (SUPER+W) — 3 wallpapers per theme, cycled via state.json `wallpaper.index`
+```
+theme-set.sh <name>
+  ├─ render templates → kitty / hypr / tmux / fastfetch / btop / starship
+  ├─ copy colors.json → ~/.config/quickshell/state/colors.json
+  ├─ nvim via integrations.nvim → ~/.config/nvim/lua/theme.lua
+  ├─ wallpaper via awww (see below)
+  └─ state.json: theme.name + wallpaper.current (nested only)
+```
 
-### Generated files (gitignored — do not edit or commit)
+Templates: `theme/.config/theme/templates/*.tpl` with `{{key}}` / `{{key_strip}}` and `{{starship_palette}}`.
+
+Per-theme integrations in `colors.json`:
+
+```json
+"integrations": { "nvim": "tokyonight-night", "starship": "tokyonight_night" }
+```
+
+### Wallpapers
+
+```
+~/.local/wallpapers/
+  <theme>/1.jpg …          # theme-bound set (cycle stays here)
+  extras/                  # unthemed (picker "Add")
+```
+
+Repo seeds: `theme/.../themes/<name>/wallpapers/` (copied on install with `cp -n`).
+
+| Script | Role |
+|--------|------|
+| `wallpaper-lib.sh` | shared helpers (source only) |
+| `wallpaper-set.sh [path]` | awww + `wallpaper.current` |
+| `wallpaper-cycle.sh` | next image in current theme dir (SUPER+W) |
+| `theme-set.sh <name>` | full theme + wallpaper for that theme |
+
+### Generated files (do not edit/commit)
 
 | Path | Source |
 |------|--------|
@@ -41,28 +70,39 @@ tokyonight, catppuccin, rosepine.
 | `~/.config/tmux/theme.conf` | `tmux.conf.tpl` |
 | `~/.config/fastfetch/config.jsonc` | `fastfetch.jsonc.tpl` |
 | `~/.config/btop/themes/theme.theme` | `btop.theme.tpl` |
-| `~/.config/nvim/lua/theme.lua` | nvim colorscheme name |
-| `~/.config/theme/current` | symlink to active theme dir |
-| `~/.config/quickshell/state.json` | machine-local state (from `state.default.json`) |
+| `~/.config/starship.toml` | `starship.toml.tpl` |
+| `~/.config/nvim/lua/theme.lua` | `integrations.nvim` |
+| `~/.config/theme/current` | symlink → active theme |
+| `~/.config/quickshell/state.json` | machine-local (from `state.default.json`) |
+| `~/.config/quickshell/state/colors.json` | copy of active `colors.json` |
+
+### State shape (nested only)
+
+```json
+{
+  "theme": { "name": "tokyonight" },
+  "wallpaper": { "current": "/home/.../wallpapers/tokyonight/1.jpg", "dynamic": true }
+}
+```
+
+No flat `"theme.name"` / `"wallpaper.index"` keys. Scripts migrate legacy flat keys on write.
 
 ## Key files
 
 | File | Purpose |
 |------|---------|
-| `install.sh` | Fresh-install bootstrap (pacman → yay → stow → defaults) |
-| `scripts/pacman.txt` | Official packages (blank-line/comment-delimited) |
-| `scripts/yay.txt` | AUR packages (same format) |
-| `scripts/stow-exclude.txt` | Top-level dirs that are not stow packages |
-| `quickshell/.config/quickshell/state.default.json` | Template for machine-local `state.json` |
-| `hypr/.config/hypr/hyprland.lua` | Hyprland config (Lua) |
-| `bin/.local/bin/theme-set.sh` | Theme switcher — the central orchestrator |
-| `bin/.local/bin/wallpaper-cycle.sh` | Wallpaper cycler |
+| `install.sh` | Bootstrap |
+| `scripts/pacman.txt` / `yay.txt` | Packages |
+| `scripts/stow-exclude.txt` | Non-stow top-level dirs |
+| `bin/.local/bin/theme-set.sh` | Theme orchestrator |
+| `bin/.local/bin/wallpaper-*.sh` | Wallpaper |
+| `hypr/.config/hypr/hyprland.lua` | Hyprland |
+| `quickshell/.../state.default.json` | State template |
 
-## Important gotchas
+## Gotchas
 
-- `state.json` is gitignored; edit `state.default.json` for structural changes
-- All theme outputs are generated by `theme-set.sh` — edit templates/`colors.json` only
-- Kitty static config is `kitty.conf`; colors live in generated `theme.conf`
-- Wallpaper dir is `~/.local/wallpapers/` (copied from repo during install, not stowed)
-- stow will refuse if a target file already exists and isn't a symlink — remove originals first
-- `theme-set.sh` reads font overrides from `state.json` (`typography.monoFont`) — font changes from the settings panel persist there
+- Edit templates / `colors.json` only — never generated outputs
+- Kitty static config is `kitty.conf`; colors in generated `theme.conf`
+- Wallpapers are **not** stowed; install seeds per-theme dirs under `~/.local/wallpapers/`
+- stow refuses if a real file already exists at the target — remove originals first
+- Font overrides from the settings panel live in `state.json` → `typography.monoFont`

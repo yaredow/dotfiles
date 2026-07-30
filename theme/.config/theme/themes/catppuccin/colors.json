@@ -26,9 +26,12 @@
   "sapphire": "#74c7ec",
   "blue": "#89b4fa",
   "lavender": "#b4befe",
-  "wallpaper": "catppuccin.jpg",
   "fonts": {
     "mono": "CaskaydiaCove Nerd Font",
     "size": 10
+  },
+  "integrations": {
+    "nvim": "catppuccin-mocha",
+    "starship": "catppuccin_mocha"
   }
 }

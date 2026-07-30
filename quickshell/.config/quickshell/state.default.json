@@ -1,6 +1,7 @@
 {
   "wallpaper": {
-    "dynamic": true
+    "dynamic": true,
+    "current": ""
   },
   "theme": {
     "name": "tokyonight"
@@ -40,7 +41,5 @@
     "imageSize": 40,
     "timeout": 5000,
     "spacing": 10
-  },
-  "wallpaper.index": 0,
-  "theme.name": "tokyonight"
+  }
 }

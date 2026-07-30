@@ -173,13 +173,19 @@ else
 fi
 
 # =============================================================================
-# 12 – Copy default wallpapers
+# 12 – Copy default wallpapers (per-theme dirs)
 # =============================================================================
 say "Copying default wallpapers..."
 mkdir -p "$HOME/.local/wallpapers"
-for img in "$REPO_DIR/theme/.config/theme/wallpapers"/*.jpg; do
-  [[ -f "$img" ]] && cp -n "$img" "$HOME/.local/wallpapers/"
-done 2>/dev/null || true
+for theme_dir in "$REPO_DIR/theme/.config/theme/themes"/*/; do
+  [[ -d "$theme_dir" ]] || continue
+  name=$(basename "$theme_dir")
+  seed="$theme_dir/wallpapers"
+  [[ -d "$seed" ]] || continue
+  mkdir -p "$HOME/.local/wallpapers/$name"
+  cp -n "$seed"/* "$HOME/.local/wallpapers/$name/" 2>/dev/null || true
+done
+mkdir -p "$HOME/.local/wallpapers/extras"
 
 mkdir -p "$HOME/.local/share"
 

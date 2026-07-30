@@ -1,43 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# shellcheck source=wallpaper-lib.sh
+source "$(dirname "$(readlink -f "$0")")/wallpaper-lib.sh"
 
-STATE_FILE="$HOME/.config/quickshell/state.json"
-WALLPAPER_DIR="$HOME/.local/wallpapers"
+THEME=$(wallpaper_state_get "theme.name" "tokyonight")
+CURRENT=$(wallpaper_state_get "wallpaper.current" "")
+[[ -z "$CURRENT" && -f "$WALLPAPER_ROOT/.current" ]] && CURRENT=$(cat "$WALLPAPER_ROOT/.current" 2>/dev/null || true)
 
-THEME="tokyonight"
-INDEX=0
-if [[ -f "$STATE_FILE" ]]; then
-  THEME=$(jq -r '.["theme.name"] // "tokyonight"' "$STATE_FILE")
-  INDEX=$(jq -r '.["wallpaper.index"] // 0 | tonumber' "$STATE_FILE")
-fi
+WP_FILE=$(wallpaper_next_in_theme "$THEME" "$CURRENT" || true)
 
-WALLPAPER_MAP='{"tokyonight":"tokyonight","catppuccin":"catppuccin","rosepine":"rose-pine"}'
-WP_PREFIX=$(echo "$WALLPAPER_MAP" | jq -r ".$THEME")
-
-NEXT_INDEX=$(( (INDEX + 1) % 3 ))
-WP_NUM=$(( NEXT_INDEX + 1 ))
-
-WP_FILE=$(find "$WALLPAPER_DIR" -maxdepth 1 -name "${WP_PREFIX}-${WP_NUM}.*" -type f 2>/dev/null | head -1)
-
-if [[ -z "$WP_FILE" ]]; then
-  NEXT_INDEX=0
-  WP_NUM=1
-  WP_FILE=$(find "$WALLPAPER_DIR" -maxdepth 1 -name "${WP_PREFIX}-1.*" -type f 2>/dev/null | head -1)
-fi
-
-if [[ -z "$WP_FILE" ]]; then
-  notify-send "Wallpaper" "No wallpaper found: ${WP_PREFIX}" -t 3000
+if [[ -z "${WP_FILE:-}" || ! -f "$WP_FILE" ]]; then
+  notify-send "Wallpaper" "No wallpapers in ${THEME}" -t 3000 2>/dev/null || true
   exit 1
 fi
 
-awww img "$WP_FILE" --transition-type grow --transition-step 30 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null || {
-  awww-daemon 2>/dev/null &
-  sleep 0.5
-  awww img "$WP_FILE" --transition-type grow --transition-step 30 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null || true
-}
+wallpaper_awww_set "$WP_FILE" || true
+wallpaper_state_update "" "$WP_FILE"
 
-if [[ -f "$STATE_FILE" ]]; then
-  jq --argjson idx "$NEXT_INDEX" '.["wallpaper.index"] = $idx' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
-fi
-
-notify-send "Wallpaper" "${THEME} - ${WP_PREFIX}-${WP_NUM}" -t 2000
+notify-send "Wallpaper" "$(basename "$(dirname "$WP_FILE")")/$(basename "$WP_FILE")" -t 2000 2>/dev/null || true

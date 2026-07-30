@@ -10,15 +10,12 @@ Singleton {
     id: root
 
     function getState(path, fallback) {
-        return StateService.get ? StateService.get(path, fallback) : fallback
+        return StateService.get ? StateService.get(path, fallback) : fallback;
     }
     function setState(path, value) {
-        if (StateService.set) StateService.set(path, value)
+        if (StateService.set)
+            StateService.set(path, value);
     }
-
-    // ========================================================================
-    // PROPERTIES
-    // ========================================================================
 
     property bool pickerVisible: false
     property string currentWallpaper: getState("wallpaper.current", "")
@@ -34,20 +31,17 @@ Singleton {
     property var themeWallpapers: []
 
     readonly property string wallpaperDir: Quickshell.env("HOME") + "/.local/wallpapers"
-    readonly property string themeWallpaperDir: wallpaperDir + "/themes"
-    readonly property string themesConfigDir: Quickshell.env("HOME") + "/.local/themes"
+    readonly property string themeWallpaperDir: wallpaperDir
     readonly property int selectedCount: selectedWallpapers.length
+    readonly property string binDir: Quickshell.env("HOME") + "/.local/bin"
 
     readonly property var activeThemeWallpapers: {
         const result = [];
         const themes = ThemeService.availableThemes;
-        const previews = ThemeService.themePreviews;
         for (let i = 0; i < themes.length; i++) {
-            const name = themes[i];
-            const preview = previews[name];
-            if (preview && preview.wallpaper) {
-                result.push(wallpaperDir + "/" + preview.wallpaper);
-            }
+            const p = ThemeService.themeWallpaperPath(themes[i]);
+            if (p)
+                result.push(p);
         }
         return result;
     }
@@ -58,17 +52,9 @@ Singleton {
         if (currentCategory === "themes" && themeFilter) {
             list = root.themeWallpapers;
         } else if (currentCategory === "themes") {
-            const themes = ThemeService.availableThemes;
-            const previews = ThemeService.themePreviews;
-            list = [];
-            for (let i = 0; i < themes.length; i++) {
-                const preview = previews[themes[i]];
-                if (preview && preview.wallpaper)
-                    list.push(themes[i]);
-            }
+            list = ThemeService.availableThemes.slice();
         } else {
             list = root.wallpapers;
-
             if (currentCategory === "favorites")
                 list = list.filter(w => favorites.includes(relativePath(w)));
         }
@@ -84,12 +70,6 @@ Singleton {
         return list;
     }
 
-    readonly property var transitions: ["wipe", "wave", "grow", "center", "outer", "any"]
-
-    // ========================================================================
-    // INITIALIZATION
-    // ========================================================================
-
     Component.onCompleted: {
         refreshWallpapers();
         getCurrentWallpaper();
@@ -97,17 +77,12 @@ Singleton {
 
     Connections {
         target: StateService
-
         function onStateLoaded() {
             root.currentWallpaper = getState("wallpaper.current", "");
             root.dynamicWallpaper = getState("wallpaper.dynamic", true);
             root.favorites = getState("wallpaper.favorites", []);
         }
     }
-
-    // ========================================================================
-    // PUBLIC FUNCTIONS
-    // ========================================================================
 
     function fileName(path) {
         return path.split("/").pop();
@@ -134,28 +109,26 @@ Singleton {
     }
 
     function isThemeWallpaper(path) {
-        return fileName(path).startsWith("theme-");
+        const rel = relativePath(path);
+        return rel.indexOf("/") >= 0 && !rel.startsWith("extras/");
     }
 
     function themeNameFromPath(path) {
-        const name = fileName(path);
-        const match = name.match(/^theme-(.+)\.\w+$/);
-        return match ? match[1] : "";
+        const rel = relativePath(path);
+        const i = rel.indexOf("/");
+        return i > 0 ? rel.substring(0, i) : "";
     }
 
     function addToTheme(sourcePath, themeName) {
-        const dest = themeWallpaperDir + "/" + themeName + "/";
+        const dest = wallpaperDir + "/" + themeName + "/";
         addToThemeProc.command = ["bash", "-c", "mkdir -p '" + dest + "' && cp '" + sourcePath + "' '" + dest + "'"];
         addToThemeProc._themeName = themeName;
         addToThemeProc.running = true;
     }
 
+    // "Active" wallpaper for a theme = currently set if under that theme, else first
     function setActiveThemeWallpaper(wallpaperPath, themeName) {
-        const relativePath = wallpaperPath.replace(wallpaperDir + "/", "");
-        const jsonPath = themesConfigDir + "/" + themeName + ".json";
-        setActiveThemeProc.command = ["bash", "-c", "jq '.wallpaper = \"" + relativePath + "\"' '" + jsonPath + "' > '" + jsonPath + ".tmp' && mv '" + jsonPath + ".tmp' '" + jsonPath + "'"];
-        setActiveThemeProc._wallpaperPath = wallpaperPath;
-        setActiveThemeProc.running = true;
+        setWallpaper(wallpaperPath);
     }
 
     function refreshThemeWallpapers(themeName) {
@@ -163,39 +136,27 @@ Singleton {
             themeWallpapers = [];
             return;
         }
-        listThemeWallpapersProc._themeName = themeName;
-        listThemeWallpapersProc.command = ["bash", "-c", "mkdir -p '" + themeWallpaperDir + "/" + themeName + "' && " + "ls -1 '" + themeWallpaperDir + "/" + themeName + "'/*.{png,jpg,jpeg,webp,gif} 2>/dev/null | sort"];
+        listThemeWallpapersProc.command = ["bash", "-c", "mkdir -p '" + wallpaperDir + "/" + themeName + "' && find '" + wallpaperDir + "/" + themeName + "' -maxdepth 1 -type f \\( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' -o -iname '*.gif' \\) | sort"];
         listThemeWallpapersProc.running = true;
     }
 
     function themeForActiveWallpaper(wallpaperPath) {
-        const relativePath = wallpaperPath.replace(wallpaperDir + "/", "");
-        const themes = ThemeService.availableThemes;
-        const previews = ThemeService.themePreviews;
-        for (let i = 0; i < themes.length; i++) {
-            const preview = previews[themes[i]];
-            if (preview && preview.wallpaper === relativePath)
-                return themes[i];
-        }
-        return "";
+        return themeNameFromPath(wallpaperPath);
     }
 
     function getThemeActiveWallpaper(themeName) {
-        const preview = ThemeService.themePreviews[themeName];
-        if (preview && preview.wallpaper)
-            return preview.wallpaper;
-        return "";
+        if (currentWallpaper && themeNameFromPath(currentWallpaper) === themeName)
+            return relativePath(currentWallpaper);
+        const p = ThemeService.themeWallpaperPath(themeName);
+        return p ? relativePath(p) : "";
     }
 
     function themeWallpaperPath(themeName) {
-        const rel = getThemeActiveWallpaper(themeName);
-        return rel ? wallpaperDir + "/" + rel : "";
+        return ThemeService.themeWallpaperPath(themeName);
     }
 
     function isActiveThemeWallpaper(wallpaperPath, themeName) {
-        const relativePath = wallpaperPath.replace(wallpaperDir + "/", "");
-        const activeWallpaper = getThemeActiveWallpaper(themeName);
-        return relativePath === activeWallpaper;
+        return wallpaperPath === currentWallpaper && themeNameFromPath(wallpaperPath) === themeName;
     }
 
     function toggleDynamicWallpaper() {
@@ -205,6 +166,7 @@ Singleton {
 
     function show() {
         refreshWallpapers();
+        ThemeService.refreshThemes();
         selectedWallpapers = [];
         confirmDelete = false;
         searchQuery = "";
@@ -232,11 +194,10 @@ Singleton {
     }
 
     function toggleSelection(path) {
-        if (isSelected(path)) {
+        if (isSelected(path))
             selectedWallpapers = selectedWallpapers.filter(w => w !== path);
-        } else {
+        else
             selectedWallpapers = [...selectedWallpapers, path];
-        }
         confirmDelete = false;
     }
 
@@ -251,37 +212,26 @@ Singleton {
     }
 
     function setWallpaper(path) {
-        setWallpaperProc.command = ["hyprctl", "hyprpaper", "wallpaper", "," + path + ",cover"];
+        if (!path)
+            return;
+        setWallpaperProc.command = [binDir + "/wallpaper-set.sh", path];
         setWallpaperProc.running = true;
-
         currentWallpaper = path;
-
         root.setState("wallpaper.current", path);
-
-        writeCurrentProc.command = ["sh", "-c", "echo '" + path + "' > '" + wallpaperDir + "/.current'"];
-        writeCurrentProc.running = true;
-
-        if (ThemeService.isAutoMode) {
-            ThemeService.runMatugen(path);
-        }
-
         hide();
     }
 
     function applySelected() {
-        if (selectedWallpapers.length === 1) {
+        if (selectedWallpapers.length === 1)
             setWallpaper(selectedWallpapers[0]);
-        }
     }
 
     function setRandomWallpaper() {
         if (wallpapers.length === 0)
             return;
-
         const available = wallpapers.filter(w => w !== currentWallpaper);
         if (available.length === 0)
             return;
-
         const randomIndex = Math.floor(Math.random() * available.length);
         setWallpaper(available[randomIndex]);
     }
@@ -289,18 +239,15 @@ Singleton {
     function requestDelete() {
         if (selectedWallpapers.length === 0)
             return;
-
-        if (selectedWallpapers.length === 1) {
+        if (selectedWallpapers.length === 1)
             deleteSelected();
-        } else {
+        else
             confirmDelete = true;
-        }
     }
 
     function deleteSelected() {
         if (selectedWallpapers.length === 0)
             return;
-
         let rmPaths = [];
         for (let i = 0; i < selectedWallpapers.length; i++) {
             const path = selectedWallpapers[i];
@@ -310,9 +257,8 @@ Singleton {
             if (currentWallpaper === path)
                 currentWallpaper = "";
         }
-        deleteWallpaperProc.command = ["sh", "-c", "rm " + rmPaths.join(" ")];
+        deleteWallpaperProc.command = ["sh", "-c", "rm -f " + rmPaths.join(" ")];
         deleteWallpaperProc.running = true;
-
         selectedWallpapers = [];
         confirmDelete = false;
     }
@@ -334,27 +280,18 @@ Singleton {
         getCurrentProc.running = true;
     }
 
-    // ========================================================================
-    // WATCHERS
-    // ========================================================================
-
     onThemeFilterChanged: {
-        if (themeFilter) {
+        if (themeFilter)
             refreshThemeWallpapers(themeFilter);
-        } else {
+        else
             themeWallpapers = [];
-        }
         clearSelection();
     }
-
-    // ========================================================================
-    // PROCESSES
-    // ========================================================================
 
     Process {
         id: listWallpapersProc
         property var _buffer: []
-        command: ["bash", "-c", "ls -1 '" + root.wallpaperDir + "'/*.{png,jpg,jpeg,webp,gif} 2>/dev/null | sort"]
+        command: ["bash", "-c", "find '" + root.wallpaperDir + "' -type f \\( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' -o -iname '*.gif' \\) ! -path '*/.git/*' 2>/dev/null | sort"]
         stdout: SplitParser {
             onRead: data => {
                 const trimmed = data.trim();
@@ -368,9 +305,7 @@ Singleton {
 
     Process {
         id: listThemeWallpapersProc
-        property string _themeName: ""
         property var _buffer: []
-
         stdout: SplitParser {
             onRead: data => {
                 const trimmed = data.trim();
@@ -384,18 +319,27 @@ Singleton {
 
     Process {
         id: setWallpaperProc
-        onExited: (exitCode, exitStatus) => {
-            if (exitCode === 0) {
-                console.log("[Wallpaper] Wallpaper changed successfully");
-            } else {
-                console.error("[Wallpaper] Failed to change wallpaper");
-            }
+        onExited: exitCode => {
+            if (exitCode === 0)
+                console.log("[Wallpaper] set ok");
+            else
+                console.error("[Wallpaper] set failed");
         }
     }
 
     Process {
         id: getCurrentProc
-        command: ["bash", "-c", "cat '" + root.wallpaperDir + "/.current' 2>/dev/null || echo ''"]
+        command: ["bash", "-c", `
+            s="$HOME/.config/quickshell/state.json"
+            cur=""
+            if [ -f "$s" ]; then
+              cur=$(jq -r '.wallpaper.current // empty' "$s" 2>/dev/null)
+            fi
+            if [ -z "$cur" ] && [ -f "${root.wallpaperDir}/.current" ]; then
+              cur=$(cat "${root.wallpaperDir}/.current" 2>/dev/null)
+            fi
+            echo "$cur"
+        `]
         stdout: SplitParser {
             onRead: data => {
                 const trimmed = data.trim();
@@ -410,17 +354,24 @@ Singleton {
     Process {
         id: addWallpapersProc
         command: ["bash", "-c", `
-            files=$(kdialog --multiple --getopenfilename ~ "Image Files (*.png *.jpg *.jpeg *.webp *.gif)")
-            if [ -n "$files" ]; then
-                mkdir -p "${root.wallpaperDir}"
-                echo "$files" | while read -r file; do
-                    if [ -f "$file" ]; then
-                        cp "$file" "${root.wallpaperDir}/"
-                    fi
-                done
-                echo "done"
+            picker=""
+            if command -v kdialog >/dev/null; then
+              files=$(kdialog --multiple --getopenfilename ~ "Image Files (*.png *.jpg *.jpeg *.webp *.gif)")
+            elif command -v zenity >/dev/null; then
+              files=$(zenity --file-selection --multiple --separator=$'\\n' --file-filter='Images | *.png *.jpg *.jpeg *.webp *.gif')
             else
-                echo "cancelled"
+              notify-send "Wallpaper" "Install kdialog or zenity to add images" -t 3000
+              echo cancelled
+              exit 0
+            fi
+            if [ -n "$files" ]; then
+              mkdir -p "${root.wallpaperDir}/extras"
+              echo "$files" | tr '|' '\\n' | while read -r file; do
+                [ -f "$file" ] && cp "$file" "${root.wallpaperDir}/extras/"
+              done
+              echo done
+            else
+              echo cancelled
             fi
         `]
         stdout: SplitParser {
@@ -437,37 +388,21 @@ Singleton {
     Process {
         id: addToThemeProc
         property string _themeName: ""
-
         onExited: exitCode => {
             if (exitCode === 0) {
-                console.log("[Wallpaper] Added wallpaper to theme:", _themeName);
+                ThemeService.loadPreviews();
                 if (root.themeFilter === _themeName)
                     root.refreshThemeWallpapers(_themeName);
-            } else {
-                console.error("[Wallpaper] Failed to add wallpaper to theme");
+                root.refreshWallpapers();
             }
         }
-    }
-
-    Process {
-        id: setActiveThemeProc
-        property string _wallpaperPath: ""
-
-        onExited: exitCode => {
-            if (exitCode === 0) {
-                console.log("[Wallpaper] Theme wallpaper config updated");
-                ThemeService.loadPreviews();
-            } else {
-                console.error("[Wallpaper] Failed to update theme config");
-            }
-        }
-    }
-
-    Process {
-        id: writeCurrentProc
     }
 
     Process {
         id: deleteWallpaperProc
+        onExited: {
+            root.refreshWallpapers();
+            ThemeService.loadPreviews();
+        }
     }
 }
