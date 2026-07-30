@@ -13,7 +13,7 @@ vim.g.have_nerd_font = true
 vim.loader.enable()
 require 'yada.config.lazy'
 
--- Colorscheme from theme-set.sh (writes ~/.config/nvim/theme.lua)
+-- Colorscheme from theme-set.sh (writes lua/theme.lua — gitignored)
 local ok, colorscheme = pcall(require, "theme")
 vim.cmd.colorscheme(ok and colorscheme or "tokyonight-night")
 

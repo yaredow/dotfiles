@@ -97,8 +97,23 @@ fi
 # 4 – Stow all config packages
 # =============================================================================
 say "Stowing dotfiles..."
-STOW_PACKAGES=(bin electron fastfetch hypr kitty mpd mpv nvim qt6ct quickshell rmpc starship theme tmux yazi youtube-tui zed zsh)
+# Discover packages: every top-level dir except scripts/stow-exclude.txt
+EXCLUDE_FILE="$REPO_DIR/scripts/stow-exclude.txt"
+STOW_PACKAGES=()
+for dir in "$REPO_DIR"/*/; do
+  name=$(basename "$dir")
+  # Match non-comment, non-blank lines in stow-exclude.txt
+  if [[ -f "$EXCLUDE_FILE" ]] && grep -vE '^\s*(#|$)' "$EXCLUDE_FILE" | grep -qxF "$name"; then
+    continue
+  fi
+  STOW_PACKAGES+=("$name")
+done
 
+if [[ ${#STOW_PACKAGES[@]} -eq 0 ]]; then
+  echo "  ERROR: no stow packages found" >&2
+  exit 1
+fi
+echo "  packages: ${STOW_PACKAGES[*]}"
 stow --restow --target="$HOME" --dir="$REPO_DIR" "${STOW_PACKAGES[@]}"
 
 # =============================================================================

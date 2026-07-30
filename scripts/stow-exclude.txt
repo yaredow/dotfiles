@@ -1,0 +1,5 @@
+# Top-level dirs that are NOT GNU Stow packages (one name per line).
+# Everything else at repo root is stowed to ~ by install.sh.
+scripts
+sddm
+ydot-sddm
