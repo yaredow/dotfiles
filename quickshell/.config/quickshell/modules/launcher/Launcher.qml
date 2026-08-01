@@ -33,9 +33,22 @@ PanelWindow {
         LauncherService.hide();
     }
 
-    MouseArea {
+    Rectangle {
         anchors.fill: parent
-        onClicked: root.hide()
+        color: "#000000"
+        opacity: LauncherService.visible ? 0.32 : 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: Config.animDuration
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: root.hide()
+        }
     }
 
     AnimatedPopup {
@@ -50,8 +63,20 @@ PanelWindow {
             id: launcherPanel
             width: 520
 
-            property int listHeight: Math.min(420, appList.contentHeight + 12)
-            property int totalHeight: appList.count > 0 ? listHeight + 52 + 24 : 52 + 24
+            property bool showHints: LauncherService.query.length === 0 && LauncherService.provider === "apps"
+            property bool showRecentLabel: showHints && appList.count > 0
+            property bool showEmptyState: {
+                const q = LauncherService.query.trim();
+                if (appList.count > 0)
+                    return false;
+                if (LauncherService.provider === "apps")
+                    return q !== "";
+                return q.length > 0;
+            }
+            property int hintsHeight: showHints ? 26 : 0
+            property int recentLabelHeight: showRecentLabel ? 18 : 0
+            property int listHeight: appList.count > 0 ? Math.min(420, appList.contentHeight + 12) : (showEmptyState ? 120 : 0)
+            property int totalHeight: 52 + 24 + hintsHeight + recentLabelHeight + listHeight + (hintsHeight > 0 ? Config.spacing : 0) + (recentLabelHeight > 0 ? Config.spacing : 0) + (listHeight > 0 ? Config.spacing : 0)
 
             height: totalHeight
             radius: Config.radiusLarge
@@ -92,11 +117,14 @@ PanelWindow {
                             font.pixelSize: Config.fontSizeNormal
                             verticalAlignment: TextInput.AlignVCenter
                             selectByMouse: true
-                            placeholderText: LauncherService.mode === "files" ? "Search videos…" : "Search apps…"
+                            placeholderText: LauncherService.placeholder
                             placeholderTextColor: Config.mutedColor
                             background: null
 
-                            onTextChanged: LauncherService.query = text
+                            onTextChanged: {
+                                if (LauncherService.query !== text)
+                                    LauncherService.query = text;
+                            }
 
                             Keys.onEscapePressed: root.hide()
 
@@ -105,42 +133,59 @@ PanelWindow {
                                 LauncherService.launchSelected();
                             }
 
-                            Keys.onUpPressed: {
-                                if (LauncherService.selectedIndex > 0)
-                                    LauncherService.selectedIndex--;
-                            }
+                            Keys.onUpPressed: LauncherService.navigateUp()
 
-                            Keys.onDownPressed: {
-                                if (LauncherService.selectedIndex < LauncherService.filteredApps.length - 1)
-                                    LauncherService.selectedIndex++;
-                            }
+                            Keys.onDownPressed: LauncherService.navigateDown()
 
                             Keys.onTabPressed: event => {
-                                if (LauncherService.selectedIndex < LauncherService.filteredApps.length - 1)
-                                    LauncherService.selectedIndex++;
+                                LauncherService.navigateDown();
                                 event.accepted = true;
                             }
 
                             Keys.onPressed: event => {
+                                const ctrl = event.modifiers & Qt.ControlModifier;
                                 const isBacktab = event.key === Qt.Key_Backtab;
                                 const isShiftTab = event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier);
 
                                 if (isBacktab || isShiftTab) {
-                                    if (LauncherService.selectedIndex > 0)
-                                        LauncherService.selectedIndex--;
+                                    LauncherService.navigateUp();
+                                    event.accepted = true;
+                                    return;
+                                }
+
+                                if (!ctrl)
+                                    return;
+
+                                // nvim-style list motion
+                                if (event.key === Qt.Key_J) {
+                                    LauncherService.navigateDown();
+                                    event.accepted = true;
+                                } else if (event.key === Qt.Key_K) {
+                                    LauncherService.navigateUp();
+                                    event.accepted = true;
+                                } else if (event.key === Qt.Key_D) {
+                                    LauncherService.navigateBy(5);
+                                    event.accepted = true;
+                                } else if (event.key === Qt.Key_U) {
+                                    LauncherService.navigateBy(-5);
                                     event.accepted = true;
                                 }
                             }
 
-                            Component.onCompleted: {
-                                LauncherService.query = "";
-                                LauncherService.selectedIndex = 0;
+                            function syncFromService() {
+                                if (text !== LauncherService.query)
+                                    text = LauncherService.query;
+                            }
+
+                            function focusSearch() {
+                                syncFromService();
                                 Qt.callLater(() => {
-                                    if (LauncherService.visible) {
+                                    if (LauncherService.visible)
                                         forceActiveFocus();
-                                    }
                                 });
                             }
+
+                            Component.onCompleted: focusSearch()
                         }
 
                         Rectangle {
@@ -161,7 +206,7 @@ PanelWindow {
                         }
 
                         Rectangle {
-                            visible: LauncherService.mode === "files"
+                            visible: LauncherService.providerLabel !== ""
                             Layout.preferredWidth: modeLabel.implicitWidth + 12
                             Layout.preferredHeight: 22
                             radius: height / 2
@@ -170,7 +215,7 @@ PanelWindow {
                             Text {
                                 id: modeLabel
                                 anchors.centerIn: parent
-                                text: "Videos"
+                                text: LauncherService.providerLabel
                                 font.family: Config.monoFont
                                 font.pixelSize: Config.fontSizeSmall
                                 color: Config.textColor
@@ -212,11 +257,93 @@ PanelWindow {
                     }
                 }
 
+                // Prefix discovery — only on a blank apps search
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: launcherPanel.hintsHeight
+                    Layout.leftMargin: Config.spacing + 6
+                    Layout.rightMargin: Config.spacing + 6
+                    visible: launcherPanel.showHints
+                    spacing: 10
+
+                    Repeater {
+                        model: [
+                            { prefix: "=", label: "math" },
+                            { prefix: ">", label: "run" },
+                            { prefix: "?", label: "web" },
+                            { prefix: ":", label: "clip" },
+                            { prefix: "/", label: "files" },
+                            { prefix: ";", label: "actions" }
+                        ]
+
+                        delegate: Item {
+                            id: hintItem
+                            required property var modelData
+
+                            // Fixed height so glyph metrics (e.g. ";") can't shift a cell vertically
+                            Layout.preferredWidth: hintRow.implicitWidth
+                            Layout.preferredHeight: launcherPanel.hintsHeight
+                            Layout.alignment: Qt.AlignVCenter
+                            width: hintRow.implicitWidth
+                            height: launcherPanel.hintsHeight
+
+                            Row {
+                                id: hintRow
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 4
+
+                                Text {
+                                    text: hintItem.modelData.prefix
+                                    color: Config.accentColor
+                                    font.family: Config.monoFont
+                                    font.pixelSize: Config.fontSizeSmall
+                                    font.weight: Font.DemiBold
+                                    height: Config.fontSizeSmall + 4
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                Text {
+                                    text: hintItem.modelData.label
+                                    color: Config.mutedColor
+                                    font.family: Config.monoFont
+                                    font.pixelSize: Config.fontSizeSmall
+                                    height: Config.fontSizeSmall + 4
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    LauncherService.setProviderPrefix(hintItem.modelData.prefix);
+                                    searchInput.focusSearch();
+                                }
+                            }
+                        }
+                    }
+
+                    Item { Layout.fillWidth: true }
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: launcherPanel.recentLabelHeight
+                    Layout.leftMargin: Config.spacing + 6
+                    visible: launcherPanel.showRecentLabel
+                    text: "Recent"
+                    color: Config.mutedColor
+                    font.family: Config.monoFont
+                    font.pixelSize: Config.fontSizeSmall
+                    font.weight: Font.DemiBold
+                }
+
                 ListView {
                     id: appList
                     Layout.fillWidth: true
-                    Layout.fillHeight: appList.count > 0
-                    visible: appList.count > 0
+                    Layout.fillHeight: listHeight > 0
+                    Layout.preferredHeight: launcherPanel.listHeight
+                    visible: launcherPanel.listHeight > 0
 
                     clip: true
                     spacing: 4
@@ -297,16 +424,19 @@ PanelWindow {
                                 Layout.preferredWidth: 40
                                 Layout.preferredHeight: 40
                                 radius: Config.radiusSmall
-                    color: "transparent"
+                                color: "transparent"
 
                                 Image {
                                     anchors.centerIn: parent
                                     width: 32
                                     height: 32
                                     source: {
-                                        if (delegateItem.modelData?._type === "file")
+                                        const item = delegateItem.modelData;
+                                        if (!item)
+                                            return "image://icon/application-x-executable";
+                                        if (item._type === "file" && item.isVideo)
                                             return Qt.resolvedUrl("cinema.svg");
-                                        const icon = delegateItem.modelData?.icon ?? "";
+                                        const icon = item.icon ?? "";
                                         return icon ? "image://icon/" + icon : "image://icon/application-x-executable";
                                     }
                                     sourceSize: Qt.size(32, 32)
@@ -321,12 +451,14 @@ PanelWindow {
 
                                 Text {
                                     Layout.fillWidth: true
-                                    text: delegateItem.modelData?.name ?? ""
+                                    text: LauncherService.highlightedName(delegateItem.modelData?.name ?? "", Config.accentColor)
+                                    textFormat: Text.RichText
                                     color: Config.textColor
                                     font.family: Config.monoFont
                                     font.pixelSize: Config.fontSizeSmall
                                     font.weight: delegateItem.isSelected ? Font.DemiBold : Font.Normal
                                     elide: Text.ElideRight
+                                    maximumLineCount: 1
                                 }
 
                                 Text {
@@ -342,10 +474,11 @@ PanelWindow {
 
                             Text {
                                 visible: delegateItem.isSelected
-                                text: "󰌑"
+                                text: LauncherService.actionVerb(delegateItem.modelData)
                                 color: Config.accentColor
                                 font.family: Config.monoFont
                                 font.pixelSize: Config.fontSizeSmall
+                                font.weight: Font.DemiBold
                             }
                         }
 
@@ -354,13 +487,10 @@ PanelWindow {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
+                            onEntered: LauncherService.selectedIndex = delegateItem.index
                             onClicked: {
-                                if (delegateItem.isSelected) {
-                                    launcherPanel.forceActiveFocus();
-                                    LauncherService.launch(delegateItem.modelData);
-                                } else {
-                                    LauncherService.selectedIndex = delegateItem.index;
-                                }
+                                launcherPanel.forceActiveFocus();
+                                LauncherService.launch(delegateItem.modelData);
                             }
                         }
                     }
@@ -379,7 +509,7 @@ PanelWindow {
 
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: LauncherService.query ? "󰅖" : "󰑓"
+                            text: LauncherService.query ? "󰅖" : "󰍉"
                             font.family: Config.monoFont
                             font.pixelSize: Config.fontSizeIcon
                             color: Config.mutedColor
@@ -389,7 +519,7 @@ PanelWindow {
                                 to: 360
                                 duration: 1000
                                 loops: Animation.Infinite
-                                running: LauncherService.query && appList.count === 0
+                                running: !!LauncherService.query && appList.count === 0
                             }
                         }
 
@@ -427,12 +557,27 @@ PanelWindow {
         }
     }
 
+    Connections {
+        target: LauncherService
+
+        function onVisibleChanged() {
+            if (LauncherService.visible)
+                searchInput.focusSearch();
+        }
+
+        function onQueryChanged() {
+            searchInput.syncFromService();
+        }
+    }
+
     Shortcut {
         sequence: "Ctrl+F"
         context: Qt.ApplicationShortcut
         onActivated: {
-            if (LauncherService.visible)
-                LauncherService.toggleFileMode();
+            if (!LauncherService.visible)
+                return;
+            LauncherService.setProviderPrefix("/");
+            searchInput.focusSearch();
         }
     }
 

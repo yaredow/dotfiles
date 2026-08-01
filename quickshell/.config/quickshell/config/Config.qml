@@ -59,8 +59,8 @@ Singleton {
     // ========================================================================
     // TYPOGRAPHY
     // ========================================================================
-    readonly property string font: _s.typography?.font ?? "Caskaydia Cove Nerd Font"
-    readonly property string monoFont: _s.typography?.monoFont ?? "Caskaydia Cove Nerd Font Mono"
+    readonly property string font: _s.typography?.font ?? "CaskaydiaCove Nerd Font"
+    readonly property string monoFont: _s.typography?.monoFont ?? "CaskaydiaCove Nerd Font Mono"
 
     readonly property int fontSizeSmall: _s.typography?.sizeSmall ?? 12
     readonly property int fontSizeNormal: _s.typography?.sizeNormal ?? 14
