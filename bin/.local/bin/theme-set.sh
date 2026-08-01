@@ -86,7 +86,6 @@ render fastfetch.jsonc "$HOME/.config/fastfetch/config.jsonc"
 mkdir -p "$HOME/.config/btop/themes"
 render btop.theme "$HOME/.config/btop/themes/theme.theme"
 render starship.toml "$HOME/.config/starship.toml"
-render qutebrowser.py "$HOME/.config/qutebrowser/theme.py"
 
 
 {
