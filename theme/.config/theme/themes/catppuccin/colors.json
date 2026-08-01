@@ -32,6 +32,8 @@
   },
   "integrations": {
     "nvim": "catppuccin-mocha",
-    "starship": "catppuccin_mocha"
+    "starship": "catppuccin_mocha",
+    "herdr": "catppuccin",
+    "opencode": "catppuccin"
   }
 }

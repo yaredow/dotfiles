@@ -42,6 +42,14 @@ local user_opts = {
 	volumecontrol = true, -- whether to show mute button and volumne slider
 	processvolume = true, -- volue slider show processd volume
 	language = "eng", -- eng=English, chs=Chinese
+
+	-- theme colors (hex, set via osc.conf)
+	accent = "#E39C42", -- seekbar / volume fill
+	fg = "#FFFFFF", -- buttons, time, title
+	bg = "#000000", -- transparent background
+	bar_bg = "#FFFFFF", -- seekbar track
+	vol_bg = "#999999", -- volume track
+	down = "#999999", -- pressed element
 }
 
 -- Localization
@@ -91,20 +99,37 @@ local osc_param = { -- calculated by osc_init()
 	areas = {},
 }
 
+-- convert #RRGGBB to ASS &HBBGGRR&
+local function hex_to_ass(hex)
+	hex = hex:gsub("#", "")
+	if #hex ~= 6 then return "&HFFFFFF&" end
+	local r = hex:sub(1, 2)
+	local g = hex:sub(3, 4)
+	local b = hex:sub(5, 6)
+	return "&H" .. b .. g .. r .. "&"
+end
+
+local accent = hex_to_ass(user_opts.accent)
+local fg = hex_to_ass(user_opts.fg)
+local bg = hex_to_ass(user_opts.bg)
+local bar_bg = hex_to_ass(user_opts.bar_bg)
+local vol_bg = hex_to_ass(user_opts.vol_bg)
+local down = hex_to_ass(user_opts.down)
+
 local osc_styles = {
-	TransBg = "{\\blur100\\bord140\\1c&H000000&\\3c&H000000&}",
-	SeekbarBg = "{\\blur0\\bord0\\1c&HFFFFFF&}",
-	SeekbarFg = "{\\blur1\\bord1\\1c&HE39C42&}",
-	VolumebarBg = "{\\blur0\\bord0\\1c&H999999&}",
-	VolumebarFg = "{\\blur1\\bord1\\1c&HFFFFFF&}",
-	Ctrl1 = "{\\blur0\\bord0\\1c&HFFFFFF&\\3c&HFFFFFF&\\fs36\\fnmaterial-design-iconic-font}",
-	Ctrl2 = "{\\blur0\\bord0\\1c&HFFFFFF&\\3c&HFFFFFF&\\fs24\\fnmaterial-design-iconic-font}",
-	Ctrl3 = "{\\blur0\\bord0\\1c&HFFFFFF&\\3c&HFFFFFF&\\fs24\\fnmaterial-design-iconic-font}",
-	Time = "{\\blur0\\bord0\\1c&HFFFFFF&\\3c&H000000&\\fs17\\fn" .. user_opts.font .. "}",
-	Tooltip = "{\\blur1\\bord0.5\\1c&HFFFFFF&\\3c&H000000&\\fs18\\fn" .. user_opts.font .. "}",
-	Title = "{\\blur1\\bord0.5\\1c&HFFFFFF&\\3c&H0\\fs48\\q2\\fn" .. user_opts.font .. "}",
-	WinCtrl = "{\\blur1\\bord0.5\\1c&HFFFFFF&\\3c&H0\\fs20\\fnmpv-osd-symbols}",
-	elementDown = "{\\1c&H999999&}",
+	TransBg = "{\\blur100\\bord140\\1c" .. bg .. "\\3c" .. bg .. "}",
+	SeekbarBg = "{\\blur0\\bord0\\1c" .. bar_bg .. "}",
+	SeekbarFg = "{\\blur1\\bord1\\1c" .. accent .. "}",
+	VolumebarBg = "{\\blur0\\bord0\\1c" .. vol_bg .. "}",
+	VolumebarFg = "{\\blur1\\bord1\\1c" .. fg .. "}",
+	Ctrl1 = "{\\blur0\\bord0\\1c" .. fg .. "\\3c" .. fg .. "\\fs36\\fnmaterial-design-iconic-font}",
+	Ctrl2 = "{\\blur0\\bord0\\1c" .. fg .. "\\3c" .. fg .. "\\fs24\\fnmaterial-design-iconic-font}",
+	Ctrl3 = "{\\blur0\\bord0\\1c" .. fg .. "\\3c" .. fg .. "\\fs24\\fnmaterial-design-iconic-font}",
+	Time = "{\\blur0\\bord0\\1c" .. fg .. "\\3c&H000000&\\fs17\\fn" .. user_opts.font .. "}",
+	Tooltip = "{\\blur1\\bord0.5\\1c" .. fg .. "\\3c&H000000&\\fs18\\fn" .. user_opts.font .. "}",
+	Title = "{\\blur1\\bord0.5\\1c" .. fg .. "\\3c&H0\\fs48\\q2\\fn" .. user_opts.font .. "}",
+	WinCtrl = "{\\blur1\\bord0.5\\1c" .. fg .. "\\3c&H0\\fs20\\fnmpv-osd-symbols}",
+	elementDown = "{\\1c" .. down .. "}",
 }
 
 -- internal states, do not touch

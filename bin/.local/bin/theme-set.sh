@@ -46,9 +46,11 @@ render() {
   done
 
   # integrations + fonts
-  local starship nvim mono size
+  local starship nvim herdr opencode mono size
   starship=$(echo "$COLORS" | jq -r '.integrations.starship // empty')
   nvim=$(echo "$COLORS" | jq -r '.integrations.nvim // empty')
+  herdr=$(echo "$COLORS" | jq -r '.integrations.herdr // empty')
+  opencode=$(echo "$COLORS" | jq -r '.integrations.opencode // empty')
   mono=$(echo "$COLORS" | jq -r '.fonts.mono // "JetBrainsMono Nerd Font"')
   size=$(echo "$COLORS" | jq -r '.fonts.size // 13')
 
@@ -61,6 +63,8 @@ render() {
 
   [[ -n "$starship" ]] && args+=(-e "s|{{starship_palette}}|${starship}|g")
   [[ -n "$nvim" ]] && args+=(-e "s|{{nvim_colorscheme}}|${nvim}|g")
+  [[ -n "$herdr" ]] && args+=(-e "s|{{herdr_theme}}|${herdr}|g")
+  [[ -n "$opencode" ]] && args+=(-e "s|{{opencode_theme}}|${opencode}|g")
   args+=(-e "s|{{font_mono}}|${mono}|g" -e "s|{{font_size}}|${size}|g")
 
 
@@ -86,6 +90,12 @@ render fastfetch.jsonc "$HOME/.config/fastfetch/config.jsonc"
 mkdir -p "$HOME/.config/btop/themes"
 render btop.theme "$HOME/.config/btop/themes/theme.theme"
 render starship.toml "$HOME/.config/starship.toml"
+mkdir -p "$HOME/.config/mpv/script-opts"
+render mpv-osc.conf "$HOME/.config/mpv/script-opts/osc.conf"
+mkdir -p "$HOME/.config/quickshell/assets"
+render ydot.svg "$HOME/.config/quickshell/assets/ydot.svg"
+render herdr.toml "$HOME/.config/herdr/config.toml"
+render opencode-tui.json "$HOME/.config/opencode/tui.json"
 
 
 {
@@ -102,6 +112,8 @@ kitty @ set-colors --all --configured "$KITTY_THEME" 2>/dev/null || true
 hyprctl reload >/dev/null 2>&1 || true
 pkill -SIGUSR1 kitty 2>/dev/null || true
 tmux source-file ~/.tmux.conf 2>/dev/null || true
+command -v herdr >/dev/null 2>&1 && herdr server reload-config >/dev/null 2>&1 || true
+[[ -x "$HOME/.local/bin/herdr" ]] && "$HOME/.local/bin/herdr" server reload-config >/dev/null 2>&1 || true
 
 NVIM_THEME=$(echo "$COLORS" | jq -r '.integrations.nvim // "tokyonight-night"')
 mkdir -p "$HOME/.config/nvim/lua"

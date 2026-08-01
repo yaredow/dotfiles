@@ -9,7 +9,7 @@ export VISUAL="nvim"
 export TERM="foot"
 export BROWSER="firefox"
 
-export PATH="$HOME/bin:/usr/local/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
 
 # Bun
 export BUN_INSTALL="$HOME/.bun"

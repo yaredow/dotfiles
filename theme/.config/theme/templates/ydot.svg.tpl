@@ -2,7 +2,7 @@
   <title>ydot</title>
   <desc>Geometric y mark with a floating dot representing dotfiles</desc>
 
-  <g fill="none" stroke="#c0caf5" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+  <g fill="none" stroke="{{text}}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
     <!-- left arm of the y -->
     <path d="M27 17 L50 48"/>
     <!-- stem of the y -->
@@ -12,5 +12,5 @@
   </g>
 
   <!-- floating dot: the "dotfiles" hook, completes the right arm -->
-  <circle cx="76" cy="16" r="11" fill="#7aa2f7"/>
+  <circle cx="76" cy="16" r="11" fill="{{blue}}"/>
 </svg>

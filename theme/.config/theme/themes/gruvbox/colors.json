@@ -32,6 +32,8 @@
   },
   "integrations": {
     "nvim": "gruvbox",
-    "starship": "gruvbox_dark"
+    "starship": "gruvbox_dark",
+    "herdr": "gruvbox",
+    "opencode": "gruvbox"
   }
 }

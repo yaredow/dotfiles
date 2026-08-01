@@ -41,7 +41,7 @@ Templates: `theme/.config/theme/templates/*.tpl` with `{{key}}` / `{{key_strip}}
 Per-theme integrations in `colors.json`:
 
 ```json
-"integrations": { "nvim": "tokyonight-night", "starship": "tokyonight_night" }
+"integrations": { "nvim": "tokyonight-night", "starship": "tokyonight_night", "herdr": "tokyo-night", "opencode": "tokyonight" }
 ```
 
 ### Wallpapers
@@ -72,6 +72,8 @@ Repo seeds: `theme/.../themes/<name>/wallpapers/` (copied on install with `cp -n
 | `~/.config/btop/themes/theme.theme` | `btop.theme.tpl` |
 | `~/.config/starship.toml` | `starship.toml.tpl` |
 | `~/.config/nvim/lua/theme.lua` | `integrations.nvim` |
+| `~/.config/herdr/config.toml` | `herdr.toml.tpl` (theme name + `[theme.custom]` palette) |
+| `~/.config/opencode/tui.json` | `opencode-tui.json.tpl` (`integrations.opencode`) |
 | `~/.config/theme/current` | symlink → active theme |
 | `~/.config/quickshell/state.json` | machine-local (from `state.default.json`) |
 | `~/.config/quickshell/state/colors.json` | copy of active `colors.json` |

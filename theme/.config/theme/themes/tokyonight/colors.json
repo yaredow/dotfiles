@@ -32,6 +32,8 @@
   },
   "integrations": {
     "nvim": "tokyonight-night",
-    "starship": "tokyonight_night"
+    "starship": "tokyonight_night",
+    "herdr": "tokyo-night",
+    "opencode": "tokyonight"
   }
 }
