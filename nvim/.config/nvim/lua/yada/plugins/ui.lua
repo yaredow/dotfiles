@@ -66,9 +66,9 @@ return {
     { flavour = 'mocha' },
     function(opts) require('catppuccin').setup(opts) end),
 
-  colorscheme_spec('rose-pine/neovim', 'rose-pine', 'rose-pine',
-    { variant = 'main' },
-    function(opts) require('rose-pine').setup(opts) end),
+  colorscheme_spec('ellisonleao/gruvbox.nvim', 'gruvbox', 'gruvbox',
+    { contrast = 'hard', transparent_mode = false },
+    function(opts) require('gruvbox').setup(opts) end),
 
   -- Todo comments
   { 'folke/todo-comments.nvim', event = 'BufReadPost', opts = { signs = false } },

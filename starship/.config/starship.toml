@@ -23,15 +23,15 @@ yellow = "#f9e2af"
 purple = "#cba6f7"
 teal = "#94e2d5"
 
-[palettes.rose_pine]
-fg = "#e0def4"
-bg = "#232136"
-blue = "#9ccfd8"
-red = "#eb6f92"
-green = "#3e8fb0"
-yellow = "#f6c177"
-purple = "#c4a7e7"
-teal = "#9ccfd8"
+[palettes.gruvbox_dark]
+fg = "#ebdbb2"
+bg = "#282828"
+blue = "#83a598"
+red = "#fb4934"
+green = "#b8bb26"
+yellow = "#fabd2f"
+purple = "#d3869b"
+teal = "#8ec07c"
 
 [aws]
 symbol = " "

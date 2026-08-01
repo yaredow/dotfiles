@@ -21,7 +21,7 @@ Singleton {
             case "reboot": rebootProc.running = true; break;
             case "suspend": suspendProc.running = true; break;
             case "hibernate": hibernateProc.running = true; break;
-            case "lock": IdleService.lock(); break;
+            case "lock": LockService.lock(); break;
             case "logout": logoutProc.running = true; break;
         }
         hideOverlay();

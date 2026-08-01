@@ -11,7 +11,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   spec = { import = 'yada.plugins' },
-  install = { colorscheme = { 'tokyonight-night', 'catppuccin-mocha', 'rose-pine' } },
+  install = { colorscheme = { 'tokyonight-night', 'catppuccin-mocha', 'gruvbox' } },
   checker = { enabled = false },
   change_detection = { notify = false },
 })

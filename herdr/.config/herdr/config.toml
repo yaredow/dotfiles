@@ -1,13 +1,9 @@
 onboarding = false
 
 [theme]
-name = "tokyo-night"
+name = "gruvbox"
 
 auto_switch = false
 
 [keys]
 prefix = "alt+u"
-focus_pane_left = ["ctrl+h", "prefix+h"]
-focus_pane_down = ["ctrl+j", "prefix+j"]
-focus_pane_up = ["ctrl+k", "prefix+k"]
-focus_pane_right = ["ctrl+l", "prefix+l"]

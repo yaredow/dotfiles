@@ -36,7 +36,7 @@ hl.monitor({
 -- Set programs that you use
 local terminal = "kitty"
 local fileManager = "nemo"
-local browser = "qutebrowser"
+local browser = "firefox"
 local music = "spotify"
 
 -------------------
@@ -277,6 +277,7 @@ local secondMod = "ALT + SHIFT"
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
+hl.bind("CTRL + B", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(music))
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call launcher toggle"))
 hl.bind("SUPER + L", hl.dsp.exec_cmd("qs ipc call power action lock"))
