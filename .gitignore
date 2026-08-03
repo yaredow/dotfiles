@@ -10,7 +10,6 @@ nvim/.config/nvim/lua/theme.lua
 fastfetch/.config/fastfetch/config.jsonc
 btop/.config/btop/themes/theme.theme
 mpv/.config/mpv/script-opts/osc.conf
-quickshell/.config/quickshell/assets/ydot.svg
 herdr/.config/herdr/config.toml
 qutebrowser/.config/qutebrowser/theme.py
 

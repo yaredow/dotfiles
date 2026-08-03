@@ -9,6 +9,7 @@ Item {
 
     property string glyph: ""
     property string imageSource: ""
+    property bool showLogo: false
     property string tooltip: ""
     property color color: Config.textColor
     property string fontFamily: Config.font
@@ -65,7 +66,13 @@ Item {
             asynchronous: true
             sourceSize: Qt.size(40, 40)
             smooth: true
-            visible: modItem.imageSource != ""
+            visible: modItem.imageSource != "" && !modItem.showLogo
+        }
+
+        YdotLogo {
+            anchors.centerIn: parent
+            width: 20; height: 20
+            visible: modItem.showLogo
         }
 
         Text {
@@ -76,7 +83,7 @@ Item {
             font.family: modItem.fontFamily
             font.pixelSize: modItem.fontSize
             font.weight: modItem.fontWeight
-            visible: modItem.imageSource == ""
+            visible: modItem.imageSource == "" && !modItem.showLogo
         }
     }
 

@@ -92,8 +92,6 @@ render btop.theme "$HOME/.config/btop/themes/theme.theme"
 render starship.toml "$HOME/.config/starship.toml"
 mkdir -p "$HOME/.config/mpv/script-opts"
 render mpv-osc.conf "$HOME/.config/mpv/script-opts/osc.conf"
-mkdir -p "$HOME/.config/quickshell/assets"
-render ydot.svg "$HOME/.config/quickshell/assets/ydot.svg"
 render herdr.toml "$HOME/.config/herdr/config.toml"
 render opencode-tui.json "$HOME/.config/opencode/tui.json"
 
