@@ -17,6 +17,7 @@ Rectangle {
     property color mutedColor: config.mutedColor ?? "#6c7086"
     property color errorColor: config.errorColor ?? "#f38ba8"
     property string displayFont: config.font ?? "FiraCode Nerd Font"
+    property string monoFont: config.monoFont ?? displayFont
     property bool use24Hour: config.use24HourClock === "true"
     property bool loggingIn: false
     property bool failed: false
@@ -196,7 +197,7 @@ Rectangle {
                 id: clockLabel
                 text: root.currentTime()
                 color: accentColor
-                font.family: displayFont
+                font.family: monoFont
                 font.pixelSize: px(76)
                 font.weight: Font.Bold
                 font.letterSpacing: 3
@@ -245,9 +246,19 @@ Rectangle {
         width: root.panelWidth
         height: loginColumn.implicitHeight + 56
         radius: 24
-        color: Qt.alpha(surface0, 0.72)
+        color: Qt.alpha(root.color, 0.82)
         border.width: 1
         border.color: Qt.alpha(surface2, 0.42)
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: 2
+            radius: 1
+            color: accentColor
+            opacity: 0.8
+        }
 
         Column {
             id: loginColumn
@@ -281,9 +292,8 @@ Rectangle {
                 width: parent.width
                 height: 44
                 radius: 14
-                color: Qt.alpha(surface1, 0.36)
-                border.width: 1
-                border.color: Qt.alpha(surface2, 0.3)
+                color: "transparent"
+                border.width: 0
 
                 Row {
                     anchors.left: parent.left
@@ -329,7 +339,7 @@ Rectangle {
                     anchors.rightMargin: 16
                     verticalAlignment: TextInput.AlignVCenter
                     color: textColor
-                    font.family: displayFont
+                    font.family: monoFont
                     font.pixelSize: 14
                     echoMode: TextInput.Password
                     onAccepted: root.doLogin()

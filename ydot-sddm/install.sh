@@ -41,10 +41,12 @@ if [[ -f "$COLORS_FILE" ]]; then
     ERR=$(jq -r '.red // "#f38ba8"' "$COLORS_FILE" | sed 's/^#//')
 fi
 
-# ── read font ──
-FONT="FiraCode Nerd Font Mono"
+# ── read fonts ──
+FONT="FiraCode Nerd Font"
+MONO_FONT="FiraCode Nerd Font Mono"
 if [[ -f "$STATE_FILE" ]]; then
-    FONT=$(jq -r '.typography.monoFont // .fonts.mono // "FiraCode Nerd Font Mono"' "$STATE_FILE" 2>/dev/null || echo "$FONT")
+    FONT=$(jq -r '.typography.font // .fonts.mono // "FiraCode Nerd Font"' "$STATE_FILE" 2>/dev/null || echo "$FONT")
+    MONO_FONT=$(jq -r '.typography.monoFont // .fonts.mono // "FiraCode Nerd Font Mono"' "$STATE_FILE" 2>/dev/null || echo "$MONO_FONT")
 fi
 
 # ── copy wallpaper into theme dir ──
@@ -70,6 +72,7 @@ surface2=#$SURFACE2
 mutedColor=#$MUTED
 errorColor=#$ERR
 font=$FONT
+monoFont=$MONO_FONT
 use24HourClock=true
 background=$WALLPAPER_PATH
 THEMECONF
