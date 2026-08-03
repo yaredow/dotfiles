@@ -14,6 +14,8 @@ Singleton {
     property int selectedIndex: 0
     property var fileResults: []
     property string mathResult: ""
+    property bool menuMode: false
+    property var menuPath: []
 
     property int _refreshToken: 0
     property int _usageToken: 0
@@ -46,6 +48,8 @@ Singleton {
 
     readonly property string provider: parsed.provider
     readonly property string providerLabel: {
+        if (root.menuMode)
+            return root.menuPath.length ? root.menuPath[root.menuPath.length - 1].name : "ydot"
         switch (provider) {
         case "math": return "Math";
         case "command": return "Run";
@@ -58,6 +62,8 @@ Singleton {
     }
 
     readonly property string placeholder: {
+        if (root.menuMode)
+            return "Search menu…"
         switch (provider) {
         case "math": return "Calculate…";
         case "command": return "Run command…";
@@ -127,6 +133,9 @@ Singleton {
         void root.mathResult;
         void ClipboardService.entries;
 
+        if (root.menuMode)
+            return root.menuResults(root.query);
+
         const provider = root.parsed.provider;
         const text = root.parsed.text;
 
@@ -155,7 +164,7 @@ Singleton {
 
     function appResults(q) {
         if (q === "")
-            return root.recentApps();
+            return [];
 
         const apps = DesktopEntries.applications.values;
         const seen = new Set();
@@ -436,6 +445,115 @@ Singleton {
         return out;
     }
 
+    function menuEntry(name, comment, icon, id, type) {
+        return {
+            _type: type || "menu",
+            id: id,
+            name: name,
+            comment: comment || "",
+            icon: icon || "applications-system"
+        };
+    }
+
+    function menuGlyph(entry) {
+        const glyphs = {
+            connect: "󰤨", audio: "󰕾", display: "󰍹", capture: "󰹑",
+            style: "󰏘", session: "󰐥", settings: "󰒓", wifi: "󰤨",
+            bluetooth: "󰂯", "network-editor": "󰖩", "audio-mute": "󰖁",
+            "audio-mixer": "󰕾", "brightness-up": "󰃠", "brightness-down": "󰃞",
+            wallpaper: "󰸉", "wallpaper-cycle": "󰸉", screenshot: "󰹑",
+            recording: "󰑋", clipboard: "󰅇", lock: "󰌾", suspend: "󰒲",
+            logout: "󰍃", reboot: "󰜉", shutdown: "󰐥"
+        };
+        return glyphs[entry?.id || ""] || "󰍉";
+    }
+
+    function menuRoot() {
+        return [
+            menuEntry("Connect", "Wi-Fi and Bluetooth", "network-wireless", "connect"),
+            menuEntry("Audio", "Outputs, inputs, and volume", "audio-card", "audio"),
+            menuEntry("Display", "Brightness and wallpaper", "video-display", "display"),
+            menuEntry("Capture", "Screenshots, recording, and clipboard", "camera-photo", "capture"),
+            menuEntry("Style", "Theme and typography", "preferences-desktop-theme", "style"),
+            menuEntry("Session", "Lock, suspend, and power", "system-shutdown", "session"),
+            menuEntry("Settings", "Open ydot settings", "preferences-system", "settings")
+        ];
+    }
+
+    function menuChildren(id) {
+        switch (id) {
+        case "connect":
+            return [
+                menuEntry("Wi-Fi", "Open Impala", "network-wireless", "wifi", "action"),
+                menuEntry("Bluetooth", "Open Bluetui", "bluetooth", "bluetooth", "action"),
+                menuEntry("Network settings", "Open NetworkManager editor", "preferences-system-network", "network-editor", "action")
+            ];
+        case "audio":
+            return [
+                menuEntry("Mute / unmute", "Toggle default output", "audio-volume-muted", "audio-mute", "action"),
+                menuEntry("Audio mixer", "Open Pavucontrol", "audio-card", "audio-mixer", "action")
+            ];
+        case "display":
+            return [
+                menuEntry("Brightness up", "Increase brightness", "display-brightness", "brightness-up", "action"),
+                menuEntry("Brightness down", "Decrease brightness", "display-brightness", "brightness-down", "action"),
+                menuEntry("Wallpaper", "Open wallpaper picker", "preferences-desktop-wallpaper", "wallpaper", "action"),
+                menuEntry("Cycle wallpaper", "Next wallpaper", "preferences-desktop-wallpaper", "wallpaper-cycle", "action")
+            ];
+        case "capture":
+            return [
+                menuEntry("Screenshot", "Select a region", "camera-photo", "screenshot", "action"),
+                menuEntry("Toggle recording", "Start or stop recording", "media-record", "recording", "action"),
+                menuEntry("Clipboard history", "Search clipboard", "edit-paste", "clipboard", "action")
+            ];
+        case "style":
+            return [
+                menuEntry("Theme and font settings", "Open settings panel", "preferences-desktop-theme", "settings", "action"),
+                menuEntry("Wallpaper picker", "Choose a background", "preferences-desktop-wallpaper", "wallpaper", "action")
+            ];
+        case "session":
+            return [
+                menuEntry("Lock", "Lock the session", "system-lock-screen", "lock", "action"),
+                menuEntry("Suspend", "Suspend the system", "system-suspend", "suspend", "action"),
+                menuEntry("Log out", "End the Hyprland session", "system-log-out", "logout", "action"),
+                menuEntry("Reboot", "Restart the system", "system-reboot", "reboot", "action"),
+                menuEntry("Shut down", "Power off the system", "system-shutdown", "shutdown", "action")
+            ];
+        default:
+            return [];
+        }
+    }
+
+    function menuResults(text) {
+        let entries = menuPath.length ? menuChildren(menuPath[menuPath.length - 1].id) : menuRoot();
+        const q = (text || "").trim().toLowerCase();
+        if (q)
+            entries = entries.filter(entry => (entry.name + " " + entry.comment).toLowerCase().includes(q));
+        return entries;
+    }
+
+    function showMenu() {
+        menuMode = true;
+        menuPath = [];
+        query = "";
+        fileResults = [];
+        selectedIndex = 0;
+        visible = true;
+    }
+
+    function leaveMenu() {
+        if (!menuMode)
+            return false;
+        if (menuPath.length) {
+            menuPath = menuPath.slice(0, -1);
+            query = "";
+            selectedIndex = 0;
+        } else {
+            hide();
+        }
+        return true;
+    }
+
     function allActions() {
         const list = [
             {
@@ -514,6 +632,54 @@ Singleton {
 
     function runAction(action) {
         const id = action.id || "";
+        if (id === "wifi") {
+            Quickshell.execDetached(["kitty", "--title", "impala", "-e", "impala"]);
+            return;
+        }
+        if (id === "bluetooth") {
+            Quickshell.execDetached(["kitty", "--title", "bluetui", "-e", "bluetui"]);
+            return;
+        }
+        if (id === "network-editor") {
+            Quickshell.execDetached(["nm-connection-editor"]);
+            return;
+        }
+        if (id === "audio-mute") {
+            AudioService.toggleMute();
+            return;
+        }
+        if (id === "audio-mixer") {
+            Quickshell.execDetached(["pavucontrol"]);
+            return;
+        }
+        if (id === "brightness-up") {
+            BrightnessService.increaseBrightness();
+            return;
+        }
+        if (id === "brightness-down") {
+            BrightnessService.decreaseBrightness();
+            return;
+        }
+        if (id === "wallpaper") {
+            WallpaperService.toggle();
+            return;
+        }
+        if (id === "screenshot") {
+            Quickshell.execDetached(["qs", "ipc", "call", "screenshot", "start"]);
+            return;
+        }
+        if (id === "recording") {
+            Quickshell.execDetached(["qs", "ipc", "call", "screenshot", "recordtoggle"]);
+            return;
+        }
+        if (id === "clipboard") {
+            ClipboardService.toggle();
+            return;
+        }
+        if (id === "settings") {
+            SettingsService.toggle();
+            return;
+        }
         if (id === "wallpaper-cycle") {
             Quickshell.execDetached(["wallpaper-cycle.sh"]);
             return;
@@ -679,6 +845,8 @@ Singleton {
         query = "";
         fileResults = [];
         selectedIndex = 0;
+        menuMode = false;
+        menuPath = [];
     }
 
     function toggle() {
@@ -701,6 +869,13 @@ Singleton {
             return;
 
         const type = entry._type || "app";
+
+        if (type === "menu") {
+            menuPath = menuPath.concat([entry]);
+            query = "";
+            selectedIndex = 0;
+            return;
+        }
 
         if (type === "file") {
             if (entry.isVideo)

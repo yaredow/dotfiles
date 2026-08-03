@@ -157,7 +157,7 @@ PanelWindow {
                 host: bar.host
                 showLogo: true
                 tooltip: "Menu"
-                onActivated: LauncherService.show()
+                onActivated: LauncherService.showMenu()
             }
 
             Separator {

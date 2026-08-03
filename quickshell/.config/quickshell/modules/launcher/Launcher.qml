@@ -63,7 +63,7 @@ PanelWindow {
             id: launcherPanel
             width: 520
 
-            property bool showHints: LauncherService.query.length === 0 && LauncherService.provider === "apps"
+            property bool showHints: LauncherService.query.length === 0 && LauncherService.provider === "apps" && !LauncherService.menuMode
             property bool showRecentLabel: showHints && appList.count > 0
             property bool showEmptyState: {
                 const q = LauncherService.query.trim();
@@ -79,6 +79,7 @@ PanelWindow {
             property int totalHeight: 52 + 24 + hintsHeight + recentLabelHeight + listHeight + (hintsHeight > 0 ? Config.spacing : 0) + (recentLabelHeight > 0 ? Config.spacing : 0) + (listHeight > 0 ? Config.spacing : 0)
 
             height: totalHeight
+            focus: LauncherService.visible
             radius: Config.radiusLarge
             color: Config.backgroundTransparentColor
             border.color: Qt.alpha(Config.accentColor, 0.6)
@@ -88,6 +89,51 @@ PanelWindow {
                 NumberAnimation {
                     duration: Config.animDuration
                     easing.type: Easing.OutCubic
+                }
+            }
+
+            Keys.onEscapePressed: {
+                if (!LauncherService.leaveMenu())
+                    root.hide();
+                else if (LauncherService.visible)
+                    searchInput.focusSearch();
+            }
+
+            Keys.onLeftPressed: event => {
+                if (LauncherService.menuMode && LauncherService.menuPath.length) {
+                    LauncherService.leaveMenu();
+                    searchInput.focusSearch();
+                    event.accepted = true;
+                }
+            }
+
+            Keys.onUpPressed: event => {
+                LauncherService.navigateUp();
+                event.accepted = true;
+            }
+
+            Keys.onDownPressed: event => {
+                LauncherService.navigateDown();
+                event.accepted = true;
+            }
+
+            Keys.onReturnPressed: event => {
+                LauncherService.launchSelected();
+                if (LauncherService.menuMode)
+                    searchInput.focusSearch();
+                event.accepted = true;
+            }
+
+            Keys.onPressed: event => {
+                if (!(event.modifiers & Qt.ControlModifier))
+                    return;
+
+                if (event.key === Qt.Key_J) {
+                    LauncherService.navigateDown();
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_K) {
+                    LauncherService.navigateUp();
+                    event.accepted = true;
                 }
             }
 
@@ -107,6 +153,25 @@ PanelWindow {
                         anchors.rightMargin: Config.spacing + 6
                         spacing: Config.spacing
 
+                        Rectangle {
+                            id: inputModeChip
+                            visible: searchInput.modePrefix !== ""
+                            Layout.preferredWidth: modeChipLabel.implicitWidth + 18
+                            Layout.preferredHeight: 28
+                            radius: 14
+                            color: Config.accentColor
+
+                            Text {
+                                id: modeChipLabel
+                                anchors.centerIn: parent
+                                text: LauncherService.providerLabel
+                                color: Config.textColor
+                                font.family: Config.monoFont
+                                font.pixelSize: Config.fontSizeSmall
+                                font.weight: Font.DemiBold
+                            }
+                        }
+
                         TextField {
                             id: searchInput
                             Layout.fillWidth: true
@@ -121,16 +186,38 @@ PanelWindow {
                             placeholderTextColor: Config.mutedColor
                             background: null
 
+                            property bool syncing: false
+                            property string modePrefix: ""
+
                             onTextChanged: {
-                                if (LauncherService.query !== text)
-                                    LauncherService.query = text;
+                                if (syncing)
+                                    return;
+
+                                const prefixes = ["=", ">", "?", ":", "/", ";"];
+                                if (!modePrefix && text.length > 0 && prefixes.indexOf(text[0]) >= 0) {
+                                    modePrefix = text[0];
+                                    syncing = true;
+                                    text = text.slice(1);
+                                    syncing = false;
+                                }
+
+                                const nextQuery = modePrefix + text;
+                                if (LauncherService.query !== nextQuery)
+                                    LauncherService.query = nextQuery;
                             }
 
-                            Keys.onEscapePressed: root.hide()
+                            Keys.onEscapePressed: {
+                                if (!LauncherService.leaveMenu())
+                                    root.hide();
+                                else if (LauncherService.visible)
+                                    searchInput.focusSearch();
+                            }
 
                             Keys.onReturnPressed: {
                                 launcherPanel.forceActiveFocus();
                                 LauncherService.launchSelected();
+                                if (LauncherService.menuMode)
+                                    searchInput.focusSearch();
                             }
 
                             Keys.onUpPressed: LauncherService.navigateUp()
@@ -173,8 +260,25 @@ PanelWindow {
                             }
 
                             function syncFromService() {
-                                if (text !== LauncherService.query)
-                                    text = LauncherService.query;
+                                const raw = LauncherService.query || "";
+                                const parsed = LauncherService.parsed;
+                                const hasPrefix = parsed.provider !== "apps" && raw.length > 0;
+                                modePrefix = hasPrefix ? raw[0] : "";
+                                const nextText = hasPrefix ? parsed.text : raw;
+                                if (text !== nextText) {
+                                    syncing = true;
+                                    text = nextText;
+                                    syncing = false;
+                                }
+                            }
+
+                            function clearSearch() {
+                                modePrefix = "";
+                                syncing = true;
+                                text = "";
+                                syncing = false;
+                                LauncherService.query = "";
+                                forceActiveFocus();
                             }
 
                             function focusSearch() {
@@ -206,7 +310,7 @@ PanelWindow {
                         }
 
                         Rectangle {
-                            visible: LauncherService.providerLabel !== ""
+                            visible: false
                             Layout.preferredWidth: modeLabel.implicitWidth + 12
                             Layout.preferredHeight: 22
                             radius: height / 2
@@ -249,8 +353,7 @@ PanelWindow {
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    searchInput.text = "";
-                                    searchInput.forceActiveFocus();
+                                    searchInput.clearSearch();
                                 }
                             }
                         }
@@ -341,7 +444,7 @@ PanelWindow {
                 ListView {
                     id: appList
                     Layout.fillWidth: true
-                    Layout.fillHeight: listHeight > 0
+                    Layout.fillHeight: launcherPanel.listHeight > 0
                     Layout.preferredHeight: launcherPanel.listHeight
                     visible: launcherPanel.listHeight > 0
 
@@ -426,12 +529,14 @@ PanelWindow {
                                 radius: Config.radiusSmall
                                 color: "transparent"
 
-                                Image {
-                                    anchors.centerIn: parent
+                                 Image {
+                                     anchors.centerIn: parent
                                     width: 32
                                     height: 32
-                                    source: {
-                                        const item = delegateItem.modelData;
+                                     source: {
+                                         if (LauncherService.menuMode)
+                                             return "";
+                                         const item = delegateItem.modelData;
                                         if (!item)
                                             return "image://icon/application-x-executable";
                                         if (item._type === "file" && item.isVideo)
@@ -441,8 +546,18 @@ PanelWindow {
                                     }
                                     sourceSize: Qt.size(32, 32)
                                     fillMode: Image.PreserveAspectFit
-                                    smooth: true
-                                }
+                                     smooth: true
+                                     visible: !LauncherService.menuMode
+                                 }
+
+                                 Text {
+                                     anchors.centerIn: parent
+                                     visible: LauncherService.menuMode
+                                     text: LauncherService.menuGlyph(delegateItem.modelData)
+                                     color: delegateItem.isSelected ? Config.accentColor : Config.textColor
+                                     font.family: Config.monoFont
+                                     font.pixelSize: Config.fontSizeIcon
+                                 }
                             }
 
                             ColumnLayout {
@@ -488,10 +603,12 @@ PanelWindow {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onEntered: LauncherService.selectedIndex = delegateItem.index
-                            onClicked: {
-                                launcherPanel.forceActiveFocus();
-                                LauncherService.launch(delegateItem.modelData);
-                            }
+                             onClicked: {
+                                 launcherPanel.forceActiveFocus();
+                                 LauncherService.launch(delegateItem.modelData);
+                                 if (LauncherService.menuMode)
+                                     searchInput.focusSearch();
+                             }
                         }
                     }
 

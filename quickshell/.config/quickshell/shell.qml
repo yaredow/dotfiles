@@ -36,6 +36,9 @@ ShellRoot {
         function toggle(): void {
             LauncherService.toggle();
         }
+        function menu(): void {
+            LauncherService.showMenu();
+        }
     }
 
     Loader {
