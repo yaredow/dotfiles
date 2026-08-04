@@ -193,8 +193,6 @@ cd "$REPO_DIR"
 # =============================================================================
 # Logging: everything is teed to the log file AND the terminal
 # =============================================================================
-mkdir -p "$(dirname "$LOG_FILE")"
-exec > >(tee -a "$LOG_FILE") 2>&1
 trap 'on_exit' EXIT
 trap 'on_err $LINENO' ERR
 
