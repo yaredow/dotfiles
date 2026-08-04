@@ -1,5 +1,0 @@
-set-environment -g BG_COLOR "#{{base_strip}}"
-set-environment -g ACTIVE_COLOR "#{{blue_strip}}"
-set-environment -g INACTIVE_COLOR "#{{overlay0_strip}}"
-set-environment -g TEXT_COLOR "#{{text_strip}}"
-set-environment -g ACCENT_COLOR "#{{mauve_strip}}"

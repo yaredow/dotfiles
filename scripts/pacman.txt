@@ -18,7 +18,6 @@ polkit-gnome
 # Shell & Terminal
 # =============================================================================
 zsh
-tmux
 kitty
 starship
 fzf
@@ -159,6 +158,7 @@ ufw
 nemo
 kdeconnect
 keepassxc
+telegram-desktop
 zathura
 fwupd
 qt6ct

@@ -85,7 +85,6 @@ fi
 
 render kitty.conf "$KITTY_THEME.tmp"
 render hypr-colors.lua "$HOME/.config/hypr/theme.lua"
-render tmux.conf "$HOME/.config/tmux/theme.conf"
 render fastfetch.jsonc "$HOME/.config/fastfetch/config.jsonc"
 mkdir -p "$HOME/.config/btop/themes"
 render btop.theme "$HOME/.config/btop/themes/theme.theme"
@@ -109,7 +108,6 @@ mv "$KITTY_THEME.tmp" "$KITTY_THEME"
 kitty @ set-colors --all --configured "$KITTY_THEME" 2>/dev/null || true
 hyprctl reload >/dev/null 2>&1 || true
 pkill -SIGUSR1 kitty 2>/dev/null || true
-tmux source-file ~/.tmux.conf 2>/dev/null || true
 command -v herdr >/dev/null 2>&1 && herdr server reload-config >/dev/null 2>&1 || true
 [[ -x "$HOME/.local/bin/herdr" ]] && "$HOME/.local/bin/herdr" server reload-config >/dev/null 2>&1 || true
 

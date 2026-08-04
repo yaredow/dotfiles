@@ -378,13 +378,15 @@ else
 fi
 
 # =============================================================================
-# 12 – Setup tmux TPM
+# 12 – Install herdr (terminal multiplexer) via official installer
 # =============================================================================
-say "Installing tmux TPM..."
-if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
-  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+say "Installing herdr..."
+if command -v herdr &>/dev/null; then
+  echo "  already installed: $(herdr --version 2>/dev/null || echo unknown)"
+elif curl -fsSL https://herdr.dev/install.sh | sh; then
+  echo "  installed to ~/.local/bin/herdr"
 else
-  echo "  already installed"
+  WARNINGS+=("herdr install failed — retry: curl -fsSL https://herdr.dev/install.sh | sh")
 fi
 
 mkdir -p "$HOME/.local/share"

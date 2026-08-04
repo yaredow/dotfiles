@@ -30,7 +30,7 @@ Personal Arch Linux + Hyprland dotfiles built around a centralized theme system.
 | Editor            | Neovim (Lua), Zed                         |
 | Launcher          | Quickshell app launcher                   |
 | File Manager      | Yazi, Nemo                                |
-| Multiplexer       | tmux                                      |
+| Multiplexer       | herdr                                     |
 | Media             | mpv, mpd, rmpc, youtube-tui               |
 | Theme System      | colors.json + jq-rendered templates       |
 | Qt Theme          | qt6ct (Fusion + Nerd Fonts)               |
@@ -45,7 +45,7 @@ Personal Arch Linux + Hyprland dotfiles built around a centralized theme system.
 ├── nvim/           # Neovim
 ├── zed/            # Zed
 ├── theme/          # colors.json + templates (theme-set.sh)
-├── zsh/ starship/ tmux/
+├── zsh/ starship/
 ├── bin/            # ~/.local/bin scripts
 ├── scripts/        # NOT stowed — pacman.txt, yay.txt, stow-exclude.txt
 ├── ydot-sddm/      # NOT stowed — SDDM theme installer

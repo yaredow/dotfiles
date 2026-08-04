@@ -29,7 +29,7 @@ Source of truth: `theme/.config/theme/themes/<name>/colors.json`.
 
 ```
 theme-set.sh <name>
-  ├─ render templates → kitty / hypr / tmux / fastfetch / btop / starship
+  ├─ render templates → kitty / hypr / fastfetch / btop / starship
   ├─ copy colors.json → ~/.config/quickshell/state/colors.json
   ├─ nvim via integrations.nvim → ~/.config/nvim/lua/theme.lua
   ├─ wallpaper via awww (see below)
@@ -67,7 +67,6 @@ Repo seeds: `theme/.../themes/<name>/wallpapers/` (copied on install with `cp -n
 |------|--------|
 | `~/.config/kitty/theme.conf` | `kitty.conf.tpl` |
 | `~/.config/hypr/theme.lua` | `hypr-colors.lua.tpl` |
-| `~/.config/tmux/theme.conf` | `tmux.conf.tpl` |
 | `~/.config/fastfetch/config.jsonc` | `fastfetch.jsonc.tpl` |
 | `~/.config/btop/themes/theme.theme` | `btop.theme.tpl` |
 | `~/.config/starship.toml` | `starship.toml.tpl` |
