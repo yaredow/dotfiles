@@ -3,17 +3,21 @@ set -e
 
 NAME="ydot"
 SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SRC_DIR/.." && pwd)"
+# install.sh runs this via sudo, where $HOME would be /root — it passes the
+# real user home as $1. Fall back to $HOME when invoked directly.
+USER_HOME="${1:-$HOME}"
 THEME_DIR="/usr/share/sddm/themes/$NAME"
 CONFIG_DIR="/etc/sddm.conf.d"
-STATE_FILE="$HOME/.config/quickshell/state.json"
-THEME_ROOT="$HOME/.config/theme"
+STATE_FILE="$USER_HOME/.config/quickshell/state.json"
+THEME_ROOT="$USER_HOME/.config/theme"
 
-echo "Installing ydot SDDM theme..."
+echo "Installing ydot SDDM theme (user: $USER_HOME)..."
 
 # ── detect current theme ──
 THEME_NAME="tokyonight"
 if [[ -f "$STATE_FILE" ]]; then
-    THEME_NAME=$(jq -r '.theme.name // .theme // "tokyonight"' "$STATE_FILE" 2>/dev/null || echo "tokyonight")
+    THEME_NAME=$(jq -r '.theme.name // "tokyonight"' "$STATE_FILE" 2>/dev/null || echo "tokyonight")
 fi
 echo "Theme: $THEME_NAME"
 
@@ -45,22 +49,29 @@ fi
 FONT="FiraCode Nerd Font"
 MONO_FONT="FiraCode Nerd Font Mono"
 if [[ -f "$STATE_FILE" ]]; then
-    FONT=$(jq -r '.typography.font // .fonts.mono // "FiraCode Nerd Font"' "$STATE_FILE" 2>/dev/null || echo "$FONT")
-    MONO_FONT=$(jq -r '.typography.monoFont // .fonts.mono // "FiraCode Nerd Font Mono"' "$STATE_FILE" 2>/dev/null || echo "$MONO_FONT")
+    FONT=$(jq -r '.typography.font // "FiraCode Nerd Font"' "$STATE_FILE" 2>/dev/null || echo "$FONT")
+    MONO_FONT=$(jq -r '.typography.monoFont // "FiraCode Nerd Font Mono"' "$STATE_FILE" 2>/dev/null || echo "$MONO_FONT")
 fi
 
-# ── copy wallpaper into theme dir ──
-WALLPAPER_PATH="assets/background.jpg"
+# ── stage the theme in a temp dir (never write into the git repo) ──
+STAGING=$(mktemp -d)
+trap 'rm -rf "$STAGING"' EXIT
+
+cp "$SRC_DIR/Main.qml" "$SRC_DIR/metadata.desktop" "$STAGING/"
+cp -r "$SRC_DIR/assets" "$STAGING/assets"
+
+# ── bake in the current wallpaper, if available ──
+WP=""
 if [[ -f "$STATE_FILE" ]]; then
     WP=$(jq -r '.wallpaper.current // empty' "$STATE_FILE" 2>/dev/null || true)
-    if [[ -n "$WP" && -f "$WP" ]]; then
-        cp "$WP" "$SRC_DIR/assets/background.jpg"
-        echo "Wallpaper copied from: $WP"
-    fi
+fi
+if [[ -n "$WP" && -f "$WP" ]]; then
+    cp "$WP" "$STAGING/assets/background.jpg"
+    echo "Wallpaper copied from: $WP"
 fi
 
 # ── generate theme.conf ──
-cat > "$SRC_DIR/theme.conf" << THEMECONF
+cat > "$STAGING/theme.conf" << THEMECONF
 [Theme]
 backgroundColor=#$BG
 textColor=#$TEXT
@@ -74,18 +85,25 @@ errorColor=#$ERR
 font=$FONT
 monoFont=$MONO_FONT
 use24HourClock=true
-background=$WALLPAPER_PATH
+background=assets/background.jpg
 THEMECONF
 
 # ── install to SDDM ──
+rm -rf "$THEME_DIR"
 mkdir -p "$THEME_DIR"
-cp "$SRC_DIR/Main.qml" "$SRC_DIR/metadata.desktop" "$SRC_DIR/theme.conf" "$THEME_DIR/"
-cp -r "$SRC_DIR/assets" "$THEME_DIR/"
+cp "$STAGING/Main.qml" "$STAGING/metadata.desktop" "$STAGING/theme.conf" "$THEME_DIR/"
+cp -r "$STAGING/assets" "$THEME_DIR/"
 
 mkdir -p "$CONFIG_DIR"
 cat > "$CONFIG_DIR/theme.conf" << EOF
 [Theme]
 Current=$NAME
 EOF
+
+# Deploy the repo's SDDM drop-ins (not stowed — these are templates only)
+if [[ -f "$REPO_ROOT/sddm/etc/sddm.conf.d/hidpi.conf" ]]; then
+    cp "$REPO_ROOT/sddm/etc/sddm.conf.d/hidpi.conf" "$CONFIG_DIR/hidpi.conf"
+    echo "Installed HiDPI SDDM config."
+fi
 
 echo "Done. Test: sddm-greeter-qt6 --test-mode --theme $THEME_DIR"

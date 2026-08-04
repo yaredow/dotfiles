@@ -1,3 +1,7 @@
+# Machine-local cursor-agent launchers (installed by cursor, not via stow)
+bin/.local/bin/agent
+bin/.local/bin/cursor-agent
+
 # Machine-local quickshell state (paths, preferences)
 quickshell/.config/quickshell/state.json
 quickshell/.config/quickshell/state/colors.json

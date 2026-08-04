@@ -83,6 +83,17 @@ cd ~/dotfiles
 ./install.sh
 ```
 
+### Options
+```sh
+./install.sh --check   # pre-flight checks only (tools, package lists, themes,
+                       # and stow conflicts) — makes no changes
+./install.sh --help
+```
+
+- **Safe to re-run** — a failed run can be recovered by running `install.sh` again.
+- Real files that would block GNU Stow are backed up to `~/.local/state/stow-backup-*/` instead of failing the install.
+- Everything is logged to `~/.local/state/dotfiles-install.log` (override with `DOTFILES_LOG`).
+
 ### Manual stow
 ```sh
 stow */          # symlink all packages
