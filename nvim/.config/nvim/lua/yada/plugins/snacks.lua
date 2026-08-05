@@ -5,6 +5,7 @@ return {
   },
   opts = {
     bigfile = { enabled = true },
+    image = { enabled = true },
     dashboard = {
       enabled = true,
       sections = {

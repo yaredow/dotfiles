@@ -8,6 +8,15 @@ Personal Arch Linux + Hyprland dotfiles built around a centralized theme system.
 
 > ⚠️ **Work in progress.** Configs are actively evolving and may break between commits.
 
+## Screenshots
+
+![Desktop](screenshots/desktop.png)
+![Terminal](screenshots/terminal.png)
+![Launcher](screenshots/launcher.png)
+![Menu](screenshots/menu.png)
+![Lock screen](screenshots/lock.png)
+![SDDM](screenshots/sddm-theme.png)
+
 ## Features
 
 - **Centralized theme switching** — 3 themes (tokyonight, catppuccin, rosepine) with per-theme wallpapers and fonts
