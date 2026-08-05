@@ -1,10 +1,15 @@
 {
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
     "logo": {
-        "type": "file-raw",
+        "type": "file",
         "source": "~/.config/fastfetch/logo.txt",
+        "color": {
+            "1": "{{blue}}"
+        },
         "padding": {
-            "right": 2
+            "top": 2,
+            "right": 3,
+            "left": 1
         }
     },
     "display": {
@@ -14,10 +19,6 @@
             "title": "{{mauve}}",
             "output": "{{text}}",
             "separator": "{{overlay0}}"
-        },
-        "key": {
-            "width": 14,
-            "type": "string"
         },
         "size": {
             "maxPrefix": "MB",
@@ -32,42 +33,136 @@
     "modules": [
         "title",
         "separator",
-        "os",
-        "host",
+        "break",
         {
-            "type": "kernel",
-            "format": "{release}"
+            "type": "custom",
+            "format": "┌──────────────────────Hardware──────────────────────┐",
+            "formatColor": "{{overlay0}}"
         },
-        "uptime",
         {
-            "type": "packages",
-            "combined": true
+            "type": "host",
+            "key": "  󰇮 PC",
+            "keyColor": "{{blue}}"
         },
-        "shell",
         {
-            "type": "display",
-            "compactType": "original",
-            "key": "Resolution"
+            "type": "cpu",
+            "key": "│ ├󰒼",
+            "showPeCoreCount": true,
+            "keyColor": "{{blue}}"
         },
-        "de",
-        "wm",
-        "wmtheme",
-        "theme",
-        "icons",
-        "terminal",
-        {
-            "type": "terminalfont",
-            "format": "{/name}{-}{/}{name}{?size} {size}{?}"
-        },
-        "cpu",
         {
             "type": "gpu",
-            "key": "GPU",
-            "format": "{name}"
+            "key": "│ ├󰅪",
+            "detectionMethod": "pci",
+            "format": "{name}",
+            "keyColor": "{{blue}}"
+        },
+        {
+            "type": "display",
+            "key": "│ ├󱄄",
+            "compactType": "original",
+            "keyColor": "{{blue}}"
+        },
+        {
+            "type": "disk",
+            "key": "│ ├󰋊",
+            "keyColor": "{{blue}}"
         },
         {
             "type": "memory",
-            "format": "{used} / {total}"
+            "key": "│ ├󰛥",
+            "format": "{used} / {total}",
+            "keyColor": "{{blue}}"
+        },
+        {
+            "type": "swap",
+            "key": "└ └󰓡",
+            "keyColor": "{{blue}}"
+        },
+        {
+            "type": "custom",
+            "format": "└────────────────────────────────────────────────────┘",
+            "formatColor": "{{overlay0}}"
+        },
+        "break",
+        {
+            "type": "custom",
+            "format": "┌──────────────────────Software──────────────────────┐",
+            "formatColor": "{{overlay0}}"
+        },
+        {
+            "type": "os",
+            "key": "  󰘬 OS",
+            "keyColor": "{{mauve}}"
+        },
+        {
+            "type": "kernel",
+            "key": "│ ├󰀓",
+            "format": "{release}",
+            "keyColor": "{{mauve}}"
+        },
+        {
+            "type": "wm",
+            "key": "│ ├󰒈",
+            "keyColor": "{{mauve}}"
+        },
+        {
+            "type": "de",
+            "key": "│ ├󰭹",
+            "keyColor": "{{mauve}}"
+        },
+        {
+            "type": "terminal",
+            "key": "│ ├󰒉",
+            "keyColor": "{{mauve}}"
+        },
+        {
+            "type": "packages",
+            "key": "│ ├󰏖",
+            "combined": true,
+            "keyColor": "{{mauve}}"
+        },
+        {
+            "type": "wmtheme",
+            "key": "│ ├󰉼",
+            "keyColor": "{{mauve}}"
+        },
+        {
+            "type": "terminalfont",
+            "key": "└ └󰀱",
+            "format": "{/name}{-}{/}{name}{?size} {size}{?}",
+            "keyColor": "{{mauve}}"
+        },
+        {
+            "type": "custom",
+            "format": "└────────────────────────────────────────────────────┘",
+            "formatColor": "{{overlay0}}"
+        },
+        "break",
+        {
+            "type": "custom",
+            "format": "┌──────────────────────Session───────────────────────┐",
+            "formatColor": "{{overlay0}}"
+        },
+        {
+            "type": "uptime",
+            "key": "  󱫐 Uptime",
+            "keyColor": "{{green}}"
+        },
+        {
+            "type": "shell",
+            "key": "│ ├󰘔",
+            "keyColor": "{{green}}"
+        },
+        {
+            "type": "theme",
+            "key": "└ └󰸌",
+            "keyColor": "{{green}}"
+        },
+        {
+            "type": "custom",
+            "format": "└────────────────────────────────────────────────────┘",
+            "formatColor": "{{overlay0}}"
         },
         "break",
         "colors"
