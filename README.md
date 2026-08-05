@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="quickshell/.config/quickshell/assets/ydot.svg" alt="ydot" width="120" />
+   <img src="screenshots/ydot.svg" alt="ydot" width="120" />
 </p>
 
 <h1 align="center">ydot</h1>
