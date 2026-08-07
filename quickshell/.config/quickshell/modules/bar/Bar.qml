@@ -306,6 +306,7 @@ PanelWindow {
                         clip: true
                         width: trayArea.isOpen ? drawer.implicitWidth : 0
                         height: 24
+                        anchors.verticalCenter: parent.verticalCenter
                         opacity: trayArea.isOpen ? 1 : 0
                         visible: trayArea.hasItems
                         spacing: 0
