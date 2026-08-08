@@ -73,10 +73,9 @@ PanelWindow {
                     return q !== "";
                 return q.length > 0;
             }
-            property int hintsHeight: showHints ? 26 : 0
             property int recentLabelHeight: showRecentLabel ? 18 : 0
             property int listHeight: appList.count > 0 ? Math.min(420, appList.contentHeight + 12) : (showEmptyState ? 120 : 0)
-            property int totalHeight: 52 + 24 + hintsHeight + recentLabelHeight + listHeight + (hintsHeight > 0 ? Config.spacing : 0) + (recentLabelHeight > 0 ? Config.spacing : 0) + (listHeight > 0 ? Config.spacing : 0)
+            property int totalHeight: 52 + 24 + recentLabelHeight + listHeight + (recentLabelHeight > 0 ? Config.spacing : 0) + (listHeight > 0 ? Config.spacing : 0)
 
             height: totalHeight
             focus: LauncherService.visible
@@ -358,75 +357,6 @@ PanelWindow {
                             }
                         }
                     }
-                }
-
-                // Prefix discovery — only on a blank apps search
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: launcherPanel.hintsHeight
-                    Layout.leftMargin: Config.spacing + 6
-                    Layout.rightMargin: Config.spacing + 6
-                    visible: launcherPanel.showHints
-                    spacing: 10
-
-                    Repeater {
-                        model: [
-                            { prefix: "=", label: "math" },
-                            { prefix: ">", label: "run" },
-                            { prefix: "?", label: "web" },
-                            { prefix: ":", label: "clip" },
-                            { prefix: "/", label: "files" },
-                            { prefix: ";", label: "actions" }
-                        ]
-
-                        delegate: Item {
-                            id: hintItem
-                            required property var modelData
-
-                            // Fixed height so glyph metrics (e.g. ";") can't shift a cell vertically
-                            Layout.preferredWidth: hintRow.implicitWidth
-                            Layout.preferredHeight: launcherPanel.hintsHeight
-                            Layout.alignment: Qt.AlignVCenter
-                            width: hintRow.implicitWidth
-                            height: launcherPanel.hintsHeight
-
-                            Row {
-                                id: hintRow
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 4
-
-                                Text {
-                                    text: hintItem.modelData.prefix
-                                    color: Config.accentColor
-                                    font.family: Config.monoFont
-                                    font.pixelSize: Config.fontSizeSmall
-                                    font.weight: Font.DemiBold
-                                    height: Config.fontSizeSmall + 4
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                Text {
-                                    text: hintItem.modelData.label
-                                    color: Config.mutedColor
-                                    font.family: Config.monoFont
-                                    font.pixelSize: Config.fontSizeSmall
-                                    height: Config.fontSizeSmall + 4
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    LauncherService.setProviderPrefix(hintItem.modelData.prefix);
-                                    searchInput.focusSearch();
-                                }
-                            }
-                        }
-                    }
-
-                    Item { Layout.fillWidth: true }
                 }
 
                 Text {
