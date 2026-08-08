@@ -84,3 +84,6 @@ eval "$(direnv hook zsh)"
 
 # mimocode
 export PATH=/home/yada/.mimocode/bin:$PATH
+
+# Pi
+export PATH="$HOME/.local/bin:$PATH"
