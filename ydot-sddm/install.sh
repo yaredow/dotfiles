@@ -101,9 +101,11 @@ Current=$NAME
 EOF
 
 # Deploy the repo's SDDM drop-ins (not stowed — these are templates only)
-if [[ -f "$REPO_ROOT/sddm/etc/sddm.conf.d/hidpi.conf" ]]; then
-    cp "$REPO_ROOT/sddm/etc/sddm.conf.d/hidpi.conf" "$CONFIG_DIR/hidpi.conf"
-    echo "Installed HiDPI SDDM config."
-fi
+for dropin in hidpi.conf cursor.conf; do
+    if [[ -f "$REPO_ROOT/sddm/etc/sddm.conf.d/$dropin" ]]; then
+        cp "$REPO_ROOT/sddm/etc/sddm.conf.d/$dropin" "$CONFIG_DIR/$dropin"
+        echo "Installed SDDM $dropin."
+    fi
+done
 
 echo "Done. Test: sddm-greeter-qt6 --test-mode --theme $THEME_DIR"
