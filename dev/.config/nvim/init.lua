@@ -8,6 +8,12 @@ vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = true
 
 -- ============================================================
+-- DISABLE NETRW (must be set before plugins load)
+-- ============================================================
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- ============================================================
 -- LAZY.NVIM (bootstrap + plugin loading)
 -- ============================================================
 vim.loader.enable()
@@ -20,9 +26,6 @@ vim.cmd.colorscheme(ok and colorscheme or "tokyonight-night")
 -- ============================================================
 -- CORE OPTIONS & AUTOCMDS
 -- ============================================================
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('yada-highlight-yank', { clear = true }),

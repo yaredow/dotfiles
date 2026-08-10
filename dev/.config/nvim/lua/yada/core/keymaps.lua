@@ -31,7 +31,7 @@ end
 -- LSP keymap framework
 -- ============================================================
 -- Apply a buffer-local LSP keymap spec, capability-conditional.
--- The spec lives in lua/yada/plugins/lsp.lua (exported as YADA_LSP_KEYMAPS).
+-- The spec lives in lua/yada/plugins/lsp.lua (local to the plugin config).
 -- Entry shape:
 --
 --   {

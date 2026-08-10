@@ -1,10 +1,31 @@
 return {
   'folke/snacks.nvim',
+  event = 'VeryLazy',
   dependencies = {
     { 'nvim-mini/mini.icons', opts = {} },
   },
+  keys = {
+    { '<leader>e', function() Snacks.explorer() end, desc = 'File explorer' },
+    { '<leader>th', function() Snacks.terminal.toggle() end, desc = '[T]erminal toggle', mode = { 'n', 't' } },
+    { '<leader>tn', function() Snacks.terminal() end, desc = '[T]erminal [N]ew', mode = { 'n', 't' } },
+    { '<leader>sh', function() Snacks.picker.help() end, desc = '[S]earch [H]elp' },
+    { '<leader>sk', function() Snacks.picker.keymaps() end, desc = '[S]earch [K]eymaps' },
+    { '<leader>sf', function() Snacks.picker.files() end, desc = '[S]earch [F]iles' },
+    { '<leader>ss', '<cmd>Pick<cr>', desc = '[S]earch [S]elect picker' },
+    { '<leader>sw', function() Snacks.picker.grep_word() end, desc = '[S]earch current [W]ord', mode = { 'n', 'v' } },
+    { '<leader>sg', function() Snacks.picker.grep() end, desc = '[S]earch by [G]rep' },
+    { '<leader>sd', function() Snacks.picker.diagnostics() end, desc = '[S]earch [D]iagnostics' },
+    { '<leader>sr', function() Snacks.picker.resume() end, desc = '[S]earch [R]esume' },
+    { '<leader>s.', function() Snacks.picker.recent() end, desc = '[S]earch Recent Files' },
+    { '<leader>sc', function() Snacks.picker.commands() end, desc = '[S]earch [C]ommands' },
+    { '<leader>sn', function() Snacks.picker.files { cwd = vim.fn.stdpath 'config' } end, desc = '[S]earch [N]eovim files' },
+    { '<leader>/', function() Snacks.picker.grep_buffers() end, desc = '[/] Fuzzily search current buffer' },
+    { '<leader>s/', function() Snacks.picker.grep { buffers = true } end, desc = '[S]earch [/] in Open Files' },
+    { '<leader><leader>', function() Snacks.picker.buffers() end, desc = '[ ] Find existing buffers' },
+  },
   opts = {
     bigfile = { enabled = true },
+    explorer = { enabled = true, replace_netrw = true },
     image = { enabled = true },
     dashboard = {
       enabled = true,
@@ -15,14 +36,16 @@ return {
       },
     },
     picker = {
+      layout = { preset = 'telescope' },
       sources = {
         explorer = {
-          layout = { layout = { position = 'right' } },
+          layout = { layout = { position = 'right', width = 0.3 } },
         },
       },
     },
     notifier = { enabled = true, timeout = 3000 },
-    terminal = { enabled = false },
+    statusline = { enabled = true },
+    terminal = { enabled = true },
     indent = { enabled = true },
     input = { enabled = true },
     quickfile = { enabled = true },

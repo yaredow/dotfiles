@@ -70,23 +70,22 @@ local servers = {
 -- LSP keymap spec
 -- ============================================================
 -- Declarative table consumed by `yada.core.keymaps.apply_lsp_keymaps`.
--- Exported as a global so keymaps.lua can access it.
 ---@type { lhs: string, rhs: function|string, desc: string, mode?: string|string[], has?: string, cond?: fun(buf: integer, client: vim.lsp.Client): boolean, opts?: table }[]
-YADA_LSP_KEYMAPS = {
-  -- Goto (override 0.12 built-ins to use Telescope pickers)
-  { lhs = 'gd', rhs = function() require('telescope.builtin').lsp_definitions() end,     desc = 'Goto Definition',        has = 'definition' },
-  { lhs = 'gD', rhs = function() require('telescope.builtin').lsp_declarations() end,    desc = 'Goto Declaration',       has = 'declaration' },
-  { lhs = 'gI', rhs = function() require('telescope.builtin').lsp_implementations() end,  desc = 'Goto Implementation',    has = 'implementation' },
-  { lhs = 'gr', rhs = function() require('telescope.builtin').lsp_references() end,      desc = 'Goto References',        has = 'references' },
-  { lhs = 'gT', rhs = function() require('telescope.builtin').lsp_type_definitions() end, desc = 'Goto Type Definition',   has = 'typeDefinition' },
+local lsp_keymaps = {
+  -- Goto (override 0.12 built-ins to use Snacks pickers)
+  { lhs = 'gd', rhs = function() Snacks.picker.lsp_definitions() end,     desc = 'Goto Definition',        has = 'definition' },
+  { lhs = 'gD', rhs = function() Snacks.picker.lsp_declarations() end,    desc = 'Goto Declaration',       has = 'declaration' },
+  { lhs = 'gI', rhs = function() Snacks.picker.lsp_implementations() end,  desc = 'Goto Implementation',    has = 'implementation' },
+  { lhs = 'gr', rhs = function() Snacks.picker.lsp_references() end,      desc = 'Goto References',        has = 'references' },
+  { lhs = 'gT', rhs = function() Snacks.picker.lsp_type_definitions() end, desc = 'Goto Type Definition',   has = 'typeDefinition' },
 
-  -- Telescope variants (alternate lhs for muscle memory)
-  { lhs = 'grd', rhs = function() require('telescope.builtin').lsp_definitions() end,     desc = 'Goto Definition (alt)',     has = 'definition' },
-  { lhs = 'grr', rhs = function() require('telescope.builtin').lsp_references() end,      desc = 'Goto References (alt)',     has = 'references' },
-  { lhs = 'gri', rhs = function() require('telescope.builtin').lsp_implementations() end,  desc = 'Goto Implementation (alt)', has = 'implementation' },
-  { lhs = 'grt', rhs = function() require('telescope.builtin').lsp_type_definitions() end, desc = 'Goto Type Definition (alt)', has = 'typeDefinition' },
-  { lhs = 'gO',  rhs = function() require('telescope.builtin').lsp_document_symbols() end,  desc = 'Document Symbols',          has = 'documentSymbol' },
-  { lhs = 'gW',  rhs = function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end, desc = 'Workspace Symbols', has = 'workspaceSymbol' },
+  -- Snacks variants (alternate lhs for muscle memory)
+  { lhs = 'grd', rhs = function() Snacks.picker.lsp_definitions() end,     desc = 'Goto Definition (alt)',     has = 'definition' },
+  { lhs = 'grr', rhs = function() Snacks.picker.lsp_references() end,      desc = 'Goto References (alt)',     has = 'references' },
+  { lhs = 'gri', rhs = function() Snacks.picker.lsp_implementations() end,  desc = 'Goto Implementation (alt)', has = 'implementation' },
+  { lhs = 'grt', rhs = function() Snacks.picker.lsp_type_definitions() end, desc = 'Goto Type Definition (alt)', has = 'typeDefinition' },
+  { lhs = 'gO',  rhs = function() Snacks.picker.lsp_symbols() end,  desc = 'Document Symbols',          has = 'documentSymbol' },
+  { lhs = 'gW',  rhs = function() Snacks.picker.lsp_workspace_symbols() end, desc = 'Workspace Symbols', has = 'workspaceSymbol' },
 
   -- Hover / signature / rename
   { lhs = 'K',          rhs = vim.lsp.buf.hover,          desc = 'Hover',          has = 'hoverProvider' },
@@ -100,9 +99,9 @@ YADA_LSP_KEYMAPS = {
   { lhs = '<leader>lf', rhs = function() vim.lsp.buf.format { async = true } end, desc = 'Format Buffer', has = 'documentFormattingProvider' },
 
   -- Symbol pickers
-  { lhs = '<leader>lR', rhs = function() require('telescope.builtin').lsp_references() end, desc = 'References (picker)', has = 'references' },
-  { lhs = '<leader>ls', rhs = function() require('telescope.builtin').lsp_document_symbols() end, desc = 'Document Symbols (picker)', has = 'documentSymbol' },
-  { lhs = '<leader>lg', rhs = function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end, desc = 'Workspace Symbols (picker)', has = 'workspaceSymbol' },
+  { lhs = '<leader>lR', rhs = function() Snacks.picker.lsp_references() end, desc = 'References (picker)', has = 'references' },
+  { lhs = '<leader>ls', rhs = function() Snacks.picker.lsp_symbols() end, desc = 'Document Symbols (picker)', has = 'documentSymbol' },
+  { lhs = '<leader>lg', rhs = function() Snacks.picker.lsp_workspace_symbols() end, desc = 'Workspace Symbols (picker)', has = 'workspaceSymbol' },
 
   -- Inlay hint toggle (only if the server supports the protocol)
   {
@@ -126,19 +125,25 @@ return {
   'neovim/nvim-lspconfig',
   dependencies = {
     'mason-org/mason.nvim',
-    'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
   },
   config = function()
     require('mason').setup {}
 
-    local ensure_installed = vim.tbl_keys(servers or {})
-    vim.list_extend(ensure_installed, { 'prettier' }) -- used by conform.nvim
+    local mason_names = {
+      gopls = 'gopls',
+      ts_ls = 'typescript-language-server',
+      stylua = 'stylua',
+      lua_ls = 'lua-language-server',
+    }
+    local ensure_installed = vim.tbl_values(mason_names)
+    vim.list_extend(ensure_installed, { 'eslint_d', 'golangci-lint', 'prettier' }) -- used by nvim-lint and conform.nvim
 
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
     for name, server in pairs(servers) do
       if name == 'gopls' and vim.fn.executable 'go' ~= 1 then goto continue end
+      if name == 'qmlls' and vim.fn.executable('/usr/lib/qt6/bin/qmlls') ~= 1 then goto continue end
       vim.lsp.config(name, server)
       vim.lsp.enable(name)
       ::continue::
@@ -152,7 +157,7 @@ return {
         if not client then return end
 
         -- Apply buffer-local LSP keymaps (capability-conditional)
-        require('yada.core.keymaps').apply_lsp_keymaps(event.buf, client, YADA_LSP_KEYMAPS)
+        require('yada.core.keymaps').apply_lsp_keymaps(event.buf, client, lsp_keymaps)
 
         -- Document highlight on CursorHold; cleared on CursorMoved / LspDetach
         if client:supports_method 'textDocument/documentHighlight' then

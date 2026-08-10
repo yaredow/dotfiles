@@ -3,7 +3,12 @@ return {
   event = 'BufWritePre',
   opts = {
     notify_on_error = false,
-    format_on_save = { go = { timeout_ms = 500 } },
+    format_on_save = function(bufnr)
+      if vim.bo[bufnr].filetype == 'go' then
+        return { timeout_ms = 500, lsp_format = 'fallback' }
+      end
+      return { timeout_ms = 2000, lsp_format = 'fallback' }
+    end,
     default_format_opts = { lsp_format = 'fallback' },
     formatters = {
       sqlfluff = {

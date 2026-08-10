@@ -22,9 +22,6 @@ return {
   -- Guess indentation
   { 'NMAC427/guess-indent.nvim', opts = {} },
 
-  -- File icons
-  { 'nvim-tree/nvim-web-devicons', lazy = true },
-
   -- Git signs
   {
     'lewis6991/gitsigns.nvim',
@@ -37,6 +34,20 @@ return {
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+      on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
+        if not gs then return end
+        local function map(lhs, rhs, desc)
+          vim.keymap.set('n', lhs, rhs, { buffer = bufnr, desc = desc })
+        end
+        map(']h', gs.next_hunk, 'Next hunk')
+        map('[h', gs.prev_hunk, 'Prev hunk')
+        map('<leader>hs', gs.stage_hunk, '[H]unk stage')
+        map('<leader>hr', gs.reset_hunk, '[H]unk reset')
+        map('<leader>hS', gs.stage_buffer, '[H]unk stage buffer')
+        map('<leader>hp', gs.preview_hunk, '[H]unk preview')
+        map('<leader>hb', function() gs.blame_line { full = true } end, '[H]unk blame line')
+      end,
     },
   },
 
@@ -83,9 +94,7 @@ return {
         n_lines = 500,
       }
       require('mini.surround').setup()
-      local statusline = require 'mini.statusline'
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-      statusline.section_location = function() return '%2l:%-2v' end
+      vim.keymap.set('x', 'W', 'sa', { remap = true, desc = 'Wrap with surrounding' })
     end,
   },
 
