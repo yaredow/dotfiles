@@ -45,27 +45,18 @@ render() {
     args+=(-e "s|{{${key}}}|${val}|g" -e "s|{{${key}_strip}}|${val#\#}|g")
   done
 
-  # integrations + fonts
-  local starship nvim herdr opencode mono size
+  # integrations
+  local starship nvim herdr opencode
   starship=$(echo "$COLORS" | jq -r '.integrations.starship // empty')
   nvim=$(echo "$COLORS" | jq -r '.integrations.nvim // empty')
   herdr=$(echo "$COLORS" | jq -r '.integrations.herdr // empty')
   opencode=$(echo "$COLORS" | jq -r '.integrations.opencode // empty')
-  mono=$(echo "$COLORS" | jq -r '.fonts.mono // "JetBrainsMono Nerd Font"')
-  size=$(echo "$COLORS" | jq -r '.fonts.size // 13')
-
-  # Global font override from quickshell state
-  if [[ -f "$STATE_FILE" ]]; then
-    local override
-    override=$(jq -r '.typography.monoFont // empty' "$STATE_FILE" 2>/dev/null || true)
-    [[ -n "$override" && "$override" != "null" ]] && mono="$override"
-  fi
 
   [[ -n "$starship" ]] && args+=(-e "s|{{starship_palette}}|${starship}|g")
   [[ -n "$nvim" ]] && args+=(-e "s|{{nvim_colorscheme}}|${nvim}|g")
   [[ -n "$herdr" ]] && args+=(-e "s|{{herdr_theme}}|${herdr}|g")
   [[ -n "$opencode" ]] && args+=(-e "s|{{opencode_theme}}|${opencode}|g")
-  args+=(-e "s|{{font_mono}}|${mono}|g" -e "s|{{font_size}}|${size}|g")
+  args+=(-e "s|{{font_mono}}|${FONT_MONO}|g" -e "s|{{font_size}}|${FONT_SIZE}|g")
 
 
   if ((${#args[@]})); then
@@ -75,7 +66,6 @@ render() {
   fi
 }
 
-KITTY_THEME="$HOME/.config/kitty/theme.conf"
 FONT_MONO=$(echo "$COLORS" | jq -r '.fonts.mono // "JetBrainsMono Nerd Font"')
 FONT_SIZE=$(echo "$COLORS" | jq -r '.fonts.size // 13')
 if [[ -f "$STATE_FILE" ]]; then
@@ -83,6 +73,7 @@ if [[ -f "$STATE_FILE" ]]; then
   [[ -n "$OVERRIDE" && "$OVERRIDE" != "null" ]] && FONT_MONO="$OVERRIDE"
 fi
 
+KITTY_THEME="$HOME/.config/kitty/theme.conf"
 render kitty.conf "$KITTY_THEME.tmp"
 render hypr-colors.lua "$HOME/.config/hypr/theme.lua"
 render fastfetch.jsonc "$HOME/.config/fastfetch/config.jsonc"

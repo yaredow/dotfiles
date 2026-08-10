@@ -45,8 +45,6 @@ bindkey '^r' history-incremental-search-backward
 # ==============================
 # Load modular dotfiles
 # ==============================
-[[ -f ~/.zsh/aliases.zsh ]] && source ~/.zsh/aliases.zsh
-
 for file in ~/.zsh/*.zsh; do
   [[ -f "$file" ]] && source "$file"
 done
@@ -81,9 +79,4 @@ export PATH="$PATH:$HOME/go/bin"
 [[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
 
 eval "$(direnv hook zsh)"
-
-# mimocode
-export PATH=/home/yada/.mimocode/bin:$PATH
-
-# Pi
 export PATH="$HOME/.local/bin:$PATH"
