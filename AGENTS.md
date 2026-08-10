@@ -94,7 +94,6 @@ No flat `"theme.name"` / `"wallpaper.index"` keys. Scripts migrate legacy flat k
 | File | Purpose |
 |------|---------|
 | `install.sh` | Bootstrap |
-| `uninstall.sh` | Remove stow symlinks (--purge to also remove generated files) |
 | `scripts/pacman.txt` / `yay.txt` | Packages |
 | `scripts/stow-exclude.txt` | Non-stow top-level dirs |
 | `bin/.local/bin/theme-set.sh` | Theme orchestrator |
