@@ -6,7 +6,7 @@ REPO_URL="${DOTFILES_REPO:-https://github.com/yaredow/dotfiles}"
 REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOG_FILE="${DOTFILES_LOG:-$HOME/.local/state/dotfiles-install.log}"
 
-TOTAL_STEPS=13
+TOTAL_STEPS=12
 step=0
 CHECK_ONLY=0
 WARNINGS=()
@@ -363,6 +363,9 @@ zsh -c 'source /usr/share/zsh-antidote/antidote.zsh && antidote bundle < "$HOME/
 # =============================================================================
 # 10 – Enable systemd services
 # =============================================================================
+say "Configuring NetworkManager with iwd backend..."
+sudo mkdir -p /etc/NetworkManager/conf.d
+printf '[device]\nwifi.backend=iwd\nwifi.iwd.autoconnect=false\n' | sudo tee /etc/NetworkManager/conf.d/wifi-backend.conf > /dev/null
 say "Enabling systemd services..."
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
 sudo systemctl enable --now bluetooth.service 2>/dev/null || true
@@ -391,18 +394,6 @@ elif [[ "$(getent passwd "$USER" | cut -d: -f7)" != "$ZSH_PATH" ]]; then
   echo "  default shell set to $ZSH_PATH (log out and back in to activate)"
 else
   echo "  already zsh"
-fi
-
-# =============================================================================
-# 13 – Install herdr (terminal multiplexer) via official installer
-# =============================================================================
-say "Installing herdr..."
-if command -v herdr &>/dev/null; then
-  echo "  already installed: $(herdr --version 2>/dev/null || echo unknown)"
-elif curl -fsSL https://herdr.dev/install.sh | sh; then
-  echo "  installed to ~/.local/bin/herdr"
-else
-  WARNINGS+=("herdr install failed — retry: curl -fsSL https://herdr.dev/install.sh | sh")
 fi
 
 mkdir -p "$HOME/.local/share"
