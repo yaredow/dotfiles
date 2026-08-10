@@ -22,6 +22,18 @@ qutebrowser/.config/qutebrowser/quickmarks
 qutebrowser/.config/qutebrowser/bookmarks/
 qutebrowser/.config/qutebrowser/userscripts/__pycache__/
 
+# Machine-local binaries (installed by install.sh or external tooling)
+bin/.local/bin/herdr
+
+# youtube-tui automatic config backups (date-stamped)
+youtube-tui/.config/youtube-tui/main-*.yml
+
+# Generated rmpc theme
+rmpc/.config/rmpc/themes/theme.ron
+
+# Per-theme rmpc theme files (generated from template)
+rmpc/.config/rmpc/themes/*.ron
+
 # Local noise (mpd runtime also covered by mpd/.config/mpd/.gitignore)
 nvim/.config/nvim/nvim.log
 **/*.log

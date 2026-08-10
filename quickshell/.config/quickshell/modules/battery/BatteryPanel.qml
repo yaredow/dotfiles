@@ -16,7 +16,7 @@ QsPopupWindow {
     moduleName: "battery"
     contentImplicitHeight: mainColumn.childrenRect.height
 
-    readonly property string binDir: "/home/yada/.local/bin"
+    readonly property string binDir: Quickshell.env("HOME") + "/.local/bin"
 
     // ---- Data from shell scripts ----
     property int batPercent: 0

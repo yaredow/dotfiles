@@ -34,6 +34,7 @@
     "nvim": "tokyonight-night",
     "starship": "tokyonight_night",
     "herdr": "tokyo-night",
-    "opencode": "tokyonight"
+    "opencode": "tokyonight",
+    "rmpc": "tokyonight"
   }
 }

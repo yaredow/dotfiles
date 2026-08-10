@@ -34,6 +34,7 @@
     "nvim": "catppuccin-mocha",
     "starship": "catppuccin_mocha",
     "herdr": "catppuccin",
-    "opencode": "catppuccin"
+    "opencode": "catppuccin",
+    "rmpc": "catppuccin"
   }
 }

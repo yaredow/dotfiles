@@ -29,7 +29,7 @@ Source of truth: `theme/.config/theme/themes/<name>/colors.json`.
 
 ```
 theme-set.sh <name>
-  ├─ render templates → kitty / hypr / fastfetch / btop / starship
+  ├─ render templates → kitty / hypr / fastfetch / btop / starship / rmpc
   ├─ copy colors.json → ~/.config/quickshell/state/colors.json
   ├─ nvim via integrations.nvim → ~/.config/nvim/lua/theme.lua
   ├─ wallpaper via awww (see below)
@@ -41,7 +41,7 @@ Templates: `theme/.config/theme/templates/*.tpl` with `{{key}}` / `{{key_strip}}
 Per-theme integrations in `colors.json`:
 
 ```json
-"integrations": { "nvim": "tokyonight-night", "starship": "tokyonight_night", "herdr": "tokyo-night", "opencode": "tokyonight" }
+"integrations": { "nvim": "tokyonight-night", "starship": "tokyonight_night", "herdr": "tokyo-night", "opencode": "tokyonight", "rmpc": "tokyonight" }
 ```
 
 ### Wallpapers
@@ -73,6 +73,7 @@ Repo seeds: `theme/.../themes/<name>/wallpapers/` (copied on install with `cp -n
 | `~/.config/nvim/lua/theme.lua` | `integrations.nvim` |
 | `~/.config/herdr/config.toml` | `herdr.toml.tpl` (theme name + `[theme.custom]` palette) |
 | `~/.config/opencode/tui.json` | `opencode-tui.json.tpl` (`integrations.opencode`) |
+| `~/.config/rmpc/themes/theme.ron` | `rmpc.ron.tpl` (full theme) |
 | `~/.config/theme/current` | symlink → active theme |
 | `~/.config/quickshell/state.json` | machine-local (from `state.default.json`) |
 | `~/.config/quickshell/state/colors.json` | copy of active `colors.json` |
@@ -93,6 +94,7 @@ No flat `"theme.name"` / `"wallpaper.index"` keys. Scripts migrate legacy flat k
 | File | Purpose |
 |------|---------|
 | `install.sh` | Bootstrap |
+| `uninstall.sh` | Remove stow symlinks (--purge to also remove generated files) |
 | `scripts/pacman.txt` / `yay.txt` | Packages |
 | `scripts/stow-exclude.txt` | Non-stow top-level dirs |
 | `bin/.local/bin/theme-set.sh` | Theme orchestrator |

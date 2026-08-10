@@ -93,6 +93,8 @@ mkdir -p "$HOME/.config/mpv/script-opts"
 render mpv-osc.conf "$HOME/.config/mpv/script-opts/osc.conf"
 render herdr.toml "$HOME/.config/herdr/config.toml"
 render opencode-tui.json "$HOME/.config/opencode/tui.json"
+mkdir -p "$HOME/.config/rmpc/themes"
+render rmpc.ron "$HOME/.config/rmpc/themes/theme.ron"
 
 
 {

@@ -9,7 +9,7 @@
     // Has to match `bind_to_address` in mpd.conf.
     address: "/tmp/mpd_socket",
 
-    theme: Some("tokyonight"),
+    theme: Some("theme"),
 
     // Where rmpc caches files downloaded via yt-dlp for YouTube/SoundCloud playback.
     cache_dir: Some("~/.cache/rmpc"),
