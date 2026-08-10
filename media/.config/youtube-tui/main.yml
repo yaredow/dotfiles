@@ -1,6 +1,6 @@
 mouse_support: true
 invidious_instance: https://inv.zoomerville.com
-write_config: Try
+write_config: false
 allow_unicode: true
 message_bar_default: All good :)
 images: Sixel
