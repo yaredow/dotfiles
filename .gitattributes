@@ -1,0 +1,2 @@
+# Theme templates are sed-substituted, not Go templates
+theme/.config/theme/templates/*.tpl linguist-language=Text
