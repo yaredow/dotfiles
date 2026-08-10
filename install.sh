@@ -301,7 +301,7 @@ fi
 say "Bootstrapping quickshell state..."
 mkdir -p "$HOME/.config/quickshell"
 if [[ ! -f "$HOME/.config/quickshell/state.json" ]]; then
-  cp "$REPO_DIR/quickshell/.config/quickshell/state.default.json" "$HOME/.config/quickshell/state.json"
+  cp "$REPO_DIR/wm/.config/quickshell/state.default.json" "$HOME/.config/quickshell/state.json"
 fi
 
 # =============================================================================
@@ -325,8 +325,8 @@ mkdir -p "$HOME/.local/wallpapers/extras"
 # =============================================================================
 say "Setting theme..."
 DEFAULT_THEME="tokyonight"
-if [[ -f "$REPO_DIR/quickshell/.config/quickshell/state.default.json" ]]; then
-  DEFAULT_THEME=$(jq -r '.theme.name // "tokyonight"' "$REPO_DIR/quickshell/.config/quickshell/state.default.json" 2>/dev/null || true)
+if [[ -f "$REPO_DIR/wm/.config/quickshell/state.default.json" ]]; then
+  DEFAULT_THEME=$(jq -r '.theme.name // "tokyonight"' "$REPO_DIR/wm/.config/quickshell/state.default.json" 2>/dev/null || true)
 fi
 THEME="$DEFAULT_THEME"
 if [[ -f "$HOME/.config/quickshell/state.json" ]]; then

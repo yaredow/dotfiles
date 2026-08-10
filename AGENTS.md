@@ -4,24 +4,31 @@ Arch Linux + Hyprland dotfiles with a centralized theme system. All config deplo
 
 ## Structure
 
-Each top-level directory is a **stow package** rooted at `~`, unless listed in `scripts/stow-exclude.txt`.
+Top-level directories are **topic-based stow packages** grouped by domain, rooted at `~`.
 
 ```
-stow hypr kitty            # specific packages
-stow -D hypr               # remove symlinks
+stow shell terminal        # deploy by topic
+stow -D shell              # remove symlinks
 ./install.sh               # full bootstrap (auto-discovers packages)
 ```
 
-### Stow packages vs non-packages
+### Packages (8 stow + 3 non-stow)
 
-| Kind | Examples | How deployed |
-|------|----------|--------------|
-| Stow package | `hypr/`, `kitty/`, `nvim/`, `quickshell/`, `theme/`, `bin/`, … | `stow` → `~` |
-| Non-package | `scripts/`, `sddm/`, `ydot-sddm/`, `starship/` | helpers / templates only |
+| Package | Contents | Domain |
+|---------|----------|--------|
+| `shell/` | zsh (.zshrc, .zshenv, aliases), atuin | shell experience |
+| `terminal/` | kitty, fastfetch, btop, herdr | terminal + TUI tools |
+| `wm/` | hyprland, quickshell | window manager + shell |
+| `dev/` | nvim, git, zed, yazi | development tools |
+| `media/` | mpd, mpv, rmpc, youtube-tui | media |
+| `desktop/` | gtk-3/4, qt6ct, electron | desktop environment |
+| `bin/` | theme-set.sh, wallpaper scripts | user scripts (~/.local/bin) |
+| `theme/` | colors.json, templates | theme system |
+| *`scripts/`* | pacman.txt, yay.txt, helpers | **not stowed** |
+| *`sddm/`* / *`ydot-sddm/`* | SDDM greeter theme | **not stowed** |
+| *`screenshots/`* | documentation images | **not stowed** |
 
-`starship/` is **not** stowed — `theme-set.sh` renders `starship.toml` from the theme template into `~/.config/starship.toml`.
-
-Adding a new app config: create `appname/.config/...` (picked up automatically). To keep a top-level dir out of stow, add its name to `scripts/stow-exclude.txt`.
+Adding a new app: put it in the closest topic dir with `app/.config/...`. To keep a top-level dir out of stow, add its name to `scripts/stow-exclude.txt`. `starship.toml` is rendered by `theme-set.sh` directly into `~/.config/starship.toml` (no stow package).
 
 ## Theme system
 
@@ -98,8 +105,8 @@ No flat `"theme.name"` / `"wallpaper.index"` keys. Scripts migrate legacy flat k
 | `scripts/stow-exclude.txt` | Non-stow top-level dirs |
 | `bin/.local/bin/theme-set.sh` | Theme orchestrator |
 | `bin/.local/bin/wallpaper-*.sh` | Wallpaper |
-| `hypr/.config/hypr/hyprland.lua` | Hyprland |
-| `quickshell/.../state.default.json` | State template |
+| `wm/.config/hypr/hyprland.lua` | Hyprland |
+| `wm/.config/quickshell/state.default.json` | State template |
 
 ## Gotchas
 
