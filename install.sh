@@ -86,8 +86,17 @@ detect_conflicts() {
     while IFS= read -r -d '' path; do
       rel="${path#"$name"/}"
       target="$HOME/$rel"
-      # Symlink or absent target = safe (previous stow / fresh install)
-      [[ -L "$target" || ! -e "$target" ]] && continue
+      # Absent target = safe (fresh install)
+      [[ ! -e "$target" && ! -L "$target" ]] && continue
+      # Valid symlink (resolves to an existing file) = safe (previous stow)
+      [[ -L "$target" && -e "$target" ]] && continue
+      # Broken symlink — silently remove so stow can replace it
+      if [[ -L "$target" ]]; then
+        if [[ "$action" == "backup" ]]; then
+          rm -f "$target"
+        fi
+        continue
+      fi
       # Conflict: stow wants a symlink here but a real file is in the way.
       # (A real *directory* at the target is fine — stow descends into it.)
       [[ -f "$REPO_DIR/$path" || ! -d "$target" ]] || continue
