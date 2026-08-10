@@ -31,7 +31,7 @@ setopt AUTOCD
 # Completion
 # ==============================
 autoload -Uz compinit
-compinit
+compinit -C
 
 # ==============================
 # Keybindings

@@ -17,7 +17,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
-export PATH="$PNPM_HOME:$PATH"
+export PATH="$PNPM_HOME/bin:$PATH"
 
 # Cargo
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -30,5 +30,3 @@ export PATH="$PATH:$ANDROID_HOME/emulator"
 export PATH="$PATH:$ANDROID_HOME/platform-tools"
 export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"
 
-# AI agents
-export PATH="$HOME/.local/bin:$PATH"

@@ -46,11 +46,11 @@ if [[ -f "$COLORS_FILE" ]]; then
 fi
 
 # ── read fonts ──
-FONT="FiraCode Nerd Font"
-MONO_FONT="FiraCode Nerd Font Mono"
+FONT="CaskaydiaCove Nerd Font"
+MONO_FONT="CaskaydiaCove Nerd Font Mono"
 if [[ -f "$STATE_FILE" ]]; then
-    FONT=$(jq -r '.typography.font // "FiraCode Nerd Font"' "$STATE_FILE" 2>/dev/null || echo "$FONT")
-    MONO_FONT=$(jq -r '.typography.monoFont // "FiraCode Nerd Font Mono"' "$STATE_FILE" 2>/dev/null || echo "$MONO_FONT")
+    FONT=$(jq -r '.typography.font // "CaskaydiaCove Nerd Font"' "$STATE_FILE" 2>/dev/null || echo "$FONT")
+    MONO_FONT=$(jq -r '.typography.monoFont // "CaskaydiaCove Nerd Font Mono"' "$STATE_FILE" 2>/dev/null || echo "$MONO_FONT")
 fi
 
 # ── stage the theme in a temp dir (never write into the git repo) ──
