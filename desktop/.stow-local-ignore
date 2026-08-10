@@ -1,4 +1,0 @@
-# qt6ct rewrites this file at runtime (fonts, window geometry, portal tweaks).
-# It is machine-local state, not a managed config — never stow it.
-# NB: stow matches ignore patterns against paths with a leading slash.
-\A/\.config/qt6ct/qt6ct\.conf\z

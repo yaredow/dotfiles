@@ -19,12 +19,12 @@ stow -D shell              # remove symlinks
 | `shell/` | zsh (.zshrc, .zshenv, aliases), atuin | shell experience |
 | `terminal/` | kitty, fastfetch, btop, herdr | terminal + TUI tools |
 | `wm/` | hyprland, quickshell | window manager + shell |
-| `dev/` | nvim, git, zed, yazi | development tools |
+| `dev/` | nvim, git, zed, yazi, opencode | development tools |
 | `media/` | mpd, mpv, rmpc, youtube-tui | media |
-| `desktop/` | gtk-3/4, qt6ct, electron | desktop environment |
+| `desktop/` | gtk-3/4, electron | desktop environment |
 | `bin/` | theme-set.sh, wallpaper scripts | user scripts (~/.local/bin) |
 | `theme/` | colors.json, templates | theme system |
-| *`scripts/`* | pacman.txt, yay.txt, helpers | **not stowed** |
+| *`scripts/`* | pacman.txt, yay.txt, qt6ct.conf, helpers | **not stowed** |
 | *`sddm/`* / *`ydot-sddm/`* | SDDM greeter theme | **not stowed** |
 | *`screenshots/`* | documentation images | **not stowed** |
 
@@ -115,3 +115,4 @@ No flat `"theme.name"` / `"wallpaper.index"` keys. Scripts migrate legacy flat k
 - Wallpapers are **not** stowed; install seeds per-theme dirs under `~/.local/wallpapers/`
 - stow refuses if a real file already exists at the target — remove originals first
 - Font overrides from the settings panel live in `state.json` → `typography.monoFont`
+- `qt6ct.conf` is copied by install.sh as a real file (not stowed) — qt6ct rewrites it at runtime

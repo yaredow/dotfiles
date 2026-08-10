@@ -6,7 +6,7 @@ REPO_URL="${DOTFILES_REPO:-https://github.com/yaredow/dotfiles}"
 REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOG_FILE="${DOTFILES_LOG:-$HOME/.local/state/dotfiles-install.log}"
 
-TOTAL_STEPS=12
+TOTAL_STEPS=13
 step=0
 CHECK_ONLY=0
 WARNINGS=()
@@ -305,7 +305,14 @@ if ! stow --restow --target="$HOME" --dir="$REPO_DIR" "${STOW_PACKAGES[@]}"; the
 fi
 
 # =============================================================================
-# 5 – Bootstrap default state
+# 5 – Copy qt6ct config (real file, not stowed — qt6ct rewrites it at runtime)
+# =============================================================================
+say "Copying qt6ct config..."
+mkdir -p "$HOME/.config/qt6ct"
+cp -n "$REPO_DIR/scripts/qt6ct.conf" "$HOME/.config/qt6ct/qt6ct.conf"
+
+# =============================================================================
+# 6 – Bootstrap default state
 # =============================================================================
 say "Bootstrapping quickshell state..."
 mkdir -p "$HOME/.config/quickshell"
@@ -314,7 +321,7 @@ if [[ ! -f "$HOME/.config/quickshell/state.json" ]]; then
 fi
 
 # =============================================================================
-# 6 – Copy default wallpapers (per-theme dirs)
+# 7 – Copy default wallpapers (per-theme dirs)
 #     BEFORE theme-set so wallpaper.current is resolved during install.
 # =============================================================================
 say "Copying default wallpapers..."
@@ -330,7 +337,7 @@ done
 mkdir -p "$HOME/.local/wallpapers/extras"
 
 # =============================================================================
-# 7 – Set theme (default from state.default.json, or user's existing choice)
+# 8 – Set theme (default from state.default.json, or user's existing choice)
 # =============================================================================
 say "Setting theme..."
 DEFAULT_THEME="tokyonight"
@@ -348,13 +355,13 @@ if ! "$HOME/.local/bin/theme-set.sh" "$THEME"; then
 fi
 
 # =============================================================================
-# 8 – Generate antidote static plugin file
+# 9 – Generate antidote static plugin file
 # =============================================================================
 say "Generating antidote plugin file..."
 zsh -c 'source /usr/share/zsh-antidote/antidote.zsh && antidote bundle < "$HOME/.zsh_plugins.txt" > "$HOME/.zsh_plugins.zsh"' 2>/dev/null || true
 
 # =============================================================================
-# 9 – Enable systemd services
+# 10 – Enable systemd services
 # =============================================================================
 say "Enabling systemd services..."
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
@@ -363,7 +370,7 @@ sudo systemctl enable --now ufw.service 2>/dev/null || true
 sudo systemctl enable sddm 2>/dev/null || true
 
 # =============================================================================
-# 10 – Install ydot SDDM theme
+# 11 – Install ydot SDDM theme
 #      Wallpapers + state are already in place, so the theme picks up the real
 #      colors and current wallpaper. Failure here must not abort the install.
 # =============================================================================
@@ -373,7 +380,7 @@ if ! sudo bash "$REPO_DIR/ydot-sddm/install.sh" "$HOME"; then
 fi
 
 # =============================================================================
-# 11 – Change default shell to zsh
+# 12 – Change default shell to zsh
 # =============================================================================
 say "Changing default shell to zsh..."
 ZSH_PATH="$(command -v zsh || true)"
@@ -387,7 +394,7 @@ else
 fi
 
 # =============================================================================
-# 12 – Install herdr (terminal multiplexer) via official installer
+# 13 – Install herdr (terminal multiplexer) via official installer
 # =============================================================================
 say "Installing herdr..."
 if command -v herdr &>/dev/null; then
