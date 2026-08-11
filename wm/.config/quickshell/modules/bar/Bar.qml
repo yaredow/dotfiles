@@ -70,10 +70,10 @@ PanelWindow {
                 id: clockItem
                 anchors.centerIn: parent
 
-                implicitWidth: clockOneLine.implicitWidth + 14
-                implicitHeight: clockOneLine.implicitHeight + 8
+                implicitWidth: clockGrid.implicitWidth + 14
+                implicitHeight: clockGrid.implicitHeight + 8
 
-                property var clockFormats: ["hh:mm", "dddd hh:mm", "ddd d MMM hh:mm"]
+                property var clockFormats: ["hh:mm", "ddd d MMM hh:mm"]
                 property int formatIndex: 0
 
                 function cycleFormat() {
@@ -86,24 +86,48 @@ PanelWindow {
                 }
 
                 property string clockText: TimeService.format(clockFormats[0])
+                property string dateText: TimeService.format("dddd")
 
                 Timer {
                     interval: 30000
                     running: true
                     repeat: true
-                    onTriggered: clockItem.clockText = TimeService.format(clockItem.currentFormat())
+                    onTriggered: {
+                        clockItem.clockText = TimeService.format(clockItem.currentFormat())
+                        clockItem.dateText = TimeService.format("dddd")
+                    }
                 }
 
-                Text {
-                    id: clockOneLine
+                GridLayout {
+                    id: clockGrid
                     anchors.centerIn: parent
-                    text: clockItem.clockText
-                    color: clockMouse.containsMouse ? Config.accentColor : Config.textColor
-                    font.family: Config.monoFont
-                    font.pixelSize: 12
-                    font.letterSpacing: 2
-                    font.weight: Font.DemiBold
-                    Behavior on color { ColorAnimation { duration: 180 } }
+                    flow: host.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+                    rowSpacing: 2
+                    columnSpacing: 10
+
+                    Text {
+                        id: clockDate
+                        Layout.alignment: Qt.AlignVCenter
+                        text: clockItem.dateText
+                        color: clockMouse.containsMouse ? Config.accentColor : Config.textColor
+                        font.family: Config.font
+                        font.pixelSize: 12
+                        font.letterSpacing: 1
+                        font.weight: Font.Medium
+                        Behavior on color { ColorAnimation { duration: 180 } }
+                    }
+
+                    Text {
+                        id: clockOneLine
+                        Layout.alignment: Qt.AlignVCenter
+                        text: clockItem.clockText
+                        color: clockMouse.containsMouse ? Config.accentColor : Config.textColor
+                        font.family: Config.monoFont
+                        font.pixelSize: 12
+                        font.letterSpacing: 2
+                        font.weight: Font.DemiBold
+                        Behavior on color { ColorAnimation { duration: 180 } }
+                    }
                 }
 
                 Timer {

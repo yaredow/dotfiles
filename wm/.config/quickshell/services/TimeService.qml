@@ -10,13 +10,16 @@ Singleton {
         const d = new Date();
         const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
         const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        const daysFull = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
         let result = formatStr;
-        result = result.replace("HH", String(d.getHours()).padStart(2,'0'));
-        result = result.replace("hh", String(d.getHours()).padStart(2,'0'));
-        result = result.replace("mm", String(d.getMinutes()).padStart(2,'0'));
-        result = result.replace("dd", String(d.getDate()).padStart(2,'0'));
-        result = result.replace("MMM", months[d.getMonth()]);
-        result = result.replace("ddd", days[d.getDay()]);
+        result = result.replace(/\bdddd\b/g, daysFull[d.getDay()]);
+        result = result.replace(/\bddd\b/g, days[d.getDay()]);
+        result = result.replace(/\bdd\b/g, String(d.getDate()).padStart(2,'0'));
+        result = result.replace(/\bd\b/g, String(d.getDate()));
+        result = result.replace(/\bMMM\b/g, months[d.getMonth()]);
+        result = result.replace(/\bHH\b/g, String(d.getHours()).padStart(2,'0'));
+        result = result.replace(/\bhh\b/g, String(d.getHours()).padStart(2,'0'));
+        result = result.replace(/\bmm\b/g, String(d.getMinutes()).padStart(2,'0'));
         return result;
     }
 
