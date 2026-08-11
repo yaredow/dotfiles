@@ -162,3 +162,4 @@ telegram-desktop
 zathura
 fwupd
 qt6ct
+deluge-gtk

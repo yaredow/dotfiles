@@ -15,6 +15,11 @@ terminal/.config/fastfetch/config.jsonc
 terminal/.config/btop/themes/theme.theme
 media/.config/mpv/script-opts/osc.conf
 terminal/.config/herdr/config.toml
+terminal/.config/herdr/.plugins.lock
+terminal/.config/herdr/release-notes.json
+terminal/.config/herdr/session.json
+terminal/.config/herdr/*.log
+terminal/.config/herdr/*.sock
 
 # Machine-local binaries (installed by install.sh or external tooling)
 bin/.local/bin/herdr
