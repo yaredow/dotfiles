@@ -85,8 +85,8 @@ cd ~/dotfiles
 ### Manual stow
 
 ```sh
-stow shell terminal wm  # deploy by topic
-stow -D shell           # remove a package
+stow nvim kitty hypr   # deploy by tool — pick just what you need
+stow -D zsh            # remove a package
 ```
 
 ## Theming
@@ -106,14 +106,30 @@ Edit templates under `theme/.config/theme/templates/*.tpl` and `colors.json` —
 
 ## Structure
 
+Every tool is its own top-level stow package rooted at `~` — pick and stow just what you need:
+
 ```
 .
-├── shell/          # zsh, atuin (stow → ~)
-├── terminal/       # kitty, fastfetch, btop, herdr
-├── wm/             # hyprland, quickshell (bar, launcher, lock screen)
-├── dev/            # nvim, git, zed, yazi
-├── media/          # mpd, mpv, rmpc, youtube-tui
-├── desktop/        # gtk-3/4, qt6ct, electron flags
+├── zsh/            # .zshrc, .zshenv, aliases, .zsh_plugins.txt
+├── atuin/          # shell history
+├── kitty/          # terminal (colors in generated theme.conf)
+├── fastfetch/      # TUI tools
+├── btop/           # TUI tools
+├── hypr/           # hyprland.lua, hypridle.conf
+├── quickshell/     # bar, launcher, lock screen)
+├── nvim/           # editor
+├── git/            # git config (delta, aliases)
+├── zed/            # editor
+├── yazi/           # file manager
+├── opencode/       # dev tools
+├── mpd/            # media (music daemon)
+├── mpv/            # media (video player)
+├── rmpc/           # media (mpd client)
+├── youtube-tui/    # media
+├── gtk/            # gtk-3/4 settings
+├── electron/       # electron flags
+├── spotify/        # spotify flags, launcher, .desktop entry
+├── postman/        # .desktop entry
 ├── bin/            # ~/.local/bin scripts (theme-set, wallpaper)
 ├── theme/          # colors.json + templates
 ├── scripts/        # NOT stowed — pacman.txt, yay.txt, stow-exclude.txt
@@ -122,9 +138,9 @@ Edit templates under `theme/.config/theme/templates/*.tpl` and `colors.json` —
 └── install.sh      # Bootstrap (auto-discovers stow packages)
 ```
 
-Top-level dirs are **topic-based stow packages** grouped by domain, except those in
+Top-level dirs are **per-tool stow packages** rooted at `~`, except those in
 `scripts/stow-exclude.txt` (`scripts/`, `sddm/`, `screenshots/`, `ydot-sddm/`).
-`starship.toml` is rendered by `theme-set.sh` directly into `~/.config/starship.toml`.
+`starship.toml` is rendered by `theme-set.sh` directly into `~/.config/starship.toml` (no stow package).
 
 Wallpapers live in `~/.local/wallpapers/<theme>/` (cycled with `SUPER + W`). Repo seeds are under
 `theme/.../themes/<name>/wallpapers/`.

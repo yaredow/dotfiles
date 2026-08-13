@@ -4,31 +4,49 @@ Arch Linux + Hyprland dotfiles with a centralized theme system. All config deplo
 
 ## Structure
 
-Top-level directories are **topic-based stow packages** grouped by domain, rooted at `~`.
+Top-level directories are **per-tool stow packages** rooted at `~`. Pick and stow just what you need.
 
 ```
-stow shell terminal        # deploy by topic
-stow -D shell              # remove symlinks
-./install.sh               # full bootstrap (auto-discovers packages)
+stow nvim kitty hypr     # deploy by tool
+stow -D zsh              # remove a package
+./install.sh             # full bootstrap (auto-discovers packages)
 ```
 
-### Packages (8 stow + 3 non-stow)
+### Packages (20 per-tool stow + 2 non-stow)
+
+Each tool is its own root-level stow package rooted at `~`.
+
+<details>
+<summary>Package list</summary>
 
 | Package | Contents | Domain |
 |---------|----------|--------|
-| `shell/` | zsh (.zshrc, .zshenv, aliases), atuin | shell experience |
-| `terminal/` | kitty, fastfetch, btop, herdr | terminal + TUI tools |
-| `wm/` | hyprland, quickshell | window manager + shell |
-| `dev/` | nvim, git, zed, yazi, opencode | development tools |
-| `media/` | mpd, mpv, rmpc, youtube-tui | media |
-| `desktop/` | gtk-3/4, electron | desktop environment |
-| `bin/` | theme-set.sh, wallpaper scripts | user scripts (~/.local/bin) |
-| `theme/` | colors.json, templates | theme system |
-| *`scripts/`* | pacman.txt, yay.txt, qt6ct.conf, helpers | **not stowed** |
-| *`sddm/`* / *`ydot-sddm/`* | SDDM greeter theme | **not stowed** |
-| *`screenshots/`* | documentation images | **not stowed** |
+| `zsh/` | .zshrc, .zshenv, aliases (.zsh/), .zsh_plugins.txt | shell experience |
+| `atuin/` | atuin config + themes | shell history |
+| `kitty/` | kitty.conf (colors in generated theme.conf) | terminal |
+| `fastfetch/` | logo.txt (config.jsonc is generated) | TUI tools |
+| `btop/` | btop.conf (theme.theme is generated) | TUI tools |
+| `hypr/` | hyprland.lua, hypridle.conf | window manager |
+| `quickshell/` | shell.qml, modules, services, state.default.json | system shell |
+| `nvim/` | init.lua, lua/yada/ (theme.lua is generated) | editor |
+| `git/` | git config (delta, aliases) | dev tools |
+| `zed/` | settings.json, keymap.json | editor |
+| `yazi/` | keymap.toml | file manager |
+| `opencode/` | opencode.jsonc (tui.json is generated) | dev tools |
+| `mpd/` | mpd.conf, playlists | media |
+| `mpv/` | mpv.conf, scripts, fonts (osc.conf is generated) | media |
+| `rmpc/` | config.ron (theme.ron is generated) | media |
+| `youtube-tui/` | *.yml keybinds/pages/cmds | media |
+| `gtk/` | gtk-3.0 + gtk-4.0 settings.ini | desktop environment |
+| `electron/` | electron-flags.conf | desktop environment |
+| `spotify/` | spotify-flags.conf, spotify-launcher.conf, .desktop entry | media apps |
+| `postman/` | postman.desktop entry | dev tools |
 
-Adding a new app: put it in the closest topic dir with `app/.config/...`. To keep a top-level dir out of stow, add its name to `scripts/stow-exclude.txt`. `starship.toml` is rendered by `theme-set.sh` directly into `~/.config/starship.toml` (no stow package).
+</details>
+
+Non-stow (listed in `scripts/stow-exclude.txt`): `scripts/`, `sddm/`, `screenshots/`, `ydot-sddm/`.
+
+Adding a new app: create a root package `<tool>/<relative path from ~>/...`. To keep a top-level dir out of stow, add its name to `scripts/stow-exclude.txt`. `starship.toml` is rendered by `theme-set.sh` directly into `~/.config/starship.toml` (no stow package).
 
 ## Theme system
 
@@ -105,8 +123,8 @@ No flat `"theme.name"` / `"wallpaper.index"` keys. Scripts migrate legacy flat k
 | `scripts/stow-exclude.txt` | Non-stow top-level dirs |
 | `bin/.local/bin/theme-set.sh` | Theme orchestrator |
 | `bin/.local/bin/wallpaper-*.sh` | Wallpaper |
-| `wm/.config/hypr/hyprland.lua` | Hyprland |
-| `wm/.config/quickshell/state.default.json` | State template |
+| `hypr/.config/hypr/hyprland.lua` | Hyprland |
+| `quickshell/.config/quickshell/state.default.json` | State template |
 
 ## Gotchas
 
