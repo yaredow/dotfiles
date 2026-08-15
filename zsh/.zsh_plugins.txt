@@ -1,9 +1,3 @@
-# OMZ compatibility bridge (handles lib dependencies automatically)
-getantidote/use-omz
-
-# OMZ plugins (cherry-picked)
-ohmyzsh/ohmyzsh path:plugins/git
-
 # Third-party plugins
 zsh-users/zsh-autosuggestions
 zsh-users/zsh-syntax-highlighting

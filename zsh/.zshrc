@@ -1,8 +1,7 @@
 # ==============================
-# Antidote (plugin manager)
+# Plugins (statically loaded)
 # ==============================
-source /usr/share/zsh-antidote/antidote.zsh
-antidote load
+[[ -f ~/.zsh_plugins.zsh ]] && source ~/.zsh_plugins.zsh
 
 # ==============================
 # Starship prompt
