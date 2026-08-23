@@ -79,3 +79,6 @@ export PATH="$PATH:$HOME/go/bin"
 
 eval "$(direnv hook zsh)"
 export PATH="$HOME/.local/bin:$PATH"
+
+# Pi
+export PATH="/home/yada/.local/share/mise/installs/node/26.5.0/bin:$PATH"
