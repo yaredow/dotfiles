@@ -367,6 +367,7 @@ say "Configuring NetworkManager with iwd backend..."
 sudo mkdir -p /etc/NetworkManager/conf.d
 printf '[device]\nwifi.backend=iwd\nwifi.iwd.autoconnect=false\n' | sudo tee /etc/NetworkManager/conf.d/wifi-backend.conf > /dev/null
 say "Enabling systemd services..."
+sudo systemctl enable --now iwd.service 2>/dev/null || true
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
 sudo systemctl enable --now bluetooth.service 2>/dev/null || true
 sudo systemctl enable --now ufw.service 2>/dev/null || true
