@@ -1,0 +1,222 @@
+# Noctalia Shell Configuration
+# Migrated from NixOS config (Tokyo Night + JetBrainsMono Nerd Font)
+
+[theme]
+mode = "dark"
+source = "builtin"
+builtin = "Tokyo-Night"
+wallpaper_scheme = "m3-content"
+
+[wallpaper]
+enabled = true
+directory = "/home/yada/.local/wallpapers"
+fill_mode = "crop"
+transition = [ "fade" ]
+transition_duration = 200.0
+
+[shell]
+font_family = "JetBrainsMono Nerd Font"
+disable_mipmaps = true
+
+[shell.animation]
+enabled = false
+speed = 1.0
+
+[idle.behavior.screen-off]
+enabled = false
+
+[idle.behavior.lock-and-suspend]
+enabled = false
+
+[lockscreen]
+enabled = true
+blurred_desktop = true
+blur_intensity = 1.0
+tint_intensity = 0.65
+lock_before_suspend = true
+transition = [ "fade" ]
+transition_duration = 200.0
+wallpaper = "/home/yada/.local/wallpapers/omanix-blurred.png"
+
+[lockscreen_widgets]
+enabled = true
+
+[lockscreen_widgets.widget."clock@eDP-1"]
+type = "clock"
+output = "eDP-1"
+cx = 720.0
+cy = 350.0
+settings = { format = "{:%H:%M}" }
+
+[lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+type = "login_box"
+output = "eDP-1"
+cx = 720.0
+cy = 470.0
+box_width = 380.0
+
+[lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+layout = "compact"
+center_password_text = true
+show_login_button = true
+show_caps_lock = true
+show_unlock_hint = false
+background_color = "surface_variant"
+background_opacity = 0.85
+background_radius = 16.0
+input_opacity = 0.9
+input_radius = 8.0
+
+[lockscreen_widgets.widget."clock@Virtual-1"]
+type = "clock"
+output = "Virtual-1"
+cx = 720.0
+cy = 350.0
+settings = { format = "{:%H:%M}" }
+
+[lockscreen_widgets.widget."lockscreen-login-box@Virtual-1"]
+type = "login_box"
+output = "Virtual-1"
+cx = 720.0
+cy = 470.0
+box_width = 380.0
+
+[lockscreen_widgets.widget."lockscreen-login-box@Virtual-1".settings]
+layout = "compact"
+center_password_text = true
+show_login_button = true
+show_caps_lock = true
+show_unlock_hint = false
+background_color = "surface_variant"
+background_opacity = 0.85
+background_radius = 16.0
+input_opacity = 0.9
+input_radius = 8.0
+
+[bar]
+order = [ "default" ]
+
+[bar.default]
+enabled = true
+position = "top"
+layer = "top"
+reserve_space = true
+thickness = 32
+margin_edge = 0
+margin_ends = 0
+radius = 0
+background_opacity = 1.0
+border_width = 0.0
+shadow = false
+capsule = true
+capsule_fill = "surface_variant"
+capsule_opacity = 0.85
+capsule_padding = 6.0
+widget_spacing = 6
+padding = 8
+font_family = "JetBrainsMono Nerd Font"
+font_weight = 400
+font_scale = 0.91
+
+start = [
+    "launcher",
+    "workspaces",
+    "media"
+]
+center = [ "clock" ]
+end = [
+    "privacy",
+    "tray",
+    "notifications",
+    "network",
+    "bluetooth",
+    "battery",
+    "volume",
+    "mic"
+]
+
+[bar.default.dead_zone.actions]
+left = "panel-toggle launcher"
+right = "panel-toggle control-center"
+
+[widget.launcher]
+custom_image_colorize = true
+icon_color = "primary"
+scale = 0.90
+
+[widget.media]
+hide_when_no_media = true
+show_progress = false
+max_length = 180.0
+font_family = "JetBrainsMono Nerd Font"
+font_weight = 400
+font_scale = 0.88
+
+[widget.workspaces]
+style = "regular"
+show_labels = true
+label_source = "id"
+hide_when_empty = false
+scale = 0.90
+active_pill_size = 2.0
+inactive_pill_size = 1.0
+focused_color = "primary"
+occupied_color = "secondary"
+empty_color = "surface_variant"
+urgent_color = "error"
+
+[widget.privacy]
+type = "privacy"
+hide_inactive = true
+icon_spacing = 6
+scale = 0.90
+font_weight = 400
+
+[widget.tray]
+scale = 0.78
+
+[widget.notifications]
+hide_when_no_unread = false
+scale = 0.90
+font_weight = 400
+
+[widget.network]
+show_label = false
+scale = 0.90
+font_weight = 400
+
+[widget.bluetooth]
+show_label = false
+scale = 0.90
+font_weight = 400
+
+[widget.battery]
+show_label = false
+scale = 0.90
+font_weight = 400
+
+[widget.volume]
+device = "output"
+show_label = false
+scale = 0.90
+font_weight = 400
+
+[widget.mic]
+type = "volume"
+device = "input"
+show_label = false
+scale = 0.90
+font_weight = 400
+
+[widget.clock]
+capsule = false
+format = "{:%H:%M %a, %b %d}"
+tooltip_format = "%A, %d %B %Y"
+font_family = "JetBrainsMono Nerd Font"
+font_weight = 500
+font_scale = 0.91
+
+[widget.control-center]
+capsule = true
+capsule_fill = "primary"
+color = "on_primary"

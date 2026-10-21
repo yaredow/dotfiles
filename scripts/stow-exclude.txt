@@ -4,3 +4,4 @@ scripts
 sddm
 screenshots
 ydot-sddm
+quickshell

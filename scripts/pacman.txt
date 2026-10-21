@@ -27,14 +27,12 @@ eza
 yazi
 
 # =============================================================================
-# Hyprland Ecosystem
+# Compositor & Shell (Niri & Noctalia)
 # =============================================================================
-hyprland
-hypridle
-awww
-
-xdg-desktop-portal-hyprland
-quickshell
+niri
+noctalia
+xdg-desktop-portal-gnome
+xdg-desktop-portal-gtk
 
 # =============================================================================
 # Editor
