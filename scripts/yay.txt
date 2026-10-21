@@ -1,22 +1,5 @@
 # Yay Applications (AUR)
-# AUR packages referenced by dotfiles configs
-
-# =============================================================================
-# Music (referenced in Hyprland keybinds)
-# =============================================================================
-spotify
-
-# =============================================================================
-# Theme & Appearance
-# =============================================================================
-bibata-cursor-theme
-
-# =============================================================================
-# Development
-# =============================================================================
-jetbrains-toolbox
-postman-bin
-nvm
+# Essential packages for dotfiles
 
 # =============================================================================
 # Shell & Terminal
@@ -25,7 +8,11 @@ zsh-antidote
 herdr-bin
 
 # =============================================================================
-# Other
+# Optional / Install Later
 # =============================================================================
-proton-vpn-gtk-app
-localsend-bin
+# spotify
+# jetbrains-toolbox
+# postman-bin
+# nvm
+# proton-vpn-gtk-app
+# localsend-bin

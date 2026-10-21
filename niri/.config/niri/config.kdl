@@ -10,6 +10,9 @@ environment {
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "adwaita"
     QT_STYLE_OVERRIDE "adwaita-dark"
+    MOZ_ENABLE_WAYLAND "1"
+    LIBVA_DRIVER_NAME "iHD"
+    MOZ_WEBRENDER "1"
 }
 
 spawn-at-startup "noctalia"

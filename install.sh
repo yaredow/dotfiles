@@ -6,7 +6,7 @@ REPO_URL="${DOTFILES_REPO:-https://github.com/yaredow/dotfiles}"
 REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOG_FILE="${DOTFILES_LOG:-$HOME/.local/state/dotfiles-install.log}"
 
-TOTAL_STEPS=12
+TOTAL_STEPS=11
 step=0
 CHECK_ONLY=0
 WARNINGS=()
@@ -88,8 +88,15 @@ detect_conflicts() {
       target="$HOME/$rel"
       # Absent target = safe (fresh install)
       [[ ! -e "$target" && ! -L "$target" ]] && continue
-      # Valid symlink (resolves to an existing file) = safe (previous stow)
-      [[ -L "$target" && -e "$target" ]] && continue
+      # Valid symlink (resolves to an existing file) or folded directory = safe (previous stow)
+      local check="$target" folded=0
+      while [[ "$check" != "$HOME" && "$check" != "/" ]]; do
+        if [[ -L "$check" && -e "$check" ]]; then
+          folded=1; break
+        fi
+        check="$(dirname "$check")"
+      done
+      [[ "$folded" -eq 1 ]] && continue
       # Broken symlink — silently remove so stow can replace it
       if [[ -L "$target" ]]; then
         if [[ "$action" == "backup" ]]; then
@@ -127,7 +134,7 @@ detect_conflicts() {
 preflight() {
   echo "── Pre-flight checks ──"
   local tool
-  for tool in git jq stow zsh sddm yay; do
+  for tool in git jq stow zsh yay; do
     if command -v "$tool" >/dev/null 2>&1; then
       printf "  [ ok ]  %s\n" "$tool"
     else
@@ -363,38 +370,23 @@ zsh -c 'source /usr/share/zsh-antidote/antidote.zsh && antidote bundle < "$HOME/
 # =============================================================================
 # 10 – Enable systemd services
 # =============================================================================
-say "Configuring NetworkManager with iwd backend..."
-sudo mkdir -p /etc/NetworkManager/conf.d
-printf '[device]\nwifi.backend=iwd\nwifi.iwd.autoconnect=false\n' | sudo tee /etc/NetworkManager/conf.d/wifi-backend.conf > /dev/null
 say "Enabling systemd services..."
-sudo systemctl enable --now iwd.service 2>/dev/null || true
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
 sudo systemctl enable --now bluetooth.service 2>/dev/null || true
 sudo systemctl enable --now ufw.service 2>/dev/null || true
-sudo systemctl enable sddm 2>/dev/null || true
 
 # =============================================================================
-# 11 – Install ydot SDDM theme
-#      Wallpapers + state are already in place, so the theme picks up the real
-#      colors and current wallpaper. Failure here must not abort the install.
+# 11 – Change default shell to fish
 # =============================================================================
-say "Installing ydot SDDM theme..."
-if ! sudo bash "$REPO_DIR/ydot-sddm/install.sh" "$HOME"; then
-  WARNINGS+=("SDDM theme install failed — retry: sudo bash $REPO_DIR/ydot-sddm/install.sh")
-fi
-
-# =============================================================================
-# 12 – Change default shell to zsh
-# =============================================================================
-say "Changing default shell to zsh..."
-ZSH_PATH="$(command -v zsh || true)"
-if [[ -z "$ZSH_PATH" ]]; then
-  WARNINGS+=("zsh not found — install 'zsh' and run: sudo usermod -s /usr/bin/zsh $USER")
-elif [[ "$(getent passwd "$USER" | cut -d: -f7)" != "$ZSH_PATH" ]]; then
-  sudo usermod -s "$ZSH_PATH" "$USER"
-  echo "  default shell set to $ZSH_PATH (log out and back in to activate)"
+say "Changing default shell to fish..."
+FISH_PATH="$(command -v fish || true)"
+if [[ -z "$FISH_PATH" ]]; then
+  WARNINGS+=("fish not found — install 'fish' and run: sudo usermod -s /usr/bin/fish $USER")
+elif [[ "$(getent passwd "$USER" | cut -d: -f7)" != "$FISH_PATH" ]]; then
+  sudo usermod -s "$FISH_PATH" "$USER"
+  echo "  default shell set to $FISH_PATH (log out and back in to activate)"
 else
-  echo "  already zsh"
+  echo "  already fish"
 fi
 
 mkdir -p "$HOME/.local/share"

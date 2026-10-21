@@ -5,3 +5,4 @@ sddm
 screenshots
 ydot-sddm
 quickshell
+keyd
