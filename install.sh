@@ -374,6 +374,13 @@ say "Enabling systemd services..."
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
 sudo systemctl enable --now bluetooth.service 2>/dev/null || true
 sudo systemctl enable --now ufw.service 2>/dev/null || true
+sudo systemctl enable --now power-profiles-daemon.service 2>/dev/null || true
+
+if [[ -f "$REPO_DIR/keyd/default.conf" ]]; then
+  sudo mkdir -p /etc/keyd
+  sudo ln -sf "$REPO_DIR/keyd/default.conf" /etc/keyd/default.conf
+  sudo systemctl enable --now keyd.service 2>/dev/null || true
+fi
 
 # =============================================================================
 # 11 – Change default shell to fish

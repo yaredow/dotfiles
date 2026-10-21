@@ -53,6 +53,8 @@ pipewire
 pipewire-alsa
 pipewire-pulse
 wireplumber
+sof-firmware
+alsa-firmware
 pavucontrol
 playerctl
 

@@ -14,9 +14,22 @@ fill_mode = "crop"
 transition = [ "fade" ]
 transition_duration = 200.0
 
+[accessibility]
+ui_scale = 0.88
+
+[notification]
+scale = 0.85
+width = 340
+
 [shell]
 font_family = "JetBrainsMono Nerd Font"
 disable_mipmaps = true
+
+[shell.launcher]
+categories = false
+compact = true
+layout = "simple"
+width = 620
 
 [shell.animation]
 enabled = false
