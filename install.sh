@@ -382,6 +382,25 @@ if [[ -f "$REPO_DIR/keyd/default.conf" ]]; then
   sudo systemctl enable --now keyd.service 2>/dev/null || true
 fi
 
+if [[ -d "$REPO_DIR/greetd" ]] && command -v noctalia-greeter &>/dev/null; then
+  sudo mkdir -p /etc/greetd /var/lib/noctalia-greeter
+  sudo cp "$REPO_DIR/greetd/config.toml" /etc/greetd/config.toml
+  sudo cp "$REPO_DIR/greetd/greeter.toml" /var/lib/noctalia-greeter/greeter.toml
+  sudo cp "$REPO_DIR/greetd/wallpaper.png" /var/lib/noctalia-greeter/wallpaper.png
+  sudo chown -R greeter:greeter /var/lib/noctalia-greeter 2>/dev/null || true
+  sudo chmod 644 /var/lib/noctalia-greeter/* 2>/dev/null || true
+  sudo systemctl disable gdm.service 2>/dev/null || true
+  sudo systemctl enable greetd.service 2>/dev/null || true
+fi
+
+if [[ -f "$REPO_DIR/zen/.config/zen/policies/policies.json" ]]; then
+  sudo mkdir -p /etc/firefox/policies
+  sudo cp "$REPO_DIR/zen/.config/zen/policies/policies.json" /etc/firefox/policies/policies.json
+  if [[ -d "/opt/zen-browser-bin/distribution" ]]; then
+    sudo cp "$REPO_DIR/zen/.config/zen/policies/policies.json" /opt/zen-browser-bin/distribution/policies.json 2>/dev/null || true
+  fi
+fi
+
 # =============================================================================
 # 11 – Change default shell to fish
 # =============================================================================

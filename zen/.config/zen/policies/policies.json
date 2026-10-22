@@ -1,0 +1,38 @@
+{
+  "policies": {
+    "DisableAppUpdate": true,
+    "DisableTelemetry": true,
+    "DisablePocket": true,
+    "DisableFirefoxStudies": true,
+    "EnableTrackingProtection": {
+      "Value": true,
+      "Locked": true,
+      "Cryptomining": true,
+      "Fingerprinting": true
+    },
+    "ExtensionSettings": {
+      "vimium-c@gdh1995.cn": {
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/vimium-c/latest.xpi",
+        "installation_mode": "force_installed"
+      },
+      "{4520dc08-80f4-4b2e-982a-c17af42e5e4d}": {
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/tokyo-night-milav/latest.xpi",
+        "installation_mode": "force_installed"
+      }
+    },
+    "Preferences": {
+      "media.ffmpeg.vaapi.enabled": true,
+      "media.hardware-video-decoding.force-enabled": true,
+      "gfx.webrender.all": true,
+      "gfx.webrender.compositor.force-enabled": true,
+      "layers.gpu-process.enabled": true,
+      "widget.use-xdg-desktop-portal.file-picker": 1,
+      "widget.use-xdg-desktop-portal.mime-handler": 1,
+      "widget.wayland.opaque-region.enabled": true,
+      "general.smoothScroll.msdPhysics.enabled": true,
+      "apz.overscroll.enabled": true,
+      "media.webrtc.hw.h264.enabled": true,
+      "zen.view.compact.hide-toolbar": false
+    }
+  }
+}

@@ -6,3 +6,4 @@ screenshots
 ydot-sddm
 quickshell
 keyd
+greetd

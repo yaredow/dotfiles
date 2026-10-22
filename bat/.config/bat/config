@@ -1,0 +1,4 @@
+# Bat Configuration
+# Tokyo Night theme ported from nixos-config
+--theme="tokyonight_night"
+--italic-text=always

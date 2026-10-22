@@ -1,0 +1,48 @@
+# Noctalia Greeter Configuration
+# Ported from NixOS config (Tokyo Night + JetBrainsMono Nerd Font)
+
+[session]
+default = "niri"
+
+[user]
+default = "yada"
+
+[cursor]
+theme = "Adwaita"
+size = 24
+
+[keyboard]
+layout = "us"
+numlock = true
+
+[appearance]
+scheme = "Synced"
+password_style = "default"
+hide_logo = true
+power_buttons_position = "bottom-right"
+scheme_selector_position = "hidden"
+theme_mode = "dark"
+font_family = "JetBrainsMono Nerd Font"
+corner_radius_scale = 1.0
+
+[appearance.palette]
+primary = "#7aa2f7"
+on_primary = "#1a1b26"
+secondary = "#bb9af7"
+on_secondary = "#1a1b26"
+tertiary = "#7dcfff"
+on_tertiary = "#1a1b26"
+error = "#f7768e"
+on_error = "#1a1b26"
+surface = "#1a1b26"
+on_surface = "#c0caf5"
+surface_variant = "#24283b"
+on_surface_variant = "#a9b1d6"
+outline = "#414868"
+shadow = "#15161e"
+hover = "#7aa2f7"
+on_hover = "#1a1b26"
+
+[appearance.wallpaper]
+path = "/var/lib/noctalia-greeter/wallpaper.png"
+fill_mode = "crop"
