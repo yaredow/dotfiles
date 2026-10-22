@@ -114,6 +114,7 @@ bluez-utils
 # Fonts & Theming
 # =============================================================================
 ttf-jetbrains-mono-nerd
+inter-font
 noto-fonts
 noto-fonts-emoji
 terminus-font
