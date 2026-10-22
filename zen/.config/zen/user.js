@@ -35,3 +35,17 @@ user_pref("experiments.supported", false);
 user_pref("network.allow-experiments", false);
 user_pref("extensions.pocket.enabled", false);
 user_pref("app.update.auto", false);
+
+// Session Restore
+user_pref("browser.startup.page", 3);
+
+// Typography and Font Rendering
+user_pref("font.default.x-western", "sans-serif");
+user_pref("font.name.sans-serif.x-western", "Inter");
+user_pref("font.name.serif.x-western", "Noto Serif");
+user_pref("font.name.monospace.x-western", "JetBrainsMono Nerd Font");
+user_pref("font.size.variable.x-western", 15);
+user_pref("font.size.monospace.x-western", 13);
+user_pref("browser.display.use_document_fonts", 1);
+user_pref("gfx.font_rendering.cleartype_params.rendering_mode", 5);
+
