@@ -401,6 +401,11 @@ if [[ -f "$REPO_DIR/zen/.config/zen/policies/policies.json" ]]; then
   fi
 fi
 
+# HiDPI console font setup
+if [[ -f "/etc/vconsole.conf" ]] && grep -q "^FONT=default8x16" /etc/vconsole.conf; then
+  sudo sed -i 's/^FONT=default8x16/FONT=ter-v32n/' /etc/vconsole.conf
+fi
+
 # Configure qBittorrent Tokyo Night theme
 QBIT_CONF="$HOME/.config/qBittorrent/qBittorrent.conf"
 QBIT_THEME="$HOME/.config/qBittorrent/themes/tokyo-night.qbtheme"
