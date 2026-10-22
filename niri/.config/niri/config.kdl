@@ -7,6 +7,7 @@ cursor {
 }
 
 environment {
+    TZ "Africa/Addis_Ababa"
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "adwaita"
     QT_STYLE_OVERRIDE "adwaita-dark"

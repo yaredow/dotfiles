@@ -1,4 +1,5 @@
 export EDITOR="nvim"
+export TZ="Africa/Addis_Ababa"
 
 # fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'

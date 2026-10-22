@@ -59,7 +59,7 @@ type = "clock"
 output = "eDP-1"
 cx = 720.0
 cy = 350.0
-settings = { format = "{:%H:%M}" }
+settings = { format = "{:%H:%M}", timezone = "Africa/Addis_Ababa" }
 
 [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
 type = "login_box"
@@ -85,7 +85,7 @@ type = "clock"
 output = "Virtual-1"
 cx = 720.0
 cy = 350.0
-settings = { format = "{:%H:%M}" }
+settings = { format = "{:%H:%M}", timezone = "Africa/Addis_Ababa" }
 
 [lockscreen_widgets.widget."lockscreen-login-box@Virtual-1"]
 type = "login_box"
@@ -223,7 +223,8 @@ font_weight = 400
 
 [widget.clock]
 capsule = false
-format = "{:%H:%M %a, %b %d}"
+format = "{:%A %H:%M}"
+timezone = "Africa/Addis_Ababa"
 tooltip_format = "%A, %d %B %Y"
 font_family = "JetBrainsMono Nerd Font"
 font_weight = 500
