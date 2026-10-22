@@ -91,7 +91,7 @@ stow -D zsh            # remove a package
 
 ## Theming
 
-Source of truth: `theme/.config/theme/themes/<name>/colors.json` — themes: **tokyonight**, **catppuccin**, **gruvbox**.
+Source of truth: `theme/.config/theme/themes/<name>/colors.json` — theme: **tokyonight** with **JetBrainsMono Nerd Font** and default wallpaper.
 
 ```
 theme-set.sh <name>

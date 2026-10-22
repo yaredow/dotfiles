@@ -41,7 +41,7 @@ user_pref("browser.startup.page", 3);
 
 // Typography and Font Rendering
 user_pref("font.default.x-western", "sans-serif");
-user_pref("font.name.sans-serif.x-western", "Inter");
+user_pref("font.name.sans-serif.x-western", "Noto Sans");
 user_pref("font.name.serif.x-western", "Noto Serif");
 user_pref("font.name.monospace.x-western", "JetBrainsMono Nerd Font");
 user_pref("font.size.variable.x-western", 15);

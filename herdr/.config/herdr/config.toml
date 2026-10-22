@@ -1,24 +1,26 @@
 onboarding = false
 
-[terminal]
-default_shell = "fish"
-new_cwd = "follow"
-
 [theme]
-name = "tokyonight"
-auto_switch = true
+name = "tokyo-night"
+auto_switch = false
+
+[theme.custom]
+accent = "#bb9af7"
+panel_bg = "#1a1b26"
+surface0 = "#292e42"
+surface1 = "#3b4261"
+surface_dim = "#16161e"
+overlay0 = "#565f89"
+overlay1 = "#737aa2"
+text = "#c0caf5"
+subtext0 = "#a9b1d6"
+mauve = "#bb9af7"
+green = "#9ece6a"
+yellow = "#e0af68"
+red = "#f7768e"
+blue = "#7aa2f7"
+teal = "#7dcfff"
+peach = "#ff9e64"
 
 [keys]
-prefix = "ctrl+b"
-focus_pane_left = "alt+h"
-focus_pane_down = "alt+j"
-focus_pane_up = "alt+k"
-focus_pane_right = "alt+l"
-
-[ui]
-pane_gaps = false
-pane_outer_borders = false
-pane_scrollbars = false
-hide_tab_bar_when_single_tab = true
-sidebar_start_collapsed = true
-sidebar_collapsed_mode = "hidden"
+prefix = "alt+u"
