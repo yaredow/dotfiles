@@ -401,6 +401,24 @@ if [[ -f "$REPO_DIR/zen/.config/zen/policies/policies.json" ]]; then
   fi
 fi
 
+# Configure qBittorrent Tokyo Night theme
+QBIT_CONF="$HOME/.config/qBittorrent/qBittorrent.conf"
+QBIT_THEME="$HOME/.config/qBittorrent/themes/tokyo-night.qbtheme"
+if [[ -f "$QBIT_THEME" ]]; then
+  mkdir -p "$HOME/.config/qBittorrent"
+  if [[ -f "$QBIT_CONF" ]]; then
+    if grep -q "\[Preferences\]" "$QBIT_CONF"; then
+      sed -i '/^General\\UseCustomUITheme=/d' "$QBIT_CONF"
+      sed -i '/^General\\CustomUIThemePath=/d' "$QBIT_CONF"
+      sed -i '/^\[Preferences\]/a General\\CustomUIThemePath='"$QBIT_THEME"'\nGeneral\\UseCustomUITheme=true' "$QBIT_CONF"
+    else
+      printf '\n[Preferences]\nGeneral\\CustomUIThemePath=%s\nGeneral\\UseCustomUITheme=true\n' "$QBIT_THEME" >> "$QBIT_CONF"
+    fi
+  else
+    printf '[Preferences]\nGeneral\\CustomUIThemePath=%s\nGeneral\\UseCustomUITheme=true\n' "$QBIT_THEME" > "$QBIT_CONF"
+  fi
+fi
+
 # =============================================================================
 # 11 – Change default shell to fish
 # =============================================================================
