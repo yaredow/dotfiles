@@ -184,21 +184,17 @@ window-rule {
     default-column-width { proportion 0.66667; }
 }
 
-// Android Emulator auxiliary & tool windows (toolbar, extended controls, popups)
+// Android Emulator auxiliary dialogs & popups (Extended controls, etc.)
 window-rule {
-    match app-id="^Emulator$"
+    match app-id="^Emulator$" title="^Extended controls"
     open-floating true
 }
 
-// Android Emulator main phone device window
+// Android Emulator main phone device window (tiled in its own column)
 window-rule {
-    match app-id="^Emulator$" title=r#"^Android Emulator"#
-    open-floating true
-    default-column-width { fixed 320; }
-    default-window-height { fixed 680; }
-    default-floating-position x=32 y=40 relative-to="top-right"
+    match app-id="^Emulator$"
+    default-column-width { fixed 404; }
     opacity 1.0
-    clip-to-geometry false
 }
 
 debug {
@@ -293,6 +289,8 @@ binds {
     Mod+Shift+9 { move-column-to-workspace 9; }
 
     // Sizing & Fullscreen
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
     Mod+R { switch-preset-column-width; }
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
