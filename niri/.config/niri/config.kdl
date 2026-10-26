@@ -195,6 +195,15 @@ window-rule {
     match app-id="^Emulator$"
     default-column-width { fixed 404; }
     opacity 1.0
+    focus-ring {
+        off
+    }
+    border {
+        off
+    }
+    shadow {
+        off
+    }
 }
 
 debug {
