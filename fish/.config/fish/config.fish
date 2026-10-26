@@ -48,7 +48,7 @@ alias cy="codex --approve-for-me"
 alias cx="printf '\\033[2J\\033[3J\\033[H' && claude --permission-mode auto"
 alias ytt="youtube-tui"
 alias dotfiles="git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
-alias ase="nohup emulator -avd Pixel_8 -no-skin > /dev/null 2>&1 &!"
+alias ase="nohup emulator -avd Pixel_8 > /dev/null 2>&1 &!"
 
 # Custom Functions
 function fe --description "Open file with editor"

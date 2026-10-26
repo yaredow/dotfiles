@@ -184,28 +184,6 @@ window-rule {
     default-column-width { proportion 0.66667; }
 }
 
-// Android Emulator auxiliary dialogs & popups (Extended controls, etc.)
-window-rule {
-    match app-id="^Emulator$" title="^Extended controls"
-    open-floating true
-}
-
-// Android Emulator main phone device window (tiled in its own column)
-window-rule {
-    match app-id="^Emulator$"
-    default-column-width { fixed 385; }
-    opacity 1.0
-    focus-ring {
-        off
-    }
-    border {
-        off
-    }
-    shadow {
-        off
-    }
-}
-
 debug {
     honor-xdg-activation-with-invalid-serial
     force-pipewire-invalid-modifier
@@ -298,15 +276,11 @@ binds {
     Mod+Shift+9 { move-column-to-workspace 9; }
 
     // Sizing & Fullscreen
-    Mod+Minus { set-column-width "-10%"; }
-    Mod+Equal { set-column-width "+10%"; }
     Mod+R { switch-preset-column-width; }
-    Mod+Ctrl+R { reset-window-height; }
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
     Mod+C { center-column; }
     Mod+V { toggle-window-floating; }
-    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
 
     // Tabbed Display & Vertical Stacking
     Mod+W { toggle-column-tabbed-display; }
