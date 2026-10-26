@@ -193,7 +193,7 @@ window-rule {
 // Android Emulator main phone device window (tiled in its own column)
 window-rule {
     match app-id="^Emulator$"
-    default-column-width { fixed 404; }
+    default-column-width { fixed 385; }
     opacity 1.0
     focus-ring {
         off
@@ -301,6 +301,7 @@ binds {
     Mod+Minus { set-column-width "-10%"; }
     Mod+Equal { set-column-width "+10%"; }
     Mod+R { switch-preset-column-width; }
+    Mod+Ctrl+R { reset-window-height; }
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
     Mod+C { center-column; }
