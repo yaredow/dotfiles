@@ -18,6 +18,9 @@
     },
   },
   "agent_servers": {
+    "antigravity-acp": {
+      "type": "registry"
+    },
     "opencode": {
       "default_config_options": {
         "effort": "high",
@@ -280,11 +283,11 @@
   "file_scan_inclusions": [".env"],
   // Move all panel to the right
   "project_panel": {
+    "folder_indicator": "icon",
     "button": false,
     "default_width": 300,
     "dock": "right",
     "file_icons": true,
-    "folder_icons": true,
     "git_status": true,
     "scrollbar": {
       "show": "never",
