@@ -1,3 +1,0 @@
-# Third-party plugins
-zsh-users/zsh-autosuggestions
-zsh-users/zsh-syntax-highlighting

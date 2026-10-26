@@ -18,7 +18,6 @@ polkit-gnome
 # Shell & Terminal
 # =============================================================================
 fish
-zsh
 alacritty
 kitty
 starship

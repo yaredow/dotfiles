@@ -134,7 +134,7 @@ detect_conflicts() {
 preflight() {
   echo "── Pre-flight checks ──"
   local tool
-  for tool in git jq stow zsh yay; do
+  for tool in git jq stow fish yay; do
     if command -v "$tool" >/dev/null 2>&1; then
       printf "  [ ok ]  %s\n" "$tool"
     else
@@ -362,12 +362,6 @@ if ! "$HOME/.local/bin/theme-set.sh" "$THEME"; then
 fi
 
 # =============================================================================
-# 9 – Generate antidote static plugin file
-# =============================================================================
-say "Generating antidote plugin file..."
-zsh -c 'source /usr/share/zsh-antidote/antidote.zsh && antidote bundle < "$HOME/.zsh_plugins.txt" > "$HOME/.zsh_plugins.zsh"' 2>/dev/null || true
-
-# =============================================================================
 # 10 – Enable systemd services
 # =============================================================================
 say "Enabling systemd services..."
@@ -441,4 +435,4 @@ fi
 mkdir -p "$HOME/.local/share"
 
 echo ""
-echo "Done! Restart your shell or run: exec zsh"
+echo "Done! Restart your shell or run: exec fish"

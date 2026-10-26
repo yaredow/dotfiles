@@ -86,7 +86,7 @@ cd ~/dotfiles
 
 ```sh
 stow nvim kitty hypr   # deploy by tool — pick just what you need
-stow -D zsh            # remove a package
+stow -D fish           # remove a package
 ```
 
 ## Theming
@@ -110,7 +110,7 @@ Every tool is its own top-level stow package rooted at `~` — pick and stow jus
 
 ```
 .
-├── zsh/            # .zshrc, .zshenv, aliases, .zsh_plugins.txt
+├── fish/           # config.fish, aliases, functions
 ├── atuin/          # shell history
 ├── kitty/          # terminal (colors in generated theme.conf)
 ├── fastfetch/      # TUI tools

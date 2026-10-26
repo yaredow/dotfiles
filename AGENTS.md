@@ -8,7 +8,7 @@ Top-level directories are **per-tool stow packages** rooted at `~`. Pick and sto
 
 ```
 stow nvim kitty hypr     # deploy by tool
-stow -D zsh              # remove a package
+stow -D fish             # remove a package
 ./install.sh             # full bootstrap (auto-discovers packages)
 ```
 
@@ -21,7 +21,7 @@ Each tool is its own root-level stow package rooted at `~`.
 
 | Package | Contents | Domain |
 |---------|----------|--------|
-| `zsh/` | .zshrc, .zshenv, aliases (.zsh/), .zsh_plugins.txt | shell experience |
+| `fish/` | config.fish, aliases, functions | shell experience |
 | `atuin/` | atuin config + themes | shell history |
 | `kitty/` | kitty.conf (colors in generated theme.conf) | terminal |
 | `fastfetch/` | logo.txt (config.jsonc is generated) | TUI tools |
