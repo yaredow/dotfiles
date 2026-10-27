@@ -379,6 +379,9 @@ fi
 if [[ -d "$REPO_DIR/greetd" ]] && command -v noctalia-greeter &>/dev/null; then
   sudo mkdir -p /etc/greetd /var/lib/noctalia-greeter
   sudo cp "$REPO_DIR/greetd/config.toml" /etc/greetd/config.toml
+  if [[ -f "$REPO_DIR/greetd/pam-greetd" ]]; then
+    sudo cp "$REPO_DIR/greetd/pam-greetd" /etc/pam.d/greetd
+  fi
   sudo cp "$REPO_DIR/greetd/greeter.toml" /var/lib/noctalia-greeter/greeter.toml
   sudo cp "$REPO_DIR/greetd/wallpaper.png" /var/lib/noctalia-greeter/wallpaper.png
   sudo chown -R greeter:greeter /var/lib/noctalia-greeter 2>/dev/null || true

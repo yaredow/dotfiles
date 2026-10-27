@@ -18,6 +18,7 @@ environment {
 
 spawn-at-startup "noctalia"
 spawn-at-startup "fcitx5" "-d"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 
 output "eDP-1" {
     mode "2880x1800@90.001"
