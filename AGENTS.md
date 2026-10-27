@@ -1,13 +1,13 @@
 # ydot — dotfiles
 
-Arch Linux + Hyprland dotfiles with a centralized theme system. All config deploys via GNU Stow.
+Arch Linux + Niri dotfiles with a centralized theme system. All config deploys via GNU Stow.
 
 ## Structure
 
 Top-level directories are **per-tool stow packages** rooted at `~`. Pick and stow just what you need.
 
 ```
-stow nvim kitty hypr     # deploy by tool
+stow nvim kitty niri     # deploy by tool
 stow -D fish             # remove a package
 ./install.sh             # full bootstrap (auto-discovers packages)
 ```
@@ -26,7 +26,8 @@ Each tool is its own root-level stow package rooted at `~`.
 | `kitty/` | kitty.conf (colors in generated theme.conf) | terminal |
 | `fastfetch/` | logo.txt (config.jsonc is generated) | TUI tools |
 | `btop/` | btop.conf (theme.theme is generated) | TUI tools |
-| `hypr/` | hyprland.lua, hypridle.conf | window manager |
+| `niri/` | config.kdl | window manager |
+| `noctalia/` | config.toml | desktop shell |
 | `quickshell/` | shell.qml, modules, services, state.default.json | system shell |
 | `nvim/` | init.lua, lua/yada/ (theme.lua is generated) | editor |
 | `git/` | git config (delta, aliases) | dev tools |
@@ -54,7 +55,7 @@ Source of truth: `theme/.config/theme/themes/<name>/colors.json`.
 
 ```
 theme-set.sh <name>
-  ├─ render templates → kitty / hypr / fastfetch / btop / starship / rmpc
+  ├─ render templates → kitty / fastfetch / btop / starship / rmpc
   ├─ copy colors.json → ~/.config/quickshell/state/colors.json
   ├─ nvim via integrations.nvim → ~/.config/nvim/lua/theme.lua
   ├─ wallpaper via awww (see below)
@@ -91,7 +92,6 @@ Repo seeds: `theme/.../themes/<name>/wallpapers/` (copied on install with `cp -n
 | Path | Source |
 |------|--------|
 | `~/.config/kitty/theme.conf` | `kitty.conf.tpl` |
-| `~/.config/hypr/theme.lua` | `hypr-colors.lua.tpl` |
 | `~/.config/fastfetch/config.jsonc` | `fastfetch.jsonc.tpl` |
 | `~/.config/btop/themes/theme.theme` | `btop.theme.tpl` |
 | `~/.config/starship.toml` | `starship.toml.tpl` |
@@ -123,7 +123,8 @@ No flat `"theme.name"` / `"wallpaper.index"` keys. Scripts migrate legacy flat k
 | `scripts/stow-exclude.txt` | Non-stow top-level dirs |
 | `bin/.local/bin/theme-set.sh` | Theme orchestrator |
 | `bin/.local/bin/wallpaper-*.sh` | Wallpaper |
-| `hypr/.config/hypr/hyprland.lua` | Hyprland |
+| `niri/.config/niri/config.kdl` | Niri |
+| `noctalia/.config/noctalia/config.toml` | Noctalia |
 | `quickshell/.config/quickshell/state.default.json` | State template |
 
 ## Gotchas

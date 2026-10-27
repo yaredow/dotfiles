@@ -85,7 +85,7 @@ cd ~/dotfiles
 ### Manual stow
 
 ```sh
-stow nvim kitty hypr   # deploy by tool — pick just what you need
+stow nvim kitty niri   # deploy by tool — pick just what you need
 stow -D fish           # remove a package
 ```
 
@@ -95,7 +95,7 @@ Source of truth: `theme/.config/theme/themes/<name>/colors.json` — theme: **to
 
 ```
 theme-set.sh <name>
-  ├─ render templates → kitty / hypr / fastfetch / btop / starship / herdr / opencode / rmpc
+  ├─ render templates → kitty / fastfetch / btop / starship / herdr / opencode / rmpc
   ├─ copy colors.json → ~/.config/quickshell/state/colors.json
   ├─ nvim integration → ~/.config/nvim/lua/theme.lua
   ├─ wallpaper for that theme
@@ -115,8 +115,9 @@ Every tool is its own top-level stow package rooted at `~` — pick and stow jus
 ├── kitty/          # terminal (colors in generated theme.conf)
 ├── fastfetch/      # TUI tools
 ├── btop/           # TUI tools
-├── hypr/           # hyprland.lua, hypridle.conf
-├── quickshell/     # bar, launcher, lock screen)
+├── niri/           # config.kdl (window manager)
+├── noctalia/       # config.toml (desktop shell)
+├── quickshell/     # state.default.json
 ├── nvim/           # editor
 ├── git/            # git config (delta, aliases)
 ├── zed/            # editor
