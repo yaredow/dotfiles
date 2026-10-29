@@ -153,6 +153,7 @@ left = "panel-toggle launcher"
 right = "panel-toggle control-center"
 
 [widget.launcher]
+custom_image = "/home/yada/.config/noctalia/icons/archlinux.svg"
 custom_image_colorize = true
 icon_color = "primary"
 scale = 0.90
