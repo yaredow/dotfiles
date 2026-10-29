@@ -38,9 +38,6 @@ intel-media-driver
 keyd
 xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
-fcitx5
-fcitx5-gtk
-fcitx5-qt
 
 # =============================================================================
 # Editor
