@@ -19,6 +19,9 @@
   },
   "agent_servers": {
     "antigravity-acp": {
+      "default_config_options": {
+        "mode": "auto_edit"
+      },
       "type": "registry"
     },
     "opencode": {
@@ -258,7 +261,7 @@
       "EDITOR": "zed --wait",
     },
     "font_size": 13.5,
-    "font_family": "FiraCode Nerd Font Mono",
+    "font_family": "JetBrainsMono Nerd Font",
     "detect_venv": {
       "on": {
         "directories": [".venv", "venv"],
@@ -304,13 +307,13 @@
   },
   "ui_font_size": 14.0,
   "buffer_font_size": 13.2,
-  "buffer_font_family": "FiraCode Nerd Font",
-  "ui_font_family": "FiraCode Nerd Font",
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "ui_font_family": "JetBrainsMono Nerd Font",
   "theme": {
     "mode": "dark",
     "light": "One Light",
     "dark": "Tokyo Night",
   },
   "format_on_save": "on",
-  "agent_ui_font_size": 13.5,
+  "agent_ui_font_size": 13.0,
 }
