@@ -168,7 +168,7 @@ Wallpapers live in `~/.local/wallpapers/<theme>/` (cycled with `SUPER + W`). Rep
 | `ALT + SHIFT + 1-9,0`                       | Move window to workspace  |
 | `SUPER + V`                                 | Clipboard history         |
 | `SUPER + S`                                 | Screenshot                |
-| `SUPER + R`                                 | Toggle screen recording   |
+| `SUPER + SHIFT + R`                         | Toggle screen recording   |
 | `SUPER + W`                                 | Cycle wallpaper           |
 | `SUPER + L`                                 | Lock screen               |
 | `SUPER + /`                                 | Keybinds reference        |

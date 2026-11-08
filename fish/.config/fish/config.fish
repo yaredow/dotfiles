@@ -125,3 +125,10 @@ end
 if command -v direnv >/dev/null 2>&1
     direnv hook fish | source
 end
+
+if command -v devenv >/dev/null 2>&1
+    devenv hook fish | source
+end
+
+# opencode
+fish_add_path /home/yada/.opencode/bin

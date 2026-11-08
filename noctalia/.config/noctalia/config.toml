@@ -136,7 +136,7 @@ start = [
     "workspaces",
     "media"
 ]
-center = [ "clock" ]
+center = [ "noctalia/screen_recorder:recorder", "clock" ]
 end = [
     "privacy",
     "tray",
