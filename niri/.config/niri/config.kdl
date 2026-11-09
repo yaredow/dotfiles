@@ -293,6 +293,7 @@ binds {
     Mod+Ctrl+L hotkey-overlay-title="Lock Screen" { spawn-sh "noctalia msg session lock"; }
 
     // Screen Recording
+    Mod+Ctrl+R hotkey-overlay-title="Toggle Screen Recording" { spawn-sh "noctalia msg plugin noctalia/screen_recorder:service all toggle region"; }
     Mod+Shift+R hotkey-overlay-title="Toggle Screen Recording" { spawn-sh "noctalia msg plugin noctalia/screen_recorder:service all toggle region"; }
 
     // Volume & Media Keys (via Noctalia OSD)

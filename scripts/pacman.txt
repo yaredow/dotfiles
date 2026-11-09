@@ -69,6 +69,7 @@ power-profiles-daemon
 grim
 slurp
 satty
+gpu-screen-recorder
 wf-recorder
 wl-clipboard
 cliphist
