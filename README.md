@@ -16,7 +16,12 @@
 </p>
 
 <p align="center">
-  <img src="screenshots/showcase.gif" alt="Desktop Showcase" width="100%" />
+  <img src="screenshots/desktop.png" alt="Desktop Overview" width="100%" />
+</p>
+
+<p align="center">
+  <img src="screenshots/launcher.png" alt="App Launcher" width="49%" />
+  <img src="screenshots/control-center.png" alt="Control Center" width="49%" />
 </p>
 
 > [!TIP]
