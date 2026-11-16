@@ -22,7 +22,7 @@ if [[ -z "$WP_FILE" || ! -f "$WP_FILE" ]]; then
 fi
 
 # Only animate when a session is running
-if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] || pgrep -x awww-daemon >/dev/null 2>&1; then
+if [[ -n "${NIRI_SOCKET:-}" || -n "${WAYLAND_DISPLAY:-}" ]] || pgrep -x awww-daemon >/dev/null 2>&1; then
   wallpaper_awww_set "$WP_FILE" || true
 else
   mkdir -p "$WALLPAPER_ROOT"

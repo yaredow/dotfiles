@@ -260,7 +260,7 @@
     "env": {
       "EDITOR": "zed --wait",
     },
-    "font_size": 13.5,
+    "font_size": 12.0,
     "font_family": "JetBrainsMono Nerd Font",
     "detect_venv": {
       "on": {
@@ -305,8 +305,8 @@
     "dock": "left",
     "button": false,
   },
-  "ui_font_size": 14.0,
-  "buffer_font_size": 13.2,
+  "ui_font_size": 13.5,
+  "buffer_font_size": 12.0,
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "ui_font_family": "JetBrainsMono Nerd Font",
   "theme": {

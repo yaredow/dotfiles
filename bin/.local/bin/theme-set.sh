@@ -25,7 +25,7 @@ cp "$THEME_DIR/colors.json" "$HOME/.config/quickshell/state/colors.json"
 CURRENT=$(wallpaper_state_get "wallpaper.current" "")
 WP_FILE=$(wallpaper_resolve_for_theme "$THEME" "$CURRENT")
 if [[ -n "$WP_FILE" && -f "$WP_FILE" ]]; then
-  if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] || pgrep -x awww-daemon >/dev/null 2>&1; then
+  if [[ -n "${NIRI_SOCKET:-}" || -n "${WAYLAND_DISPLAY:-}" ]] || pgrep -x awww-daemon >/dev/null 2>&1; then
     wallpaper_awww_set "$WP_FILE" || true
   fi
 fi

@@ -16,9 +16,10 @@ if test -d "$HOME/go/bin"
     end
 end
 
-if test -d "$HOME/.bun/bin"
-    if not contains "$HOME/.bun/bin" $PATH
-        set -gx PATH "$HOME/.bun/bin" $PATH
+set -gx BUN_INSTALL "$HOME/.bun"
+if test -d "$BUN_INSTALL/bin"
+    if not contains "$BUN_INSTALL/bin" $PATH
+        set -gx PATH "$BUN_INSTALL/bin" $PATH
     end
 end
 
@@ -131,4 +132,6 @@ if command -v devenv >/dev/null 2>&1
 end
 
 # opencode
-fish_add_path /home/yada/.opencode/bin
+if test -d "$HOME/.opencode/bin"
+    fish_add_path "$HOME/.opencode/bin"
+end

@@ -7,12 +7,12 @@ Arch Linux + Niri dotfiles with a centralized theme system. All config deploys v
 Top-level directories are **per-tool stow packages** rooted at `~`. Pick and stow just what you need.
 
 ```
-stow nvim kitty niri     # deploy by tool
-stow -D fish             # remove a package
-./install.sh             # full bootstrap (auto-discovers packages)
+stow niri noctalia alacritty fish   # deploy by tool
+stow -D kitty                       # remove a package
+./install.sh                        # full bootstrap (auto-discovers packages)
 ```
 
-### Packages (20 per-tool stow + 2 non-stow)
+### Packages (27 per-tool stow packages)
 
 Each tool is its own root-level stow package rooted at `~`.
 
@@ -21,31 +21,37 @@ Each tool is its own root-level stow package rooted at `~`.
 
 | Package | Contents | Domain |
 |---------|----------|--------|
+| `niri/` | config.kdl | window manager |
+| `noctalia/` | config.toml, archlinux.svg | desktop shell |
+| `alacritty/` | alacritty.toml | terminal |
+| `kitty/` | kitty.conf (colors in generated theme.conf) | terminal |
 | `fish/` | config.fish, aliases, functions | shell experience |
 | `atuin/` | atuin config + themes | shell history |
-| `kitty/` | kitty.conf (colors in generated theme.conf) | terminal |
+| `bat/` | config + tokyonight theme | TUI tools |
 | `fastfetch/` | logo.txt (config.jsonc is generated) | TUI tools |
 | `btop/` | btop.conf (theme.theme is generated) | TUI tools |
-| `niri/` | config.kdl | window manager |
-| `noctalia/` | config.toml | desktop shell |
-| `quickshell/` | shell.qml, modules, services, state.default.json | system shell |
-| `nvim/` | init.lua, lua/yada/ (theme.lua is generated) | editor |
+| `fontconfig/` | fonts.conf | system fonts |
 | `git/` | git config (delta, aliases) | dev tools |
-| `zed/` | settings.json, keymap.json | editor |
-| `yazi/` | keymap.toml | file manager |
-| `opencode/` | opencode.jsonc (tui.json is generated) | dev tools |
+| `gtk/` | gtk-3.0 + gtk-4.0 settings.ini, gtk.css | desktop environment |
+| `herdr/` | config.toml | dev tools / multiplexer |
 | `mpd/` | mpd.conf, playlists | media |
-| `mpv/` | mpv.conf, scripts, fonts (osc.conf is generated) | media |
+| `mpv/` | mpv.conf, input.conf, scripts, fonts (osc.conf is generated) | media |
 | `rmpc/` | config.ron (theme.ron is generated) | media |
 | `youtube-tui/` | *.yml keybinds/pages/cmds | media |
-| `gtk/` | gtk-3.0 + gtk-4.0 settings.ini | desktop environment |
 | `electron/` | electron-flags.conf | desktop environment |
-| `spotify/` | spotify-flags.conf, spotify-launcher.conf, .desktop entry | media apps |
 | `postman/` | postman.desktop entry | dev tools |
+| `qbittorrent/` | tokyo-night.qbtheme | media |
+| `spotify/` | spotify-flags.conf, spotify-launcher.conf, .desktop entry | media apps |
+| `telegram/` | TokyoNight.tdesktop-theme | media apps |
+| `yazi/` | keymap.toml | file manager |
+| `zed/` | settings.json, keymap.json | editor |
+| `zen/` | policies.json, user.js, vimium theme | browser |
+| `bin/` | ~/.local/bin scripts (theme-set, wallpaper, recording) | system scripts |
+| `theme/` | colors.json + templates | system theme |
 
 </details>
 
-Non-stow (listed in `scripts/stow-exclude.txt`): `scripts/`, `sddm/`, `screenshots/`, `ydot-sddm/`.
+Non-stow (listed in `scripts/stow-exclude.txt`): `scripts/`, `screenshots/`, `greetd/`, `keyd/`, `quickshell/`, `sddm/`, `ydot-sddm/`.
 
 Adding a new app: create a root package `<tool>/<relative path from ~>/...`. To keep a top-level dir out of stow, add its name to `scripts/stow-exclude.txt`. `starship.toml` is rendered by `theme-set.sh` directly into `~/.config/starship.toml` (no stow package).
 
@@ -55,7 +61,7 @@ Source of truth: `theme/.config/theme/themes/<name>/colors.json`.
 
 ```
 theme-set.sh <name>
-  ├─ render templates → kitty / fastfetch / btop / starship / rmpc
+  ├─ render templates → alacritty / kitty / fastfetch / btop / starship / herdr / rmpc
   ├─ copy colors.json → ~/.config/quickshell/state/colors.json
   ├─ nvim via integrations.nvim → ~/.config/nvim/lua/theme.lua
   ├─ wallpaper via awww (see below)
@@ -74,8 +80,8 @@ Per-theme integrations in `colors.json`:
 
 ```
 ~/.local/wallpapers/
-  <theme>/1.jpg …          # theme-bound set (cycle stays here)
-  extras/                  # unthemed (picker "Add")
+  <theme>/default-wallpaper.jpg …   # theme-bound set (cycle stays here)
+  extras/                           # unthemed (picker "Add")
 ```
 
 Repo seeds: `theme/.../themes/<name>/wallpapers/` (copied on install with `cp -n`).
@@ -108,7 +114,7 @@ Repo seeds: `theme/.../themes/<name>/wallpapers/` (copied on install with `cp -n
 ```json
 {
   "theme": { "name": "tokyonight" },
-  "wallpaper": { "current": "/home/.../wallpapers/tokyonight/1.jpg", "dynamic": true }
+  "wallpaper": { "current": "/home/.../wallpapers/tokyonight/default-wallpaper.jpg", "dynamic": true }
 }
 ```
 
@@ -123,8 +129,8 @@ No flat `"theme.name"` / `"wallpaper.index"` keys. Scripts migrate legacy flat k
 | `scripts/stow-exclude.txt` | Non-stow top-level dirs |
 | `bin/.local/bin/theme-set.sh` | Theme orchestrator |
 | `bin/.local/bin/wallpaper-*.sh` | Wallpaper |
-| `niri/.config/niri/config.kdl` | Niri |
-| `noctalia/.config/noctalia/config.toml` | Noctalia |
+| `niri/.config/niri/config.kdl` | Niri compositor config |
+| `noctalia/.config/noctalia/config.toml` | Noctalia shell config |
 | `quickshell/.config/quickshell/state.default.json` | State template |
 
 ## Gotchas

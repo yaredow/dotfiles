@@ -5,48 +5,49 @@
 <h1 align="center">ydot</h1>
 
 <p align="center">
-  Personal Arch Linux + Hyprland dotfiles with a centralized theme system. All configs deploy via GNU Stow and are driven from a unified QML shell.
+  Personal Arch Linux + Niri dotfiles with a centralized theme system and Noctalia shell.<br/>
+  All configurations deploy via GNU Stow.
 </p>
 
 <p align="center">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg" />
   <img alt="Stars" src="https://img.shields.io/github/stars/yaredow/dotfiles?style=social" />
+  <a href="https://github.com/yaredow/nixos-config"><img alt="NixOS Variant" src="https://img.shields.io/badge/NixOS%20Variant-nixos--config-5277C3?logo=nixos&logoColor=white" /></a>
 </p>
 
-## Screenshots
+<p align="center">
+  <img src="screenshots/showcase.gif" alt="Desktop Showcase" width="100%" />
+</p>
 
-<table>
-  <tr>
-    <td><img src="screenshots/desktop.png" alt="Desktop" width="400" /></td>
-    <td><img src="screenshots/terminal.png" alt="Terminal" width="400" /></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/launcher.png" alt="Launcher" width="400" /></td>
-    <td><img src="screenshots/menu.png" alt="Menu" width="400" /></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/lock.png" alt="Lock screen" width="400" /></td>
-    <td><img src="screenshots/sddm-theme.png" alt="SDDM" width="400" /></td>
-  </tr>
-</table>
+> [!TIP]
+> Also running NixOS? Check out the NixOS variant of this configuration at [yaredow/nixos-config](https://github.com/yaredow/nixos-config).
+
+---
 
 ## Highlights
 
-- **Centralized theming** — pick a theme and every app restyles: Hyprland, kitty, fastfetch, btop, starship, nvim, rmpc, herdr and more
-- **Unified QML shell** — bar, launcher, settings panel, clipboard history, keybinds reference, lock screen and power menu in one place
-- **Searchable settings** — change theme or font with live search
-- **Clipboard history** — `SUPER + V` opens a searchable cliphist manager
-- **Wallpaper cycling** — `SUPER + W` rotates theme-bound wallpapers
+- **Scrollable Tiling Compositor** — Driven by [Niri](https://github.com/YaLTeR/niri) with smooth animations, column resizing, and dynamic multi-monitor layout.
+- **Modern Desktop Shell** — [Noctalia](https://github.com/noctalia-dev/noctalia) provides the top bar, launcher, control center, volume/brightness OSDs, screen recorder widget, and lock screen.
+- **Centralized Theming** — Tokyo Night theme orchestrator (`theme-set.sh`) styles Alacritty, Kitty, Fastfetch, Btop, Starship, Neovim, Herdr, RMPC, Zen Browser, and GTK.
+- **Streamlined Login** — [greetd](https://man.sr.ht/~kennylevinsen/greetd/) paired with `noctalia-greeter` for a smooth, unified Wayland greeting experience.
+- **Hardware & Remaps** — [keyd](https://github.com/rvaiya/keyd) remaps Caps Lock to Esc when tapped and Ctrl when held.
+- **Per-Tool Stow Packages** — Every tool is an isolated stow package; pick and install only what you need.
 
 > [!NOTE]
 > **Environment**
 >
 > - **OS:** Arch Linux
-> - **Window Manager:** Hyprland
-> - **Terminal:** Kitty
-> - **Shell:** Zsh + Starship
+> - **Compositor:** [Niri](https://github.com/YaLTeR/niri)
+> - **Desktop Shell:** [Noctalia](https://github.com/noctalia-dev/noctalia)
+> - **Greeter:** greetd + noctalia-greeter
+> - **Terminal:** Alacritty (default) / Kitty
+> - **Shell:** Fish + Starship
 > - **Editor:** Neovim / Zed
-> - **Multiplexer:** herdr
+> - **Browser:** [Zen Browser](https://zen-browser.app)
+> - **Multiplexer:** [herdr](https://github.com/herdr-sh/herdr)
+> - **Key Remap:** [keyd](https://github.com/rvaiya/keyd)
+
+---
 
 ## Installation
 
@@ -56,7 +57,7 @@
 curl -fsSL https://raw.githubusercontent.com/yaredow/dotfiles/main/install.sh | sh
 ```
 
-For a private fork, set `DOTFILES_REPO`:
+For a private fork:
 
 ```sh
 DOTFILES_REPO="https://token@github.com/youruser/dotfiles.git" curl -fsSL ... | sh
@@ -73,106 +74,135 @@ cd ~/dotfiles
 ### Options
 
 ```sh
-./install.sh --check   # pre-flight checks only (tools, package lists, themes,
-                       # and stow conflicts) — makes no changes
+./install.sh --check   # Pre-flight check only (tools, packages, conflicts) — no changes
 ./install.sh --help
 ```
 
-- **Safe to re-run** — a failed run can be recovered by running `install.sh` again.
-- Real files that would block GNU Stow are backed up to `~/.local/state/stow-backup-*/` instead of failing the install.
-- Everything is logged to `~/.local/state/dotfiles-install.log` (override with `DOTFILES_LOG`).
+- **Safe to re-run** — A failed run can be recovered by running `./install.sh` again.
+- Files blocking GNU Stow are safely backed up to `~/.local/state/stow-backup-*/`.
+- Installation is logged to `~/.local/state/dotfiles-install.log` (override with `DOTFILES_LOG`).
 
-### Manual stow
+### Selective manual deployment
+
+Pick and deploy just what you need using GNU Stow:
 
 ```sh
-stow nvim kitty niri   # deploy by tool — pick just what you need
-stow -D fish           # remove a package
+stow niri noctalia alacritty fish   # Deploy specific tools
+stow -D kitty                       # Undeploy a tool
 ```
 
-## Theming
-
-Source of truth: `theme/.config/theme/themes/<name>/colors.json` — theme: **tokyonight** with **JetBrainsMono Nerd Font** and default wallpaper.
-
-```
-theme-set.sh <name>
-  ├─ render templates → kitty / fastfetch / btop / starship / herdr / opencode / rmpc
-  ├─ copy colors.json → ~/.config/quickshell/state/colors.json
-  ├─ nvim integration → ~/.config/nvim/lua/theme.lua
-  ├─ wallpaper for that theme
-  └─ state.json: theme.name + wallpaper.current
-```
-
-Edit templates under `theme/.config/theme/templates/*.tpl` and `colors.json` — never the generated outputs.
-
-## Structure
-
-Every tool is its own top-level stow package rooted at `~` — pick and stow just what you need:
-
-```
-.
-├── fish/           # config.fish, aliases, functions
-├── atuin/          # shell history
-├── kitty/          # terminal (colors in generated theme.conf)
-├── fastfetch/      # TUI tools
-├── btop/           # TUI tools
-├── niri/           # config.kdl (window manager)
-├── noctalia/       # config.toml (desktop shell)
-├── quickshell/     # state.default.json
-├── nvim/           # editor
-├── git/            # git config (delta, aliases)
-├── zed/            # editor
-├── yazi/           # file manager
-├── opencode/       # dev tools
-├── mpd/            # media (music daemon)
-├── mpv/            # media (video player)
-├── rmpc/           # media (mpd client)
-├── youtube-tui/    # media
-├── gtk/            # gtk-3/4 settings
-├── electron/       # electron flags
-├── spotify/        # spotify flags, launcher, .desktop entry
-├── postman/        # .desktop entry
-├── bin/            # ~/.local/bin scripts (theme-set, wallpaper)
-├── theme/          # colors.json + templates
-├── scripts/        # NOT stowed — pacman.txt, yay.txt, stow-exclude.txt
-├── ydot-sddm/      # NOT stowed — SDDM theme
-├── screenshots/    # README gallery
-└── install.sh      # Bootstrap (auto-discovers stow packages)
-```
-
-Top-level dirs are **per-tool stow packages** rooted at `~`, except those in
-`scripts/stow-exclude.txt` (`scripts/`, `sddm/`, `screenshots/`, `ydot-sddm/`).
-`starship.toml` is rendered by `theme-set.sh` directly into `~/.config/starship.toml` (no stow package).
-
-Wallpapers live in `~/.local/wallpapers/<theme>/` (cycled with `SUPER + W`). Repo seeds are under
-`theme/.../themes/<name>/wallpapers/`.
+---
 
 ## Keybinds
 
-`ALT` is the primary modifier; `ALT + SHIFT` handles window control.
+`Mod` refers to the Super / Windows key.
 
-| Keys                                        | Action                    |
-|---------------------------------------------|---------------------------|
-| `ALT + T`                                   | Terminal                  |
-| `ALT + F`                                   | File manager              |
-| `ALT + B`                                   | Browser                   |
-| `ALT + M`                                   | Music                     |
-| `ALT + SPACE`                               | App launcher              |
-| `SUPER + ALT + SPACE`                        | App menu                  |
-| `ALT + W`                                   | Settings panel            |
-| `ALT + Q`                                   | Close window              |
-| `ALT + h/j/k/l`                             | Move focus                |
-| `ALT + SHIFT + h/j/k/l`                     | Move window               |
-| `ALT + SHIFT + T`                           | Toggle float              |
-| `ALT + SHIFT + F`                           | Toggle fullscreen         |
-| `ALT + 1-9,0`                               | Switch workspace          |
-| `ALT + SHIFT + 1-9,0`                       | Move window to workspace  |
-| `SUPER + V`                                 | Clipboard history         |
-| `SUPER + S`                                 | Screenshot                |
-| `SUPER + SHIFT + R`                         | Toggle screen recording   |
-| `SUPER + W`                                 | Cycle wallpaper           |
-| `SUPER + L`                                 | Lock screen               |
-| `SUPER + /`                                 | Keybinds reference        |
-| `XF86PowerOff`                              | Power menu                |
-| `XF86AudioRaise/Lower/Mute`                 | Volume OSD                |
-| `XF86MonBrightnessUp/Down`                  | Brightness OSD            |
-| `XF86AudioNext/Prev/Play/Pause`             | Media control             |
+### Shell & Applications
+
+| Keys | Action |
+|------|--------|
+| `Mod + Return` / `Mod + T` | Open Terminal (Alacritty) |
+| `Mod + B` | Open Browser (Zen Browser) |
+| `Mod + Shift + Return` | Open Fastfetch in floating terminal |
+| `Mod + Space` | Toggle Noctalia App Launcher |
+| `Mod + S` | Toggle Noctalia Control Center |
+| `Mod + Comma` | Toggle Noctalia Settings |
+| `Mod + Ctrl + L` | Lock Screen |
+| `Mod + Shift + /` | Hotkey overlay / Cheatsheet |
+| `Mod + Shift + R` | Toggle Screen Recording (region) |
+
+### Window Management & Navigation
+
+| Keys | Action |
+|------|--------|
+| `Mod + Q` | Close window |
+| `Mod + Shift + E` | Quit Niri |
+| `Mod + H` / `Mod + Left` | Focus column left |
+| `Mod + L` / `Mod + Right` | Focus column right |
+| `Mod + J` / `Mod + Down` | Focus window down |
+| `Mod + K` / `Mod + Up` | Focus window up |
+| `Mod + Shift + H` / `Left` | Move column left |
+| `Mod + Shift + L` / `Right` | Move column right |
+| `Mod + Shift + J` / `Down` | Move window down |
+| `Mod + Shift + K` / `Up` | Move window up |
+| `Mod + 1-9` | Switch to workspace 1–9 |
+| `Mod + Shift + 1-9` | Move column to workspace 1–9 |
+| `Mod + Ctrl + J/K` | Focus workspace down / up |
+| `Mod + R` | Switch preset column width (33% / 50% / 67%) |
+| `Mod + F` | Maximize column |
+| `Mod + Shift + F` | Fullscreen window |
+| `Mod + C` | Center column |
+| `Mod + V` | Toggle window floating |
+| `Mod + W` | Toggle column tabbed display |
+| `Mod + [` / `Mod + ]` | Consume / expel window into column |
+
+### Media & Hardware
+
+| Keys | Action |
+|------|--------|
+| `Print` / `Mod + Shift + S` | Interactive screenshot |
+| `Ctrl + Print` | Fullscreen screenshot |
+| `Alt + Print` | Focused window screenshot |
+| `XF86AudioRaiseVolume` | Volume up (via Noctalia OSD) |
+| `XF86AudioLowerVolume` | Volume down (via Noctalia OSD) |
+| `XF86AudioMute` | Mute volume |
+| `XF86MonBrightnessUp` | Brightness up |
+| `XF86MonBrightnessDown` | Brightness down |
+
+---
+
+## Structure
+
+Top-level directories are **per-tool stow packages** rooted at `~`, deployed cleanly with GNU Stow:
+
+```
+.
+├── niri/           # Window manager (config.kdl)
+├── noctalia/       # Desktop shell (config.toml, archlinux icon)
+├── alacritty/      # Terminal emulator (alacritty.toml)
+├── kitty/          # Terminal emulator (kitty.conf)
+├── fish/           # Shell (config.fish, aliases, functions)
+├── atuin/          # Shell history (config.toml, tokyo-night theme)
+├── bat/            # Syntax-highlighting cat (config, tokyonight theme)
+├── btop/           # Resource monitor (btop.conf)
+├── fastfetch/      # Neofetch alternative (logo.txt)
+├── fontconfig/     # Font rendering & fallbacks (fonts.conf)
+├── git/            # Git configuration (delta, aliases)
+├── gtk/            # GTK-3 & GTK-4 themes/settings
+├── herdr/          # Terminal multiplexer (config.toml)
+├── mpd/            # Music player daemon (mpd.conf)
+├── mpv/            # Media player (mpv.conf, input.conf, scripts)
+├── rmpc/           # MPD TUI client (config.ron)
+├── electron/       # Wayland ozone flags
+├── postman/        # Desktop entry
+├── qbittorrent/    # Tokyo Night theme for qBittorrent
+├── spotify/        # Spotify Wayland flags & launcher config
+├── telegram/       # Tokyo Night theme for Telegram Desktop
+├── yazi/           # Terminal file manager (keymap.toml)
+├── youtube-tui/    # YouTube TUI client
+├── zed/            # Code editor (settings.json, keymap.json)
+├── zen/            # Zen Browser user.js, policies & vimium theme
+├── bin/            # User scripts (~/.local/bin: theme-set, wallpaper, recording)
+├── theme/          # Central palette (colors.json) & templates (*.tpl)
+├── greetd/         # Greetd & noctalia-greeter system configuration
+├── keyd/           # Keyd keyboard remap configuration (/etc/keyd/default.conf)
+├── scripts/        # Non-stowed installer scripts, pacman.txt, yay.txt
+└── install.sh      # Automated bootstrap installer
+```
+
+---
+
+## Theming
+
+Source of truth: `theme/.config/theme/themes/tokyonight/colors.json`.
+
+```
+theme-set.sh <name>
+  ├─ render templates → alacritty / kitty / fastfetch / btop / starship / herdr / rmpc
+  ├─ copy colors.json → ~/.config/quickshell/state/colors.json
+  ├─ nvim integration → ~/.config/nvim/lua/theme.lua
+  ├─ wallpaper via awww
+  └─ state.json: theme.name + wallpaper.current
+```
+
+Edit templates under `theme/.config/theme/templates/*.tpl` and `colors.json` — never edit generated outputs directly.

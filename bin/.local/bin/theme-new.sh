@@ -47,7 +47,7 @@ cat > "$THEME_DIR/colors.json" <<'EOF'
   "blue": "#",
   "lavender": "#",
   "fonts": {
-    "mono": "CaskaydiaCove Nerd Font",
+    "mono": "JetBrainsMono Nerd Font",
     "size": 10
   },
   "integrations": {

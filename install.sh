@@ -6,7 +6,7 @@ REPO_URL="${DOTFILES_REPO:-https://github.com/yaredow/dotfiles}"
 REPO_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOG_FILE="${DOTFILES_LOG:-$HOME/.local/state/dotfiles-install.log}"
 
-TOTAL_STEPS=11
+TOTAL_STEPS=10
 step=0
 CHECK_ONLY=0
 WARNINGS=()
@@ -311,6 +311,11 @@ if ! stow --restow --target="$HOME" --dir="$REPO_DIR" "${STOW_PACKAGES[@]}"; the
   WARNINGS+=("stow failed for some packages — see log")
 fi
 
+# Adapt absolute paths in noctalia config for other users
+if [[ "$USER" != "yada" && -f "$HOME/.config/noctalia/config.toml" ]]; then
+  sed -i "s|/home/yada|$HOME|g" "$HOME/.config/noctalia/config.toml" 2>/dev/null || true
+fi
+
 # =============================================================================
 # 5 – Copy qt6ct config (real file, not stowed — qt6ct rewrites it at runtime)
 # =============================================================================
@@ -362,7 +367,7 @@ if ! "$HOME/.local/bin/theme-set.sh" "$THEME"; then
 fi
 
 # =============================================================================
-# 10 – Enable systemd services
+# 9 – Enable systemd services
 # =============================================================================
 say "Enabling systemd services..."
 sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
@@ -422,7 +427,7 @@ if [[ -f "$QBIT_THEME" ]]; then
 fi
 
 # =============================================================================
-# 11 – Change default shell to fish
+# 10 – Change default shell to fish
 # =============================================================================
 say "Changing default shell to fish..."
 FISH_PATH="$(command -v fish || true)"
