@@ -316,4 +316,8 @@
   },
   "format_on_save": "on",
   "agent_ui_font_size": 13.0,
+  "auto_install_extensions": {
+    "tokyo-night": true,
+    "material-icon-theme": true
+  }
 }
